@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Genre — VEXORA</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="/static/css/output.css"/>
+</head>
+<body class="bg-dark text-white min-h-screen selection:bg-netflix selection:text-white">
+  <!-- NAVBAR Netflix — seragam + auth konsisten -->
+  <nav class="fixed top-0 w-full z-50 bg-[#141414] border-b border-white/10">
+    <div class="max-w-[1600px] mx-auto px-3 md:px-8 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-6">
+          <a href="/" class="flex items-center">
+            <img src="/asset/logo.png" alt="VEXORA" title="VEXORA" class="h-8 md:h-9 lg:h-10 w-auto object-contain max-h-[40px]" onerror="this.style.display='none'" />
+          </a>
+        <div class="hidden lg:flex items-center gap-5 text-[13px] font-medium">
+          <a href="/" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-house text-xs"></i> Beranda</a>
+          <a href="/genre" class="text-white font-bold border-b-2 border-netflix pb-1 flex items-center gap-1"><i class="fa-solid fa-layer-group text-xs"></i> Genre</a>
+          <a href="/schedule" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-calendar text-xs"></i> Schedule</a>
+          <a href="/" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-bolt text-xs"></i> Terbaru</a>
+          <a href="/bookmark" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-bookmark text-xs"></i> Bookmark</a>
+          <a href="/riwayat" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-clock-rotate-left text-xs"></i> Riwayat</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div id="authNav" class="flex items-center gap-2">
+          <a href="/login" id="btnLogin" class="hidden md:inline-flex bg-netflix hover:bg-red-700 text-white px-4 py-1.5 rounded text-xs font-black">Masuk</a>
+          <a href="/register" id="btnRegister" class="hidden md:inline-flex bg-white/10 hover:bg-white/20 border border-white/20 text-white px-3 py-1.5 rounded text-xs font-bold">Daftar</a>
+          <div id="userMenu" class="hidden items-center cursor-pointer" onclick="toggleUserDropdown()">
+            <img id="navAvatar" src="https://i.pravatar.cc/100?u=vexora" alt="Foto profil" title="Foto profil" class="w-8 h-8 rounded-full object-cover border border-white/20"/>
+            <div id="userDropdown" class="hidden absolute right-4 md:right-10 top-[56px] w-52 bg-black border border-white/20 shadow-2xl rounded overflow-hidden z-50">
+              <div class="p-3 border-b border-white/10 flex items-center gap-2">
+                <img id="dropAvatar" src="https://i.pravatar.cc/100?u=vexora" alt="Foto profil" class="w-9 h-9 rounded object-cover"/>
+                <div class="min-w-0"><p id="dropName" class="text-xs font-bold truncate">User</p><p id="dropEmail" class="text-[11px] text-white/50 truncate">email</p></div>
+              </div>
+              <a href="/profile" class="flex items-center gap-2 px-3 py-2.5 text-xs font-bold hover:bg-white/10"><i class="fa-solid fa-user w-4"></i> Profil & Ganti Foto</a>
+              <button onclick="doLogout()" class="w-full text-left flex items-center gap-2 px-3 py-2.5 text-xs font-bold hover:bg-white/10 text-red-400"><i class="fa-solid fa-right-from-bracket w-4"></i> Keluar</button>
+            </div>
+          </div>
+        </div>
+        <button id="mobileMenuBtn" class="lg:hidden w-8 h-8 flex items-center justify-center border border-white/10 rounded bg-white/5" onclick="toggleMobileMenu()" aria-label="Buka menu"><i class="fa-solid fa-bars text-sm"></i></button>
+      </div>
+    </div>
+    <div id="mobileMenu" class="hidden lg:hidden bg-black border-t border-white/10 px-4 py-3 space-y-1">
+      <a href="/" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-house w-5"></i> Beranda</a>
+      <a href="/genre" class="flex py-2 text-sm font-bold text-white items-center gap-2"><i class="fa-solid fa-layer-group w-5"></i> Genre</a>
+      <a href="/schedule" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-calendar w-5"></i> Schedule</a>
+      <a href="/bookmark" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-bookmark w-5"></i> Bookmark</a>
+      <a href="/riwayat" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-clock-rotate-left w-5"></i> Riwayat</a>
+    </div>
+  </nav>
+
+  <!-- HEADER Genre -->
+  <section class="pt-20 md:pt-24 pb-6 bg-gradient-to-b from-black to-dark">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-10">
+      <div class="flex items-center gap-2 text-netflix text-xs font-black tracking-[0.18em]"><i class="fa-solid fa-layer-group"></i> JELAJAHI GENRE</div>
+      <h1 class="font-black text-[28px] md:text-[36px] leading-none mt-2">Genre Donghua</h1>
+      <p class="text-sm text-white/60 mt-2 max-w-2xl">Pilih genre untuk filter VEXORA — klik dropdown di bawah.</p>
+
+      <!-- DROPDOWN FILTER — seragam dengan navbar GENRE (47) -->
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <div class="relative" id="genreFilterContainer">
+          <button id="genreFilterBtn" onclick="toggleGenreFilter()" class="bg-black/60 border border-white/30 hover:border-white text-white px-4 py-2.5 rounded flex items-center gap-2 text-sm font-bold min-w-[220px] justify-between" aria-label="Filter genre" title="Filter genre" aria-haspopup="listbox" aria-expanded="false">
+            <span class="flex items-center gap-2"><i class="fa-solid fa-bars text-white/70 text-xs"></i> <span id="genreFilterLabel">PILIH GENRE</span></span>
+            <i id="genreFilterArrow" class="fa-solid fa-caret-down text-white/60 text-xs transition-transform"></i>
+          </button>
+          <div id="genreFilterList" class="hidden absolute left-0 mt-2 w-[300px] md:w-[360px] bg-black border border-white/20 shadow-2xl rounded overflow-hidden z-50 max-h-[420px] overflow-y-auto">
+            <div class="p-2 border-b border-white/10 sticky top-0 bg-black">
+              <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-white/40 text-xs"></i>
+                <input id="genreSearch" type="text" placeholder="Cari genre..." aria-label="Cari genre" class="w-full bg-[#232323] border border-white/10 rounded pl-8 pr-3 py-2 text-xs placeholder:text-white/40 focus:border-white/30 outline-none" oninput="filterGenreList(this.value)"/>
+              </div>
+            </div>
+            <div id="genreFilterItems" class="p-1">
+              <div class="px-3 py-2.5 text-xs font-black cursor-pointer hover:bg-white/10 rounded flex justify-between items-center bg-white/5" onclick="selectGenreFilter('', 'SEMUA GENRE')"><span>Semua Genre</span><span class="text-[10px] bg-netflix px-1.5 py-0.5 rounded">ALL</span></div>
+            </div>
+          </div>
+        </div>
+        <span id="genreCount" class="text-xs font-bold text-white/40 hidden">0 genre</span>
+        <span id="resultCount" class="text-xs font-bold bg-white/10 border border-white/20 px-3 py-2 rounded hidden">0 judul</span>
+        <button onclick="clearGenreFilter()" class="text-xs font-bold text-white/60 hover:text-white border border-white/10 px-3 py-2 rounded hover:bg-white/5">Reset</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-[1600px] mx-auto px-4 md:px-10 pb-10">
+    <div id="loading" class="hidden py-12 text-center">
+      <div class="w-10 h-10 rounded-full border-2 border-white/10 border-t-netflix animate-spin mx-auto"></div>
+      <p class="text-xs font-bold tracking-widest text-white/50 mt-3 animate-pulse">MEMUAT GENRE...</p>
+    </div>
+    <div id="genreInfo" class="hidden mb-4 p-4 bg-[#181818] border border-white/10 rounded items-center justify-between">
+      <div><p class="text-xs font-black tracking-widest text-netflix">FILTER AKTIF</p><h2 id="activeGenreName" class="font-bold text-lg"></h2></div>
+      <span id="activeGenreSlug" class="text-xs font-bold bg-netflix px-2 py-1 rounded">slug</span>
+    </div>
+    <div id="resultGrid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 md:gap-4"></div>
+    <div id="emptyState" class="hidden text-center py-16 bg-[#181818] border border-white/10 rounded">
+      <i class="fa-solid fa-face-meh text-3xl text-white/20 mb-3"></i>
+      <p class="font-bold">Tidak ada donghua untuk genre ini</p>
+      <p class="text-xs text-white/40 mt-1">Coba genre lain dari dropdown di atas</p>
+    </div>
+  </div>
+
+  <!-- FOOTER Elegant -->
+  <footer class="bg-black border-t border-white/10">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-10 py-8">
+      <div class="flex gap-3 mb-6 text-white/60">
+        <a href="#" aria-label="Facebook" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition"><i class="fa-brands fa-facebook-f text-sm" aria-hidden="true"></i></a>
+        <a href="#" aria-label="Instagram" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition"><i class="fa-brands fa-instagram text-sm" aria-hidden="true"></i></a>
+        <a href="#" aria-label="Twitter" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition"><i class="fa-brands fa-twitter text-sm" aria-hidden="true"></i></a>
+        <a href="#" aria-label="Youtube" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition"><i class="fa-brands fa-youtube text-sm" aria-hidden="true"></i></a>
+      </div>
+      <p class="text-[11px] text-white/20">© 2026 VEXORA — Genre • Klik genre di dropdown untuk filter langsung</p>
+    </div>
+  </footer>
+
+<script>
+const FALLBACK_GENRES = [
+  {name:"Action",slug:"action"},{name:"Adventure",slug:"adventure"},{name:"Cultivation",slug:"cultivation"},
+  {name:"Fantasy",slug:"fantasy"},{name:"Martial Arts",slug:"martial-arts"},{name:"Romance",slug:"romance"},
+  {name:"Comedy",slug:"comedy"},{name:"Historical",slug:"historical"},{name:"Supernatural",slug:"supernatural"},
+  {name:"Sci-Fi",slug:"sci-fi"},{name:"Reincarnation",slug:"reincarnation"},{name:"Demons",slug:"demons"}
+];
+let allGenres = [];
+async function initGenrePage(){
+  await loadGenres();
+  const params = new URLSearchParams(location.search);
+  const slug = params.get('g') || params.get('genre') || '';
+  if(slug){ selectGenreFilter(slug, slug); } else { selectGenreFilter('', 'SEMUA GENRE'); }
+}
+async function loadGenres(){
+  try{
+    let res = await fetch('/api/genres');
+    let j = await res.json();
+    if(j.status==="success" && j.data && j.data.length) allGenres = j.data;
+    else allGenres = FALLBACK_GENRES;
+  }catch(e){ allGenres = FALLBACK_GENRES; }
+  renderGenreList(allGenres);
+  document.getElementById('genreCount').textContent = allGenres.length + ' genre'; 
+  document.getElementById('genreCount').classList.remove('hidden');
+}
+function renderGenreList(list){
+  const c = document.getElementById('genreFilterItems');
+  c.innerHTML = `<div class="px-3 py-2.5 text-xs font-black cursor-pointer hover:bg-white/10 rounded flex justify-between items-center bg-white/5" onclick="selectGenreFilter('', 'SEMUA GENRE')"><span>Semua Genre</span><span class="text-[10px] bg-netflix px-1.5 py-0.5 rounded">ALL</span></div>`;
+  list.forEach(g=>{
+    let d=document.createElement('div');
+    d.className='px-3 py-2 text-xs font-medium cursor-pointer hover:bg-white/10 rounded flex justify-between items-center';
+    d.innerHTML=`<span>${g.name}</span><span class="text-[10px] text-white/30">${g.slug}</span>`;
+    d.onclick=()=>selectGenreFilter(g.slug, g.name);
+    c.appendChild(d);
+  });
+}
+function filterGenreList(q){
+  q=q.toLowerCase().trim();
+  let filtered = !q ? allGenres : allGenres.filter(g=> g.name.toLowerCase().includes(q) || g.slug.includes(q));
+  renderGenreList(filtered);
+}
+function toggleGenreFilter(){
+  let l=document.getElementById('genreFilterList');
+  let a=document.getElementById('genreFilterArrow');
+  let b=document.getElementById('genreFilterBtn');
+  l.classList.toggle('hidden');
+  a.classList.toggle('rotate-180');
+  b.setAttribute('aria-expanded', !l.classList.contains('hidden'));
+}
+window.addEventListener('click', e=>{
+  if(!e.target.closest('#genreFilterContainer')){
+    document.getElementById('genreFilterList').classList.add('hidden');
+    document.getElementById('genreFilterArrow').classList.remove('rotate-180');
+    document.getElementById('genreFilterBtn').setAttribute('aria-expanded','false');
+  }
+});
+function clearGenreFilter(){ history.replaceState(null,'','/genre'); selectGenreFilter('', 'SEMUA GENRE'); }
+async function selectGenreFilter(slug, name){
+  document.getElementById('genreFilterLabel').textContent = name.toUpperCase();
+  document.getElementById('genreFilterList').classList.add('hidden');
+  document.getElementById('genreFilterArrow').classList.remove('rotate-180');
+  // update UI
+  if(slug){
+    let gi=document.getElementById('genreInfo'); gi.classList.remove('hidden'); gi.classList.add('flex');
+    document.getElementById('activeGenreName').textContent = name;
+    document.getElementById('activeGenreSlug').textContent = slug;
+    history.replaceState(null,'', '/genre?g='+encodeURIComponent(slug));
+  } else {
+    let gi=document.getElementById('genreInfo'); gi.classList.add('hidden'); gi.classList.remove('flex');
+    history.replaceState(null,'','/genre');
+  }
+  await fetchGenreData(slug);
+}
+async function fetchGenreData(slug){
+  const grid=document.getElementById('resultGrid');
+  const loading=document.getElementById('loading');
+  const empty=document.getElementById('emptyState');
+  const count=document.getElementById('resultCount');
+  grid.innerHTML=''; empty.classList.add('hidden'); count.classList.add('hidden');
+  loading.classList.remove('hidden');
+  try{
+    let url = slug ? `/api/genre/${encodeURIComponent(slug)}` : '/api/home';
+    let res = await fetch(url);
+    let j = await res.json();
+    let data = slug ? (j.data || []) : (j.sections ? j.sections.flatMap(s=>s.data) : []);
+    // untuk /api/home fallback ambil semua
+    if(!slug) data = data.slice(0,24);
+    if(data.length===0){ empty.classList.remove('hidden'); }
+    else{
+      count.textContent = data.length + ' judul'; count.classList.remove('hidden');
+      data.forEach(anime=>{
+        let isCompleted=(anime.status||'').toLowerCase().includes('completed');
+        grid.innerHTML+=`
+          <a href="${anime.url}" class="group premium-card bg-[#181818] rounded overflow-hidden border border-white/5 hover:border-white/20 transition hover:scale-[1.03]">
+            <div class="relative aspect-[2/3] overflow-hidden bg-black">
+              <img src="${anime.thumbnail}" alt="${anime.title}" title="${anime.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy"/>
+              <span class="absolute top-1.5 right-1.5 bg-black/70 text-[10px] font-bold px-1.5 py-0.5 rounded border border-white/20">${anime.label||'SUB'}</span>
+              <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black to-transparent p-2"><span class="bg-netflix text-white text-[10px] font-black px-1.5 py-0.5 rounded">${anime.episode||''}</span></div>
+            </div>
+            <div class="p-2"><h3 class="text-xs font-semibold line-clamp-2 min-h-[30px]">${anime.title}</h3><p class="text-[11px] text-white/40 mt-1">${anime.type||'VEXORA'} • <span class="${isCompleted?'text-emerald-400':'text-netflix'} font-bold">${anime.status||''}</span></p></div>
+          </a>`;
+      });
+    }
+  }catch(e){
+    grid.innerHTML=`<p class="col-span-full text-center py-10 bg-red-900/20 border border-red-500/20 rounded">Gagal memuat: ${e.message}</p>`;
+  } finally{ loading.classList.add('hidden'); }
+}
+document.addEventListener('DOMContentLoaded', initGenrePage);
+async function checkAuthGenre(){
+  try{
+    let r=await fetch('/api/auth/me'); let j=await r.json();
+    let loginBtn=document.getElementById('btnLogin');
+    let regBtn=document.getElementById('btnRegister');
+    if(j.logged_in){
+      [loginBtn, regBtn].forEach(el=>{ if(el){ el.classList.add('hidden'); el.classList.add('md:hidden'); el.classList.remove('md:inline-flex'); el.style.display='none'; }});
+      let um=document.getElementById('userMenu'); if(um){um.classList.remove('hidden'); um.classList.add('flex');}
+      let av=j.user.avatar || 'https://i.pravatar.cc/100?u='+encodeURIComponent(j.user.username);
+      document.getElementById('navAvatar').src=av;
+      document.getElementById('dropAvatar').src=av;
+      document.getElementById('dropName').textContent=j.user.username;
+      document.getElementById('dropEmail').textContent=j.user.email;
+    } else {
+      [loginBtn, regBtn].forEach(el=>{ if(el){ el.classList.remove('hidden','md:hidden'); el.style.display=''; }});
+      if(loginBtn) loginBtn.classList.add('md:inline-flex');
+      if(regBtn) regBtn.classList.add('md:inline-flex');
+    }
+  }catch(e){}
+}
+document.addEventListener('DOMContentLoaded', ()=>{ checkAuthGenre(); initGenrePage(); });
+</script>
+</body>
+</html>

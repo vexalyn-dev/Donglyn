@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detail — VEXORA</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="/static/css/output.css"/>
+  <style>
+    .detail-hero{position:relative;width:100%;min-height:480px;overflow:hidden;display:flex;align-items:flex-end}
+    .detail-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(to top, #0a0a0a 0%, #0a0a0a 8%, rgba(10,10,10,0.85) 20%, rgba(10,10,10,0.4) 50%, transparent 100%);z-index:2}
+    .detail-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(to right, #0a0a0a 0%, #0a0a0a 12%, rgba(10,10,10,0.6) 35%, transparent 60%);z-index:2}
+    .detail-poster-wrap{position:relative;z-index:3;perspective:800px}
+    .detail-poster{width:200px;height:300px;object-fit:cover;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.8),0 0 40px rgba(229,9,20,0.15);transition:transform 0.4s cubic-bezier(0.23,1,0.32,1),box-shadow 0.4s ease;border:1px solid rgba(255,255,255,0.08)}
+    .detail-poster:hover{transform:translateY(-8px) rotateY(4deg) scale(1.03);box-shadow:0 30px 80px rgba(0,0,0,0.9),0 0 60px rgba(229,9,20,0.25)}
+    .detail-info{position:relative;z-index:3;flex:1;min-width:0}
+    .detail-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:6px;font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);transition:all 0.3s ease}
+    .detail-badge.ongoing{background:rgba(229,9,20,0.25);color:#ff4d5a;border:1px solid rgba(229,9,20,0.4)}
+    .detail-badge.completed{background:rgba(16,185,129,0.2);color:#34d399;border:1px solid rgba(16,185,129,0.3)}
+    .detail-badge.hiatus{background:rgba(245,158,11,0.2);color:#fbbf24;border:1px solid rgba(245,158,11,0.3)}
+    .detail-meta-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.55)}
+    .detail-meta-row .meta-sep{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,0.25)}
+    .detail-meta-row .meta-tag{padding:3px 8px;border:1px solid rgba(255,255,255,0.15);border-radius:4px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.5)}
+    .detail-meta-row .meta-hd{color:#34d399}
+    .detail-meta-row .meta-match{color:#34d399;font-weight:800}
+    .detail-genre-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+    .genre-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.1);transition:all 0.3s ease;cursor:default}
+    .genre-chip:hover{background:rgba(229,9,20,0.15);color:#fff;border-color:rgba(229,9,20,0.4);transform:translateY(-1px)}
+    .genre-chip i{font-size:10px;color:rgba(255,255,255,0.35)}
+    .genre-chip:hover i{color:rgba(229,9,20,0.7)}
+    .detail-synopsis{margin-top:18px;font-size:14px;line-height:1.75;color:rgba(255,255,255,0.65);max-width:680px;position:relative;padding-left:16px;border-left:2px solid rgba(229,9,20,0.4)}
+    .detail-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:24px}
+    .btn-play{display:inline-flex;align-items:center;gap:10px;padding:12px 32px;background:#fff;color:#0a0a0a;font-weight:800;font-size:14px;border-radius:8px;transition:all 0.3s ease;text-decoration:none;box-shadow:0 4px 20px rgba(255,255,255,0.15)}
+    .btn-play:hover{background:#fff;transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,255,255,0.25)}
+    .btn-play i{font-size:14px}
+    .btn-secondary{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;background:rgba(255,255,255,0.08);color:#fff;font-weight:700;font-size:13px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);transition:all 0.3s ease;cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+    .btn-secondary:hover{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.25);transform:translateY(-1px)}
+    .btn-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);transition:all 0.3s ease;cursor:pointer;font-size:14px}
+    .btn-icon:hover{background:rgba(229,9,20,0.2);border-color:rgba(229,9,20,0.4);color:#fff;transform:translateY(-1px)}
+    .detail-info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:28px;padding:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+    .info-item{display:flex;flex-direction:column;gap:4px}
+    .info-label{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.3)}
+    .info-value{font-size:13px;font-weight:700;color:rgba(255,255,255,0.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .episode-section{position:relative}
+    .episode-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+    .episode-title{font-size:20px;font-weight:800;display:flex;align-items:center;gap:12px}
+    .episode-count{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:999px;font-size:12px;font-weight:700;color:rgba(255,255,255,0.5)}
+    .episode-controls{display:flex;align-items:center;gap:10px}
+    .episode-sort{display:flex;align-items:center;gap:8px}
+    .episode-sort span{font-size:12px;font-weight:700;color:rgba(255,255,255,0.4)}
+    .episode-sort select{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);font-size:12px;font-weight:700;padding:6px 12px;border-radius:6px;outline:none;cursor:pointer;transition:all 0.3s ease}
+    .episode-sort select:focus{border-color:rgba(229,9,20,0.5)}
+    .episode-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;max-height:560px;overflow-y:auto;padding-right:4px}
+    .episode-grid::-webkit-scrollbar{width:5px}
+    .episode-grid::-webkit-scrollbar-track{background:transparent}
+    .episode-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:99px}
+    .episode-card{position:relative;display:flex;flex-direction:column;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;text-decoration:none;color:inherit;transition:all 0.35s cubic-bezier(0.23,1,0.32,1)}
+    .episode-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(229,9,20,0.08),transparent 60%);opacity:0;transition:opacity 0.35s ease;pointer-events:none;z-index:1}
+    .episode-card:hover{transform:translateY(-4px) scale(1.02);border-color:rgba(229,9,20,0.35);box-shadow:0 12px 40px rgba(0,0,0,0.5),0 0 20px rgba(229,9,20,0.1);background:rgba(255,255,255,0.06)}
+    .episode-card:hover::before{opacity:1}
+    .episode-card-inner{position:relative;z-index:2;padding:16px;display:flex;flex-direction:column;gap:8px;flex:1}
+    .episode-num{display:flex;align-items:center;gap:10px}
+    .episode-num .ep-icon{width:32px;height:32px;border-radius:8px;background:rgba(229,9,20,0.15);display:flex;align-items:center;justify-content:center;transition:all 0.35s ease}
+    .episode-num .ep-icon i{font-size:11px;color:#e50914;transition:all 0.35s ease}
+    .episode-card:hover .ep-icon{background:rgba(229,9,20,0.3);transform:scale(1.05)}
+    .episode-card:hover .ep-icon i{color:#fff}
+    .episode-num .ep-text{font-size:13px;font-weight:800;color:rgba(255,255,255,0.85);transition:color 0.3s ease}
+    .episode-card:hover .ep-text{color:#fff}
+    .episode-name{font-size:12px;font-weight:500;color:rgba(255,255,255,0.4);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;transition:color 0.3s ease}
+    .episode-card:hover .episode-name{color:rgba(255,255,255,0.65)}
+    .episode-cta{margin-top:auto;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.25);transition:all 0.3s ease;padding-top:8px;border-top:1px solid rgba(255,255,255,0.04)}
+    .episode-card:hover .episode-cta{color:rgba(229,9,20,0.8);border-top-color:rgba(229,9,20,0.15)}
+    .episode-cta i{font-size:9px;transition:transform 0.3s ease}
+    .episode-card:hover .episode-cta i{transform:translate(2px,-2px)}
+    .detail-ep-note{text-align:center;padding:16px;font-size:12px;color:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;gap:8px}
+    .detail-ep-note i{color:rgba(229,9,20,0.4)}
+    .spinner-reverse{animation-direction:reverse;animation-duration:1.5s}
+    .ep-empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:rgba(255,255,255,0.3);font-size:13px;font-weight:600}
+    @media(max-width:768px){
+      .detail-hero{min-height:420px}
+      .detail-poster{width:150px;height:225px;border-radius:10px}
+      .detail-poster:hover{transform:translateY(-4px) scale(1.02)}
+      .episode-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;max-height:440px}
+      .btn-play{padding:10px 24px;font-size:13px}
+    }
+    @media(max-width:480px){
+      .detail-poster{width:130px;height:195px}
+      .episode-grid{grid-template-columns:1fr 1fr;gap:8px}
+    }
+  </style>
+</head>
+<body class="bg-[#0a0a0a] text-white min-h-screen font-['Inter',sans-serif]">
+  <nav class="fixed top-0 w-full z-50 bg-[#0a0a0a]/90 backdrop-blur-xl border-b border-white/[0.06]">
+    <div class="max-w-[1600px] mx-auto px-3 md:px-8 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-6">
+        <a href="/" class="flex items-center">
+          <img src="/asset/logo.png" alt="VEXORA" title="VEXORA" class="h-8 md:h-9 lg:h-10 w-auto object-contain max-h-[40px]" onerror="this.style.display='none'"/>
+        </a>
+        <button id="mobileMenuBtnDetail" class="lg:hidden w-8 h-8 flex items-center justify-center border border-white/10 rounded-md bg-white/5 hover:bg-white/10 transition" onclick="document.getElementById('mobileMenuDetail').classList.toggle('hidden')" aria-label="Buka menu"><i class="fa-solid fa-bars text-sm text-white/60"></i></button>
+        <div class="hidden lg:flex items-center gap-6 text-[13px] font-semibold">
+          <a href="/" class="text-white/50 hover:text-white transition flex items-center gap-2 py-1"><i class="fa-solid fa-house text-xs"></i> Beranda</a>
+          <a href="/genre" class="text-white/50 hover:text-white transition flex items-center gap-2 py-1"><i class="fa-solid fa-layer-group text-xs"></i> Genre</a>
+          <a href="/schedule" class="text-white/50 hover:text-white transition flex items-center gap-2 py-1"><i class="fa-solid fa-calendar text-xs"></i> Jadwal</a>
+          <a href="/" class="text-white/50 hover:text-white transition flex items-center gap-2 py-1"><i class="fa-solid fa-bolt text-xs"></i> Terbaru</a>
+          <a href="/bookmark" class="text-white/50 hover:text-white transition flex items-center gap-2 py-1"><i class="fa-solid fa-bookmark text-xs"></i> Bookmark</a>
+          <a href="/riwayat" class="text-white/50 hover:text-white transition flex items-center gap-2 py-1"><i class="fa-solid fa-clock-rotate-left text-xs"></i> Riwayat</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div id="authNavDetail" class="flex items-center gap-2">
+          <a href="/login" id="btnLoginDetail" class="hidden md:inline-flex bg-[#e50914] hover:bg-[#b20710] text-white px-4 py-1.5 rounded-md text-xs font-extrabold transition">Masuk</a>
+          <a href="/register" id="btnRegisterDetail" class="hidden md:inline-flex bg-white/[0.06] border border-white/10 hover:bg-white/10 text-white px-4 py-1.5 rounded-md text-xs font-bold transition">Daftar</a>
+        </div>
+        <div id="userMenuDetail" class="hidden items-center gap-2 cursor-pointer" onclick="document.getElementById('userDropdownDetail').classList.toggle('hidden')">
+          <img id="navAvatarDetail" src="https://i.pravatar.cc/100?u=netflix" alt="Foto profil" title="Foto profil" class="w-8 h-8 rounded-full object-cover border border-white/15"/>
+          <div id="userDropdownDetail" class="hidden absolute right-4 md:right-10 top-16 w-44 bg-[#161616] border border-white/10 rounded-lg shadow-2xl z-50 overflow-hidden">
+            <a href="/profile" class="block px-4 py-2.5 text-xs font-bold hover:bg-white/[0.06] transition"><i class="fa-solid fa-user mr-2 text-white/40"></i>Profil</a>
+            <button onclick="fetch('/api/auth/logout',{method:'POST'}).then(()=>location.href='/')" class="w-full text-left px-4 py-2.5 text-xs font-bold text-red-400 hover:bg-white/[0.06] transition"><i class="fa-solid fa-right-from-bracket mr-2"></i>Keluar</button>
+          </div>
+        </div>
+        <a href="/" class="bg-white/[0.06] border border-white/10 hover:bg-white/10 text-white px-4 py-1.5 text-xs font-bold rounded-md flex items-center gap-2 transition"><i class="fa-solid fa-arrow-left text-[10px]"></i> Kembali</a>
+      </div>
+    </div>
+    <div id="mobileMenuDetail" class="hidden lg:hidden bg-[#0e0e0e] border-t border-white/[0.06] px-4 py-3 space-y-1">
+      <a href="/" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-house w-5 text-center"></i> Beranda</a>
+      <a href="/genre" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-layer-group w-5 text-center"></i> Genre</a>
+      <a href="/schedule" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-calendar w-5 text-center"></i> Jadwal</a>
+      <a href="/bookmark" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-bookmark w-5 text-center"></i> Bookmark</a>
+      <a href="/riwayat" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-clock-rotate-left w-5 text-center"></i> Riwayat</a>
+    </div>
+  </nav>
+
+  <div id="loading" class="pt-28 text-center min-h-screen flex flex-col items-center justify-center">
+    <div class="relative">
+      <div class="w-12 h-12 rounded-full border-2 border-white/10 border-t-[#e50914] animate-spin"></div>
+      <div class="absolute inset-0 w-12 h-12 rounded-full border-2 border-transparent border-b-[#e50914]/30 animate-spin spinner-reverse"></div>
+    </div>
+    <p class="text-xs font-bold tracking-[0.25em] text-white/40 mt-4 animate-pulse">MEMUAT DETAIL</p>
+  </div>
+
+  <div id="detailContainer" class="hidden">
+    <section class="detail-hero">
+      <img id="detailBackdrop" src="" alt="" class="absolute inset-0 w-full h-full object-cover opacity-30 scale-105"/>
+      <div class="max-w-[1600px] mx-auto px-4 md:px-10 w-full pb-10 pt-20 flex flex-col md:flex-row gap-8 md:gap-10 items-end">
+        <div class="detail-poster-wrap shrink-0">
+          <img id="detailPoster" src="" alt="Poster" class="detail-poster"/>
+        </div>
+        <div class="detail-info min-w-0 pb-1">
+          <div id="detailStatusBadge" class="detail-badge ongoing">
+            <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
+            <span id="statusText">ONGOING</span>
+          </div>
+          <h1 id="detailTitle" class="font-black text-[26px] md:text-[40px] lg:text-[44px] leading-[1.05] mt-4 tracking-tight"></h1>
+          <div class="detail-meta-row">
+            <span id="detailYear">2024</span>
+            <span class="meta-sep"></span>
+            <span id="detailType">Donghua</span>
+            <span class="meta-sep"></span>
+            <span class="meta-match" id="detailMatch">97% Cocok</span>
+            <span class="meta-sep"></span>
+            <span class="meta-hd">HD</span>
+            <span class="meta-tag" id="detailSubTag">SUB INDO</span>
+          </div>
+          <div id="detailGenres" class="detail-genre-chips"></div>
+          <p id="detailSynopsis" class="detail-synopsis"></p>
+          <div class="detail-actions">
+            <a id="playFirst" href="#" target="_blank" class="btn-play"><i class="fa-solid fa-play"></i> Putar Sekarang</a>
+            <button onclick="window.location.href='/bookmark'" class="btn-secondary"><i class="fa-solid fa-plus"></i> Bookmark</button>
+            <button class="btn-icon" title="Sukai" aria-label="Sukai donghua ini"><i class="fa-regular fa-thumbs-up"></i></button>
+          </div>
+          <div id="detailMeta" class="detail-info-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="episode-section max-w-[1600px] mx-auto px-4 md:px-10 py-8">
+      <div class="episode-header">
+        <h2 class="episode-title">
+          <i class="fa-solid fa-film text-[#e50914]"></i> Episode
+          <span class="episode-count" id="totalEpisodesCount"><i class="fa-solid fa-list-ul text-[10px]"></i> 0 Episode</span>
+        </h2>
+        <div class="episode-controls">
+          <div class="episode-sort">
+            <span>Urutkan</span>
+            <select aria-label="Urutkan episode" title="Urutkan episode">
+              <option>Terbaru</option>
+              <option>Terlama</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div id="detailEpisodes" class="episode-grid"></div>
+      <p class="detail-ep-note"><i class="fa-solid fa-circle-info"></i> Klik episode untuk mulai streaming</p>
+    </section>
+  </div>
+
+<script>
+const targetUrl="{{ target_url }}";
+
+async function loadDetailData(){
+  try{
+    let res=await fetch(`/api/detail-data?url=${encodeURIComponent(targetUrl)}`);
+    let data=await res.json();
+    if(data.status==="success"){
+      document.getElementById("detailTitle").textContent=data.title;
+      document.getElementById("detailPoster").src=data.poster;
+      document.getElementById("detailBackdrop").src=data.poster;
+      document.getElementById("detailSynopsis").textContent=data.synopsis;
+
+      let status=data.meta["status"]||"Ongoing";
+      let badge=document.getElementById("detailStatusBadge");
+      let statusText=document.getElementById("statusText");
+      statusText.textContent=status.toUpperCase();
+      badge.className="detail-badge";
+      if(status.toLowerCase().includes("completed")) badge.classList.add("completed");
+      else if(status.toLowerCase().includes("hiatus")) badge.classList.add("hiatus");
+      else badge.classList.add("ongoing");
+
+      let gc=document.getElementById("detailGenres"); gc.innerHTML="";
+      [...new Set(data.genres)].forEach(g=>{
+        let s=document.createElement("span");
+        s.className="genre-chip";
+        s.innerHTML=`<i class="fa-solid fa-tag"></i>${g}`;
+        gc.appendChild(s);
+      });
+
+      let mc=document.getElementById("detailMeta"); mc.innerHTML="";
+      for(const[k,v] of Object.entries(data.meta)){
+        if(k==="status") continue;
+        let d=document.createElement("div");
+        d.className="info-item";
+        d.innerHTML=`<span class="info-label">${k.replace(/_/g," ")}</span><span class="info-value">${v}</span>`;
+        mc.appendChild(d);
+      }
+
+      document.getElementById("detailYear").textContent=data.meta["release_date"]||"2024";
+      document.getElementById("detailType").textContent=data.meta["type"]||"Donghua";
+
+      let epC=document.getElementById("detailEpisodes"); epC.innerHTML="";
+      document.getElementById("totalEpisodesCount").innerHTML=`<i class="fa-solid fa-list-ul text-[10px]"></i> ${data.episodes.length} Episode`;
+
+      if(data.episodes.length){
+        if(data.episodes[0]){
+          let firstEp=data.episodes[data.episodes.length-1];
+          let firstUrl=firstEp.url.includes('/player?url=')||firstEp.url.includes('/watch?url=')?firstEp.url:`/player?url=${encodeURIComponent(firstEp.original_url||firstEp.url)}`;
+          document.getElementById("playFirst").href=firstUrl;
+        }
+        data.episodes.forEach(ep=>{
+          let a=document.createElement("a");
+          let playerUrl=ep.url.includes('/player?url=')||ep.url.includes('/watch?url=')?ep.url:`/player?url=${encodeURIComponent(ep.original_url||ep.url)}`;
+          a.href=playerUrl;
+          a.title=`Putar ${ep.number} — ${ep.title}`;
+          a.className="episode-card";
+          a.innerHTML=`<div class="episode-card-inner"><div class="episode-num"><span class="ep-icon"><i class="fa-solid fa-play"></i></span><span class="ep-text">${ep.number}</span></div><span class="episode-name">${ep.title}</span><div class="episode-cta">Putar <i class="fa-solid fa-arrow-right"></i></div></div>`;
+          epC.appendChild(a);
+        });
+      } else {
+        epC.innerHTML=`<p class="ep-empty"><i class="fa-solid fa-film mr-2 text-[#e50914]/40"></i>Tidak ada episode tersedia</p>`;
+      }
+
+      document.getElementById("loading").classList.add("hidden");
+      document.getElementById("detailContainer").classList.remove("hidden");
+    } else {
+      document.getElementById("loading").innerHTML=`<p class="text-red-500 font-bold">Gagal memuat detail</p>`;
+    }
+  }catch(e){
+    document.getElementById("loading").innerHTML=`<p class="text-red-500">Error: ${e}</p>`;
+  }
+}
+
+async function checkAuthDetail(){
+  try{
+    let r=await fetch('/api/auth/me');let j=await r.json();
+    let nav=document.getElementById('authNavDetail');
+    if(j.logged_in){
+      document.getElementById('btnLoginDetail')?.classList.add('hidden');
+      document.getElementById('btnRegisterDetail')?.classList.add('hidden');
+      if(nav){nav.classList.add('hidden','md:hidden');nav.classList.remove('md:flex');nav.style.display='none';}
+      let um=document.getElementById('userMenuDetail');if(um){um.classList.remove('hidden');um.classList.add('flex');document.getElementById('navAvatarDetail').src=j.user.avatar||'https://i.pravatar.cc/100?u='+encodeURIComponent(j.user.username);}
+    } else {
+      if(nav){nav.classList.remove('hidden','md:hidden');nav.classList.add('flex','md:flex');nav.style.display='';}
+    }
+  }catch(e){}
+}
+
+document.addEventListener("DOMContentLoaded",()=>{checkAuthDetail();loadDetailData();});
+window.addEventListener('click',e=>{if(!e.target.closest('#userMenuDetail')){let d=document.getElementById('userDropdownDetail');if(d)d.classList.add('hidden');}});
+</script>
+</body>
+</html>

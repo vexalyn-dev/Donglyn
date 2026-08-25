@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vexora</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+  <link rel="stylesheet" href="/static/css/output.css"/>
+  <style>
+    .swiper-pagination-bullet{width:8px;height:8px;background:rgba(255,255,255,0.4);opacity:1;transition:all .3s}
+    .swiper-pagination-bullet-active{background:#E50914;transform:scale(1.3)}
+    .swiper-pagination{right:1.5rem !important;left:auto !important;bottom:1.5rem !important;width:auto !important;display:flex;gap:6px;justify-content:flex-end}
+    @media(max-width:640px){.swiper-pagination{right:1rem !important;bottom:1rem !important}}
+  </style>
+</head>
+<body class="bg-dark text-white min-h-screen selection:bg-netflix selection:text-white">
+  <!-- NAVBAR Netflix -->
+  <nav class="fixed top-0 w-full z-50 bg-gradient-to-b from-black via-black/70 to-transparent md:bg-[#141414] md:bg-none border-b border-white/0 md:border-white/10">
+    <div class="max-w-[1600px] mx-auto px-3 md:px-8 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-6">
+        <a href="/" class="flex items-center" onclick="loadHome()">
+          <img src="/asset/logo.png" alt="VEXORA" title="VEXORA" class="h-8 md:h-9 lg:h-10 w-auto object-contain max-h-[40px]" onerror="this.onerror=null; this.src='/assets/Logo.png'; this.onerror=function(){this.style.display='none'}"/>
+        </a>
+        <button id="mobileMenuBtn" class="lg:hidden w-8 h-8 flex items-center justify-center border border-white/10 rounded bg-white/5" onclick="toggleMobileMenu()" aria-label="Buka menu" title="Menu"><i class="fa-solid fa-bars text-sm"></i></button>
+        <div class="hidden lg:flex items-center gap-5 text-[13px] font-medium">
+          <a onclick="loadHome()" id="navBeranda" class="cursor-pointer text-white font-bold border-b-2 border-netflix pb-1 flex items-center gap-1"><i class="fa-solid fa-house text-xs"></i> Beranda</a>
+          <a href="/genre" id="navGenre" class="cursor-pointer text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1"><i class="fa-solid fa-layer-group text-xs"></i> Genre</a>
+          <a href="/schedule" id="navSchedule" class="cursor-pointer text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1"><i class="fa-solid fa-calendar text-xs"></i> Schedule</a>
+          <a onclick="showTerbaru()" id="navTerbaru" class="cursor-pointer text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1"><i class="fa-solid fa-bolt text-xs"></i> Terbaru</a>
+          <a href="/bookmark" id="navBookmark" class="cursor-pointer text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1"><i class="fa-solid fa-bookmark text-xs"></i> Bookmark</a>
+          <a href="/riwayat" id="navRiwayat" class="cursor-pointer text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1"><i class="fa-solid fa-clock-rotate-left text-xs"></i> Riwayat</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="relative hidden md:flex items-center">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 text-white/60 text-sm"></i>
+          <input id="searchInput" type="text" placeholder="Judul, orang, genre" aria-label="Cari judul donghua" title="Cari judul" class="bg-black/60 border border-white/30 pl-9 pr-3 py-1.5 text-sm w-[240px] focus:w-[300px] focus:bg-black focus:border-white placeholder:text-white/60 outline-none transition-all" onkeydown="if(event.key==='Enter')handleSearch()"/>
+        </div>
+        <button onclick="handleSearch()" class="md:hidden w-8 h-8 flex items-center justify-center" aria-label="Cari donghua" title="Cari"><i class="fa-solid fa-magnifying-glass text-white" aria-hidden="true"></i></button>
+        <!-- AUTH -->
+        <div id="authNav" class="flex items-center gap-2">
+          <a href="/login" id="btnLogin" class="hidden md:inline-flex bg-netflix hover:bg-red-700 text-white px-4 py-1.5 rounded text-xs font-black">Masuk</a>
+          <a href="/register" id="btnRegister" class="hidden md:inline-flex bg-white/10 hover:bg-white/20 border border-white/20 text-white px-3 py-1.5 rounded text-xs font-bold">Daftar</a>
+          <div id="userMenu" class="hidden items-center cursor-pointer" onclick="toggleUserDropdown()">
+            <img id="navAvatar" src="https://i.pravatar.cc/100?u=netflix" alt="Foto profil pengguna" title="Foto profil" class="w-8 h-8 rounded-full object-cover border border-white/20"/>
+            <div id="userDropdown" class="hidden absolute right-4 md:right-10 top-[56px] w-52 bg-black border border-white/20 shadow-2xl rounded overflow-hidden z-50">
+              <div class="p-3 border-b border-white/10 flex items-center gap-2">
+                <img id="dropAvatar" src="https://i.pravatar.cc/100?u=netflix" alt="Foto profil dropdown" title="Foto profil" class="w-9 h-9 rounded object-cover"/>
+                <div class="min-w-0"><p id="dropName" class="text-xs font-bold truncate">User</p><p id="dropEmail" class="text-[11px] text-white/50 truncate">email</p></div>
+              </div>
+              <a href="/profile" class="flex items-center gap-2 px-3 py-2.5 text-xs font-bold hover:bg-white/10"><i class="fa-solid fa-user w-4"></i> Profil & Ganti Foto</a>
+              <button onclick="doLogout()" class="w-full text-left flex items-center gap-2 px-3 py-2.5 text-xs font-bold hover:bg-white/10 text-red-400"><i class="fa-solid fa-right-from-bracket w-4"></i> Keluar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- mobile search -->
+    <div class="md:hidden px-4 pb-3">
+      <div class="relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-sm"></i>
+        <input id="searchInputMobile" type="text" placeholder="Cari judul donghua..." aria-label="Cari judul donghua mobile" title="Cari judul" class="w-full bg-[#232323] border border-white/10 pl-9 pr-12 py-2.5 text-sm placeholder:text-white/40 focus:border-white/30 outline-none" onkeydown="if(event.key==='Enter'){document.getElementById('searchInput').value=this.value;handleSearch()}"/>
+        <button onclick="document.getElementById('searchInput').value=document.getElementById('searchInputMobile').value;handleSearch()" class="absolute right-1 top-1 bottom-1 bg-netflix px-4 text-xs font-black">CARI</button>
+      </div>
+    </div>
+    <!-- Mobile menu Netflix -->
+    <div id="mobileMenu" class="hidden lg:hidden bg-black border-t border-white/10 px-4 py-3 space-y-1">
+      <a onclick="loadHome(); toggleMobileMenu()" class="flex py-2 text-sm font-bold text-white items-center gap-2"><i class="fa-solid fa-house w-5"></i> Beranda</a>
+      <a href="/genre" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-layer-group w-5"></i> Genre</a>
+      <a href="/schedule" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-calendar w-5"></i> Schedule</a>
+      <a onclick="showTerbaru(); toggleMobileMenu()" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-fire w-5"></i> Terbaru</a>
+      <a href="/bookmark" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-bookmark w-5"></i> Bookmark</a>
+      <a href="/riwayat" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-clock-rotate-left w-5"></i> Riwayat</a>
+    </div>
+  </nav>
+
+  <!-- HERO SLIDER Netflix — banner.py → /api/banner : Swiper, dot kanan, 3 detik, swipe & drag, creative/pull effect -->
+  <section id="hero" class="group relative w-full h-[58vh] sm:h-[68vh] md:h-[78vh] lg:h-[86vh] min-h-[420px] md:min-h-[480px] overflow-hidden bg-black hidden">
+    <div class="swiper mySwiper w-full h-full">
+      <div class="swiper-wrapper" id="sliderTrack"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </section>
+
+  <!-- Fallback hero when no data -->
+  <section id="heroFallback" class="relative w-full pt-20 md:pt-16 bg-dark">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-10 py-6">
+      <div class="flex items-center gap-2 text-netflix text-xs font-black tracking-widest"><i class="fa-solid fa-fire"></i> WELCOME • VEXORA</div>
+      <h2 class="font-black text-2xl md:text-3xl mt-1">Pusat Streaming donghua Terlengkap</h2>
+      <p class="text-sm text-white/60 mt-1">Pilih judul di bawah atau gunakan pencarian.</p>
+    </div>
+  </section>
+
+  <div class="max-w-[1600px] mx-auto px-4 md:px-10">
+    <div id="loading" class="hidden py-16 text-center">
+      <div class="inline-flex flex-col items-center gap-3">
+        <div class="w-10 h-10 rounded-full border-2 border-white/10 border-t-netflix animate-spin"></div>
+        <p class="text-sm font-bold tracking-widest text-white/60 animate-pulse">MEMUAT • LOADING...</p>
+      </div>
+    </div>
+    <div id="resultContainer" class="space-y-8 pb-10 mt-2"></div>
+  </div>
+
+
+  <!-- FOOTER Elegant Netflix -->
+  <footer class="bg-black border-t border-white/10 mt-8">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-10 py-10">
+      <img src="/asset/logo.png" alt="VEXORA" title="VEXORA" class="h-8 w-auto object-contain mb-5"/>
+      <div class="flex gap-4 text-white/60">
+        <a href="#" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition" aria-label="Instagram VEXORA" title="Instagram"><i class="fa-brands fa-instagram text-sm" aria-hidden="true"></i></a>
+        <a href="#" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition" aria-label="TikTok VEXORA" title="TikTok"><i class="fa-brands fa-tiktok text-sm" aria-hidden="true"></i></a>
+        <a href="#" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition" aria-label="Github VEXORA" title="Github"><i class="fa-brands fa-github text-sm" aria-hidden="true"></i></a>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-xs">
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80 hover:underline">Audio Description</a>
+          <a href="#" class="block hover:text-white/80">Investor Relations</a>
+          <a href="#" class="block hover:text-white/80">Legal Notices</a>
+          <a href="#" onclick="loadHome()" class="block hover:text-white">Beranda</a>
+        </div>
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80">Help Center</a>
+          <a href="#" class="block hover:text-white/80">Jobs</a>
+          <a href="#" class="block hover:text-white/80">Cookie Preferences</a>
+          <a href="/genre" class="block hover:text-white">Genre</a>
+        </div>
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80">Gift Cards</a>
+          <a href="#" class="block hover:text-white/80">Terms of Use</a>
+          <a href="#" class="block hover:text-white/80">Corporate Information</a>
+          <a href="#" onclick="showTerbaru()" class="block hover:text-white">Terbaru</a>
+        </div>
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80">Media Center</a>
+          <a href="#" class="block hover:text-white/80">Privacy</a>
+          <a href="#" class="block hover:text-white/80">Contact Us</a>
+          <a href="/bookmark" class="block hover:text-white">Bookmark</a>
+        </div>
+      </div>
+      <div class="mt-4">
+        <span class="text-[10px] font-black tracking-[0.25em] text-[#e50914] uppercase">CRAFTED BY</span>
+        <img src="/asset/dev-logo.png" alt="Vexalyn Developer" title="Vexalyn Developer" class="h-7 w-24 object-contain rounded-lg border border-white/10 mt-0.5 block"/>
+      </div>
+      <p class="text-[11px] text-white/20 mt-4 text-center">© 2026 VEXORA • Dibuat oleh Vexalyn Developer <span class="text-[#e50914] font-bold">[Vio Atmajaya]</span></p>
+    </div>
+  </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+let globalHomeData=null;
+ // auto-load pas buka web — banner slider + home
+async function initDashboard(){
+  checkAuth();
+  loadBannerSlider(); // dari /api/banner (banner.py)
+  await loadHome();
+}
+document.addEventListener('DOMContentLoaded', initDashboard);
+window.addEventListener('load', ()=>{ if(!globalHomeData || !globalHomeData.sections) loadHome(); if(!bannerSlides.length) loadBannerSlider(); });
+async function checkAuth(){
+  try{
+    let r=await fetch('/api/auth/me'); let j=await r.json();
+    let loginBtn=document.getElementById('btnLogin');
+    let regBtn=document.getElementById('btnRegister');
+    if(j.logged_in){
+      // hapus total tombol Masuk/Daftar kalau sudah daftar — fix hidden vs md:inline-flex conflict
+      [loginBtn, regBtn].forEach(el=>{ if(el){ el.classList.add('hidden'); el.classList.add('md:hidden'); el.classList.remove('md:inline-flex'); el.style.display='none'; }});
+      let um=document.getElementById('userMenu'); if(um){um.classList.remove('hidden'); um.classList.add('flex');}
+      let av=j.user.avatar || 'https://i.pravatar.cc/100?u='+encodeURIComponent(j.user.username);
+      document.getElementById('navAvatar').src=av;
+      document.getElementById('dropAvatar').src=av;
+      document.getElementById('dropName').textContent=j.user.username;
+      document.getElementById('dropEmail').textContent=j.user.email;
+    } else {
+      // pastikan muncul lagi kalau belum login
+      [loginBtn, regBtn].forEach(el=>{ if(el){ el.classList.remove('hidden','md:hidden'); el.style.display=''; }});
+      if(loginBtn) loginBtn.classList.add('md:inline-flex');
+      if(regBtn) regBtn.classList.add('md:inline-flex');
+    }
+  }catch(e){}
+}
+function toggleUserDropdown(){document.getElementById('userDropdown').classList.toggle('hidden');}
+function toggleMobileMenu(){document.getElementById('mobileMenu').classList.toggle('hidden');}
+async function doLogout(){await fetch('/api/auth/logout',{method:'POST'}); location.reload();}
+
+// ===== BANNER SLIDER Netflix — Swiper wrapper, dot kanan, 3 detik, swipe mouse & hp =====
+let swiperInstance=null;
+async function loadBannerSlider(){
+  try{
+    let r=await fetch('/api/banner');
+    let j=await r.json();
+    let banners = (j.banners && j.banners.length) ? j.banners : [];
+    if(!banners.length) throw new Error('no banners');
+    renderBannerSlider(banners);
+  }catch(e){
+    console.warn('Banner fallback', e);
+    renderBannerSlider([
+      {title:"Battle Through the Heavens",url:"/detail?url=https://anichin.moe/btth/",thumbnail:"https://cdn.myanimelist.net/images/anime/1208/94745.jpg",synopsis:"Xiao Yan kultivasi dari nol menuju puncak."},
+      {title:"Perfect World",url:"/detail?url=https://anichin.moe/perfect-world/",thumbnail:"https://cdn.myanimelist.net/images/anime/10/76045.jpg",synopsis:"Shi Hao dengan tulang supreme melawan takdir."},
+      {title:"Soul Land 2",url:"/detail?url=https://anichin.moe/soul-land-2/",thumbnail:"https://cdn.myanimelist.net/images/anime/1356/130543.jpg",synopsis:"Generasi Shrek Academy melawan roh jahat."},
+      {title:"Throne of Seal",url:"/detail?url=https://anichin.moe/throne-of-seal/",thumbnail:"https://picsum.photos/1200/600?random=21",synopsis:"Long Haochen tempa throne suci melawan kegelapan."}
+    ]);
+  }
+}
+function renderBannerSlider(banners){
+  const track=document.getElementById('sliderTrack');
+  if(!track) return;
+  track.innerHTML='';
+  document.getElementById('hero').classList.remove('hidden');
+  document.getElementById('heroFallback').classList.add('hidden');
+  banners.forEach((b,i)=>{
+    let slide=document.createElement('div');
+    slide.className='swiper-slide relative w-full h-full overflow-hidden';
+    slide.innerHTML=`
+      <img src="${b.thumbnail}" alt="${b.title}" title="${b.title}" class="absolute inset-0 w-full h-full object-cover" loading="${i===0?'eager':'lazy'}"/>
+      <div class="absolute inset-0" style="background:linear-gradient(77deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,.55) 45%, rgba(0,0,0,.15) 75%, transparent 90%), linear-gradient(to top, #141414 0%, transparent 50%)"></div>
+      <div class="absolute inset-0 flex flex-col justify-end pb-8 md:pb-14 lg:pb-16 px-4 md:px-10 lg:px-12 max-w-[1600px] mx-auto w-full">
+        <span class="inline-flex items-center gap-2 text-[10px] md:text-xs font-black tracking-[0.18em] mb-2"><span class="bg-netflix text-white px-1.5 py-0.5">TOP 10</span><span class="text-white">NO.${i+1} DI VEXORA HARI INI</span></span>
+        <h2 class="font-black text-[22px] sm:text-[28px] md:text-[42px] lg:text-[48px] leading-none max-w-2xl drop-shadow-2xl line-clamp-2">${b.title}</h2>
+        <p class="text-[12px] md:text-[15px] text-white/80 leading-relaxed max-w-xl mt-2 md:mt-3 line-clamp-2 md:line-clamp-3 font-medium drop-shadow">${b.synopsis||'Streaming Vexora sub Indo kualitas HD, update real-time dari Anichin.moe.'}</p>
+        <div class="flex flex-wrap items-center gap-2 md:gap-3 mt-4 md:mt-5">
+          <a href="${b.url}" class="inline-flex items-center gap-2 bg-white text-black hover:bg-white/90 px-5 md:px-8 py-2 md:py-2.5 rounded text-sm md:text-[16px] font-bold transition"><i class="fa-solid fa-play"></i> Putar</a>
+          <a href="${b.url}" class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur text-white px-4 md:px-7 py-2 md:py-2.5 rounded text-sm font-bold transition"><i class="fa-solid fa-circle-info"></i> Selengkapnya</a>
+          <span class="hidden md:inline-flex ml-auto items-center gap-2 bg-black/50 border-l-4 border-white pl-3 pr-4 py-1.5 text-xs font-bold"><span class="border border-white/60 px-1.5 text-[11px]">16+</span> HD • SUB INDO</span>
+        </div>
+      </div>`;
+    track.appendChild(slide);
+  });
+  // init Swiper — 3 detik, dot kanan, swipe hp + drag mouse, Netflix-style creative/pull effect
+  if(swiperInstance) swiperInstance.destroy(true,true);
+  swiperInstance = new Swiper('.mySwiper', {
+    loop: true,
+    effect: 'creative',
+    creativeEffect: {
+      prev: {
+        translate: ['-20%', 0, -150],
+        rotate: [0, 0, 15],
+        opacity: 0.3,
+        scale: 0.85,
+      },
+      next: {
+        translate: ['20%', 0, -150],
+        rotate: [0, 0, -15],
+        opacity: 0.3,
+        scale: 0.85,
+      },
+      limitProgress: 2,
+      shadowPerProgress: true,
+    },
+    autoplay: { delay: 3000, disableOnInteraction: false },
+    pagination: { el: '.swiper-pagination', clickable: true, bulletClass: 'swiper-pagination-bullet', bulletActiveClass: 'swiper-pagination-bullet-active' },
+    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+    grabCursor: true,
+    allowTouchMove: true,
+    simulateTouch: true,
+    touchRatio: 1,
+    mousewheel: false,
+    keyboard: { enabled: true },
+    speed: 800,
+    centeredSlides: true,
+    slidesPerView: 'auto',
+    spaceBetween: -100,
+  });
+}
+
+const FALLBACK_GENRES_CLIENT = [
+  {name:"Action",slug:"action"},{name:"Adventure",slug:"adventure"},{name:"Cultivation",slug:"cultivation"},
+  {name:"Fantasy",slug:"fantasy"},{name:"Martial Arts",slug:"martial-arts"},{name:"Romance",slug:"romance"},
+  {name:"Comedy",slug:"comedy"},{name:"Historical",slug:"historical"},{name:"Supernatural",slug:"supernatural"},
+  {name:"Sci-Fi",slug:"sci-fi"},{name:"Reincarnation",slug:"reincarnation"},{name:"Demons",slug:"demons"}
+];
+async function loadGenresDropdown(){
+  const list=document.getElementById("dropdownList");
+  const title=document.getElementById("dropdownTitle");
+  const titleM=document.getElementById("dropdownTitleMobile");
+  // reset keep only Semua Genre
+  if(list) list.innerHTML=`<div onclick="selectGenre('', 'SEMUA GENRE')" class="px-3 py-2 text-xs font-bold cursor-pointer hover:bg-white/10 flex justify-between"><span>Semua Genre</span><i class="fa-solid fa-check opacity-0"></i></div>`;
+  let genres = FALLBACK_GENRES_CLIENT;
+  try{
+    let res=await fetch("/api/genres");
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    let json=await res.json();
+    console.log("/api/genres", json);
+    if(json.status==="success" && Array.isArray(json.data) && json.data.length>0){
+      genres = json.data;
+    }
+    if(json.fallback) console.warn("Genres fallback aktif");
+  }catch(e){
+    console.error("Genres fetch gagal, pakai fallback client:", e);
+    // tetap pakai fallback client
+  }
+  // render
+  if(title) title.textContent=`GENRE (${genres.length})`;
+  if(titleM) titleM.textContent=`GENRE (${genres.length})`;
+  genres.forEach(g=>{
+    let item=document.createElement("div");
+    item.className="px-3 py-2 text-xs font-medium cursor-pointer hover:bg-white/10 flex justify-between items-center border-b border-white/5 last:border-0";
+    item.innerHTML=`<span>${g.name}</span><i class='fa-solid fa-chevron-right text-[10px] text-white/20'></i>`;
+    item.onclick=()=>selectGenre(g.slug,g.name);
+    list.appendChild(item);
+  });
+}
+function toggleDropdown(){
+  let list=document.getElementById("dropdownList");
+  let arrow=document.getElementById("dropdownArrow");
+  list.classList.toggle("hidden");
+  if(arrow) arrow.classList.toggle("rotate-180");
+}
+window.onclick=function(e){
+  if(!e.target.closest("#userMenu")){
+    let ud=document.getElementById("userDropdown"); if(ud) ud.classList.add("hidden");
+  }
+}
+function selectGenre(slug,name){
+  let t=document.getElementById("dropdownTitle"); if(t) t.textContent=name.toUpperCase();
+  let tm=document.getElementById("dropdownTitleMobile"); if(tm) tm.textContent=name.toUpperCase();
+  document.getElementById("dropdownList").classList.add("hidden");
+  let a=document.getElementById("dropdownArrow"); if(a) a.classList.remove("rotate-180");
+  if(slug===""){loadHome()}else{fetchAPI(`/api/genre/${slug}`)}
+}
+async function fetchAPI(url){
+  document.getElementById("loading").classList.remove("hidden");
+  document.getElementById("resultContainer").innerHTML="";
+  document.getElementById("hero").classList.add("hidden");
+  document.getElementById("heroFallback").classList.remove("hidden");
+  try{let res=await fetch(url); let data=await res.json(); renderData(data);}catch(err){
+    document.getElementById("resultContainer").innerHTML=`<p class="text-white bg-card border border-white/10 p-6 text-center">Gagal memuat: ${err}</p>`;
+  } finally{document.getElementById("loading").classList.add("hidden");}
+}
+async function loadHome(){
+  setActiveNav('navBeranda');
+  let t=document.getElementById("dropdownTitle"); if(t) t.textContent="GENRE";
+  let tm=document.getElementById("dropdownTitleMobile"); if(tm) tm.textContent="GENRE";
+  let s=document.getElementById("searchInput"); if(s) s.value="";
+  let sm=document.getElementById("searchInputMobile"); if(sm) sm.value="";
+  document.getElementById("loading").classList.remove("hidden");
+  document.getElementById("resultContainer").innerHTML="";
+  let dbg=document.getElementById("debugBar"); if(dbg){dbg.classList.remove("hidden"); dbg.classList.add("flex"); document.getElementById("debugText").textContent="Memanggil /api/home...";}
+  try{
+    let res=await fetch("/api/home"); 
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    globalHomeData=await res.json(); 
+    console.log("/api/home", globalHomeData);
+    if(document.getElementById("debugText")) document.getElementById("debugText").textContent = globalHomeData.fallback ? "Mode Fallback (scrape gagal, pakai mock) • "+(globalHomeData.sections?.length||0)+" section" : "Tersambung • "+(globalHomeData.sections?.length||0)+" section • "+globalHomeData.elapsed_time;
+    if(document.getElementById("debugDot")) document.getElementById("debugDot").className = globalHomeData.fallback ? "w-2 h-2 rounded-full bg-yellow-400" : "w-2 h-2 rounded-full bg-emerald-500";
+    renderData(globalHomeData);
+  } catch(err){
+    console.error(err);
+    if(document.getElementById("debugText")) document.getElementById("debugText").textContent="Error: "+err.message+" — pakai mock lokal";
+    if(document.getElementById("debugDot")) document.getElementById("debugDot").className="w-2 h-2 rounded-full bg-red-500";
+    // fallback client side — biar tidak kosong pas buka web
+    const CLIENT_MOCK = [
+      {section_name:"Trending Now — VEXORA Hot", data:[
+        {title:"Battle Through the Heavens",url:"/detail?url=https://anichin.moe/btth/",thumbnail:"https://cdn.myanimelist.net/images/anime/1208/94745.jpg",episode:"Ep 120",type:"Donghua",label:"SUB",status:"Ongoing"},
+        {title:"Perfect World",url:"/detail?url=https://anichin.moe/perfect-world/",thumbnail:"https://cdn.myanimelist.net/images/anime/10/76045.jpg",episode:"Ep 185",type:"Donghua",label:"SUB",status:"Ongoing"},
+        {title:"Soul Land 2",url:"/detail?url=https://anichin.moe/soul-land-2/",thumbnail:"https://cdn.myanimelist.net/images/anime/1356/130543.jpg",episode:"Ep 58",type:"Donghua",label:"SUB",status:"Completed"},
+        {title:"Tales of Demons",url:"/detail?url=https://anichin.moe/tales/",thumbnail:"https://picsum.photos/300/450?random=11",episode:"Ep 252",type:"Donghua",label:"DUB",status:"Ongoing"},
+        {title:"Apotheosis",url:"/detail?url=https://anichin.moe/apotheosis/",thumbnail:"https://picsum.photos/300/450?random=12",episode:"Ep 112",type:"Donghua",label:"SUB",status:"Ongoing"},
+        {title:"Renegade Immortal",url:"/detail?url=https://anichin.moe/renegade/",thumbnail:"https://picsum.photos/300/450?random=13",episode:"Ep 74",type:"Donghua",label:"SUB",status:"Ongoing"}
+      ]},
+      {section_name:"Baru Rilis — Update Hari Ini", data:[
+        {title:"Throne of Seal",url:"/detail?url=https://anichin.moe/throne/",thumbnail:"https://picsum.photos/300/450?random=21",episode:"Ep 92",type:"Donghua",label:"SUB",status:"Ongoing"},
+        {title:"Against the Gods",url:"/detail?url=https://anichin.moe/against/",thumbnail:"https://picsum.photos/300/450?random=22",episode:"Ep 45",type:"Donghua",label:"SUB",status:"Ongoing"},
+        {title:"Stellar Transformations",url:"/detail?url=https://anichin.moe/stellar/",thumbnail:"https://picsum.photos/300/450?random=23",episode:"Ep 60",type:"Donghua",label:"SUB",status:"Ongoing"}
+      ]}
+    ];
+    globalHomeData={sections:CLIENT_MOCK};
+    renderData(globalHomeData);
+  } finally{document.getElementById("loading").classList.add("hidden");}
+}
+function handleSearch(){
+  let q=(document.getElementById("searchInput").value || document.getElementById("searchInputMobile").value || "").toLowerCase().trim();
+  if(!q){ if(globalHomeData) renderData(globalHomeData); return;}
+  if(globalHomeData && globalHomeData.sections){
+    let filtered=[];
+    globalHomeData.sections.forEach(sec=>{
+      let matched=sec.data.filter(i=>i.title.toLowerCase().includes(q));
+      if(matched.length) filtered.push({section_name:`Hasil untuk "${q}" di ${sec.section_name}`, data:matched});
+    });
+    renderData({sections:filtered, isSearch:true});
+  }
+}
+function updateHero(anime){ /* deprecated — slider pakai /api/banner, tidak pakai section */ }
+function renderData(response){
+  let container=document.getElementById("resultContainer"); container.innerHTML="";
+  // Handler hero slider: tetap tampil di home, sembunyikan saat search/genre
+  if(response.isSearch){
+    document.getElementById("hero").classList.add("hidden");
+    document.getElementById("heroFallback").classList.remove("hidden");
+  } else {
+    // home: biarkan slider dari /api/banner tetap terlihat, fallback disembunyikan
+    // slider sudah di-load via loadBannerSlider()
+  }
+  if(response.isSearch && response.sections.length===0){
+    container.innerHTML=`<div class="bg-card border border-white/10 p-10 text-center text-sm font-bold text-white/60">TIDAK ADA HASIL. Coba kata kunci lain.</div>`; return;
+  }
+  if(response.sections && response.sections.length){
+    response.sections.forEach((sec, idx)=>{
+      let row=document.createElement("div");
+      row.className="animate-fade";
+      row.innerHTML=`
+        <div class="flex items-end justify-between mb-3">
+          <a href="/section?url=${encodeURIComponent(sec.more_url || sec.archive_url || '')}&name=${encodeURIComponent(sec.section_name)}" class="text-[16px] md:text-[19px] font-bold tracking-tight flex items-center gap-2 hover:text-[#e50914] transition">${sec.section_name} <i class="fa-solid fa-chevron-right text-xs text-white/40"></i></a>
+          <span class="hidden md:inline text-xs font-bold text-white/40">${sec.data.length} judul</span>
+        </div>`;
+      let isLoadMoreSection = /rilisan terbaru|dropped|drop/i.test(sec.section_name);
+      let track=document.createElement("div");
+      if(isLoadMoreSection){
+        // PC: grid ke bawah, HP: flex geser samping
+        track.className="netflix-row flex md:grid md:grid-cols-5 lg:grid-cols-6 gap-2 md:gap-3 overflow-x-auto md:overflow-visible scrollbar-hide pb-3 snap-x md:snap-none";
+      } else {
+        track.className="netflix-row flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide pb-3 snap-x";
+      }
+      track.id=`track-${idx}`;
+      sec.data.forEach(anime=>{ track.innerHTML+=createCard(anime, isLoadMoreSection); });
+      row.appendChild(track);
+      // Tombol Selanjutnya > cuma di Rilisan Terbaru & Dropped
+      if(isLoadMoreSection && (sec.more_url || sec.archive_url)){
+        let moreUrl = sec.more_url || sec.archive_url;
+        let btnWrap=document.createElement('div');
+        btnWrap.className='flex justify-center mt-3';
+        btnWrap.innerHTML=`<button onclick="loadMoreSection(this, '${moreUrl.replace(/'/g,"\\'")}')" class="group bg-[#e50914] hover:bg-[#b20710] text-white px-5 py-2 rounded-lg text-xs font-black flex items-center gap-2 transition"><span>Next</span> <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-0.5 transition"></i></button><span class="hidden text-xs text-white/40 ml-3 more-status"></span>`;
+        row.appendChild(btnWrap);
+      }
+      container.appendChild(row);
+    }); return;
+  }
+  if(response.data && response.genre){
+    document.getElementById("hero").classList.add("hidden");
+    document.getElementById("heroFallback").classList.remove("hidden");
+    let row=document.createElement("div");
+    row.innerHTML=`<h2 class="text-[18px] font-bold mb-3">Genre: ${response.genre.toUpperCase()} <span class="text-white/40 text-sm font-normal">— ${response.data.length} judul</span></h2>`;
+    let track=document.createElement("div");
+    track.className="flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide pb-3 flex-wrap";
+    // for genre use grid wrap
+    track.className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3";
+    response.data.forEach(anime=>{track.innerHTML+=createCard(anime, true)});
+    row.appendChild(track);
+    container.appendChild(row);
+  }
+}
+async function loadMoreSection(btn, url){
+  const wrap=btn.parentElement;
+  const status=wrap.querySelector('.more-status');
+  const orig=btn.innerHTML;
+  btn.disabled=true; btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Memuat...';
+  if(status){ status.textContent='Memuat...'; status.classList.remove('hidden'); }
+  try{
+    let r=await fetch(`/api/load-more?url=${encodeURIComponent(url)}`);
+    let j=await r.json();
+    if(j.status==='success' && j.data && j.data.length){
+      let track=wrap.previousElementSibling;
+      if(!track || !track.classList.contains('netflix-row')){
+        let row=btn.closest('.animate-fade');
+        track=row.querySelector('.netflix-row');
+      }
+      let isGrid = track.classList.contains('md:grid') || track.classList.contains('grid');
+      j.data.forEach(anime=>{ track.insertAdjacentHTML('beforeend', createCard(anime, isGrid)); });
+      let next=j.next_url || j.more_url;
+      if(next){
+        let prevUrl=url;
+        let prevBtn=document.createElement('button');
+        prevBtn.setAttribute('onclick', `loadPrevSection(this, '${prevUrl.replace(/'/g,"\\'")}')`);
+        prevBtn.className='group bg-white/10 hover:bg-white/20 text-white px-5 py-2 rounded-lg text-xs font-black flex items-center gap-2 transition mr-2';
+        prevBtn.innerHTML=`<i class="fa-solid fa-arrow-left text-xs group-hover:-translate-x-0.5 transition"></i> <span>Prev</span>`;
+        wrap.insertBefore(prevBtn, btn);
+        btn.setAttribute('onclick', `loadMoreSection(this, '${next.replace(/'/g,"\\'")}')`);
+        btn.innerHTML=orig; btn.disabled=false;
+        if(status){ status.textContent=`+${j.data.length} judul ditambahkan`; status.classList.remove('hidden'); }
+      } else {
+        btn.innerHTML='<i class="fa-solid fa-check"></i> Habis'; btn.disabled=true; btn.classList.add('opacity-50');
+        if(status) status.textContent='Tidak ada halaman lagi';
+      }
+    } else {
+      btn.innerHTML='Gagal / Kosong'; btn.disabled=false;
+    }
+  }catch(e){ btn.innerHTML='Error'; btn.disabled=false; if(status) status.textContent=e.message; }
+  setTimeout(()=>{ if(status) status.classList.add('hidden'); }, 2500);
+}
+function loadPrevSection(btn, url){
+  const wrap=btn.parentElement;
+  btn.remove();
+  let nextBtn=wrap.querySelector('button:last-of-type');
+  if(nextBtn){ nextBtn.disabled=true; nextBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Memuat...'; }
+  fetch(`/api/load-more?url=${encodeURIComponent(url)}`).then(r=>r.json()).then(j=>{
+    if(j.status==='success' && j.data && j.data.length){
+      let track=wrap.previousElementSibling;
+      if(!track || !track.classList.contains('netflix-row')){ let row=btn.closest('.animate-fade'); track=row.querySelector('.netflix-row'); }
+      let cards=track.querySelectorAll('.premium-card, .anime-card');
+      let removeCount=j.data.length;
+      for(let i=cards.length-1;i>=0 && removeCount>0;i--){ cards[i].remove(); removeCount--; }
+      if(nextBtn){ nextBtn.disabled=false; nextBtn.innerHTML=`<span>Next</span> <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-0.5 transition"></i>`; }
+    }
+  }).catch(()=>{ if(nextBtn){ nextBtn.disabled=false; nextBtn.innerHTML=`<span>Next</span> <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-0.5 transition"></i>`; }});
+}
+function setActiveNav(id){
+  ['navBeranda','navGenre','navTerbaru','navBookmark','navRiwayat'].forEach(n=>{let el=document.getElementById(n); if(el){el.classList.remove('text-white','border-netflix'); el.classList.add('text-white/70','border-transparent')}});
+  let a=document.getElementById(id); if(a){a.classList.remove('text-white/70','border-transparent'); a.classList.add('text-white','border-netflix');}
+}
+function showTerbaru(){
+  setActiveNav('navTerbaru');
+  if(!globalHomeData || !globalHomeData.sections) return;
+  // Terbaru =ambil semua item lalu sort by episode number desc fallback
+  let all=[]; globalHomeData.sections.forEach(s=> all.push(...s.data));
+  // sort by episode number if numeric
+  all.sort((a,b)=>{
+    let na=parseInt((a.episode||'').replace(/\D/g,''))||0;
+    let nb=parseInt((b.episode||'').replace(/\D/g,''))||0;
+    return nb-na;
+  });
+  renderData({sections:[{section_name: "Terbaru — Update Terakhir", data: all.slice(0,18)}]});
+  document.getElementById("hero").classList.add("hidden"); document.getElementById("heroFallback").classList.remove("hidden");
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function showMyList(){
+  window.location.href = '/bookmark';
+}
+function createCard(anime, isGrid){
+  let isCompleted=anime.status.toLowerCase().includes("completed")||anime.status.toLowerCase().includes("tamat");
+  let baseClass = isGrid ? "w-[148px] md:w-auto shrink-0 md:shrink" : "w-[148px] md:w-[170px] shrink-0";
+  return `
+  <div class="netflix-card premium-card group relative ${baseClass} bg-card rounded overflow-hidden flex flex-col snap-start border border-white/5 hover:border-netflix/30">
+    <a href="${anime.url}" class="block relative aspect-[2/3] overflow-hidden bg-[#181818]">
+      <img src="${anime.thumbnail}" alt="${anime.title}" class="w-full h-full object-cover group-hover:scale-[1.04] transition duration-500" loading="lazy">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-play text-black text-sm ml-0.5"></i></div>
+      </div>
+      <span class="absolute top-1.5 right-1.5 bg-black/70 backdrop-blur text-[10px] font-bold px-1.5 py-0.5 rounded text-white border border-white/20">${anime.label}</span>
+      ${isCompleted?`<span class="absolute top-1.5 left-1.5 bg-netflix text-white text-[9px] font-black px-1.5 py-0.5 rounded">TAMAT</span>`:`<span class="absolute top-1.5 left-1.5 bg-netflix text-white text-[9px] font-black px-1.5 py-0.5 rounded">BARU</span>`}
+      <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black to-transparent p-2 pt-6">
+        <span class="inline-flex items-center gap-1 bg-netflix text-white text-[10px] font-black px-1.5 py-0.5 rounded"><i class="fa-solid fa-closed-captioning text-[10px]"></i> ${anime.episode}</span>
+      </div>
+    </a>
+    <div class="premium-shine"></div>
+    <div class="p-2 bg-[#181818] group-hover:bg-[#232323] transition relative z-10">
+      <a href="${anime.url}" class="block"><h3 class="text-[12px] font-semibold leading-tight line-clamp-2 min-h-[32px] group-hover:text-white">${anime.title}</h3></a>
+      <div class="flex items-center justify-between mt-1.5">
+        <span class="text-[11px] text-white/40 font-medium flex items-center gap-1"><i class="fa-solid fa-film text-[10px]"></i> ${anime.type}</span>
+        <span class="text-[11px] font-bold ${isCompleted?'text-emerald-400':'text-netflix'}">${anime.status}</span>
+      </div>
+    </div>
+  </div>`;
+}
+</script>
+</body>
+</html>

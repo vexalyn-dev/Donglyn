@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>{{ title }} — VEXORA</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="/static/css/output.css"/>
+<style>.ep-active{background:#E50914 !important;color:white !important;border-color:#E50914 !important}</style>
+</head>
+<body class="bg-black text-white min-h-screen">
+<nav class="fixed top-0 w-full z-50 bg-[#141414] border-b border-white/10">
+  <div class="max-w-[1600px] mx-auto px-3 md:px-8 py-3.5 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-6">
+        <a href="/" class="flex items-center">
+          <img src="/asset/logo.png" alt="VEXORA" title="VEXORA" class="h-8 md:h-9 lg:h-10 w-auto object-contain max-h-[40px]" onerror="this.style.display='none'"/>
+        </a>
+      <div class="hidden lg:flex items-center gap-5 text-[13px] font-medium">
+        <a href="/" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-house text-xs"></i> Beranda</a>
+        <a href="/genre" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-layer-group text-xs"></i> Genre</a>
+        <a href="/schedule" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-calendar text-xs"></i> Schedule</a>
+        <a href="/" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-bolt text-xs"></i> Terbaru</a>
+        <a href="/bookmark" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-bookmark text-xs"></i> Bookmark</a>
+        <a href="/riwayat" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-clock-rotate-left text-xs"></i> Riwayat</a>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <div id="authNavPlayer" class="flex items-center gap-2">
+        <a href="/login" id="btnLoginPlayer" class="hidden md:inline-flex bg-netflix hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-black">Masuk</a>
+        <a href="/register" id="btnRegisterPlayer" class="hidden md:inline-flex bg-white/10 border border-white/20 text-white px-3 py-1.5 rounded text-xs font-bold">Daftar</a>
+      </div>
+      <div id="userMenuPlayer" class="hidden items-center cursor-pointer" onclick="document.getElementById('userDropdownPlayer').classList.toggle('hidden')">
+        <img id="navAvatarPlayer" src="https://i.pravatar.cc/100?u=vexora" alt="Foto profil" class="w-7 h-7 rounded-full object-cover border border-white/20"/>
+        <div id="userDropdownPlayer" class="hidden absolute right-4 md:right-10 top-[56px] w-48 bg-black border border-white/20 rounded shadow-2xl z-50">
+          <a href="/profile" class="block px-3 py-2 text-xs font-bold hover:bg-white/10">Profil</a>
+          <button onclick="fetch('/api/auth/logout',{method:'POST'}).then(()=>location.href='/')" class="w-full text-left px-3 py-2 text-xs font-bold text-red-400 hover:bg-white/10">Keluar</button>
+        </div>
+      </div>
+      <a href="javascript:history.back()" class="bg-white text-black hover:bg-white/90 px-4 py-1.5 rounded text-xs font-black flex items-center gap-1.5"><i class="fa-solid fa-arrow-left text-xs"></i> Kembali</a>
+      <button id="mobileMenuBtnPlayer" class="lg:hidden w-8 h-8 flex items-center justify-center border border-white/10 rounded bg-white/5" onclick="document.getElementById('mobileMenuPlayer').classList.toggle('hidden')" aria-label="Buka menu"><i class="fa-solid fa-bars text-sm"></i></button>
+    </div>
+  </div>
+  <div id="mobileMenuPlayer" class="hidden lg:hidden bg-black border-t border-white/10 px-4 py-3 space-y-1">
+    <a href="/" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-house w-5"></i> Beranda</a>
+    <a href="/genre" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-layer-group w-5"></i> Genre</a>
+    <a href="/schedule" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-calendar w-5"></i> Schedule</a>
+  </div>
+</nav>
+<div class="pt-[60px]"></div>
+
+<div class="max-w-[1300px] mx-auto px-4 md:px-6 py-4 md:py-6">
+  <h1 class="font-bold text-[16px] md:text-[20px] leading-tight line-clamp-2">{{ title }}</h1>
+  <p class="text-xs text-white/50 mt-1 flex items-center gap-2"><span class="border border-white/30 px-1 text-[10px]">16+</span> <span class="text-netflix font-black">HD</span> • SUB INDO • Free</p>
+
+  <div class="mt-4 rounded overflow-hidden bg-black border border-white/10 shadow-2xl">
+    <div class="relative w-full aspect-video bg-black">
+      {% if iframe_proxy %}
+      <iframe src="{{ iframe_proxy }}" allowfullscreen title="Pemutar video VEXORA {{ title }}" class="absolute inset-0 w-full h-full border-0" allow="autoplay; fullscreen" referrerpolicy="no-referrer"></iframe>
+      {% elif iframe_url %}
+      <iframe src="/api/proxy-player?url={{ iframe_url|urlencode }}" allowfullscreen title="Pemutar video VEXORA {{ title }}" class="absolute inset-0 w-full h-full border-0" allow="autoplay; fullscreen" referrerpolicy="no-referrer"></iframe>
+      {% else %}
+      <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-gradient-to-br from-[#141414] to-black">
+        <div class="w-16 h-16 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mb-3"><i class="fa-solid fa-play text-xl text-white/60 ml-1"></i></div>
+        <p class="font-black tracking-widest text-sm">PILIH SERVER UNTUK MEMUTAR</p>
+        <p class="text-xs text-white/40 mt-1">Gunakan dropdown server di bawah — style Netflix</p>
+      </div>
+      {% endif %}
+      <div class="absolute bottom-0 left-0 right-0 h-1 bg-white/20"><div class="h-full w-[35%] bg-netflix"></div></div>
+    </div>
+    <div class="flex flex-wrap items-center gap-3 px-3 md:px-4 py-3 bg-[#181818] border-t border-white/5">
+      <span class="text-xs font-black tracking-widest text-white/50 hidden md:inline">SERVER</span>
+      {% if servers %}
+      <div class="relative">
+        <select class="appearance-none bg-black border border-white/20 hover:border-white/40 text-white text-xs font-bold px-3 pr-8 py-2 rounded outline-none cursor-pointer" aria-label="Pilih server streaming" title="Pilih server" onchange="if(this.value) window.location.href=this.value;">
+          <option value="">— PILIH SERVER —</option>
+          {% for s in servers %}
+          <option value="/player?url={{ original_url|urlencode }}&server={{ s|urlencode }}" {% if current_server and s.lower() in current_server.lower() %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+        <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-white/50 text-xs pointer-events-none"></i>
+      </div>
+      {% else %}
+      <span class="text-xs font-bold text-white/40 bg-black border border-white/10 px-3 py-2 rounded">Tidak ada server</span>
+      {% endif %}
+      <div class="ml-auto flex items-center gap-2 text-xs">
+        <button class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center" aria-label="Sukai video" title="Sukai"><i class="fa-regular fa-thumbs-up text-xs" aria-hidden="true"></i></button>
+        <button class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center" aria-label="Bagikan video" title="Bagikan"><i class="fa-solid fa-share text-xs" aria-hidden="true"></i></button>
+        <span class="hidden md:inline-flex bg-white/10 border border-white/10 px-2 py-1 rounded text-[11px] font-bold gap-1 items-center"><i class="fa-solid fa-closed-captioning"></i> SUB INDO</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6 bg-[#181818] border border-white/5 rounded p-4 md:p-5">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="font-bold text-sm flex items-center gap-2"><span class="w-1 h-4 bg-netflix rounded"></span> Episode — kotak kecil Netflix</h2>
+      <span class="text-xs font-bold bg-netflix px-2 py-1 rounded">{% if servers %}{{ servers|length }} Server{% else %}24 Ep{% endif %}</span>
+    </div>
+    <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
+      {% if servers %}
+        {% for s in servers %}
+        <a href="/player?url={{ original_url|urlencode }}&server={{ s|urlencode }}" class="aspect-square flex flex-col items-center justify-center rounded border text-xs font-black {% if current_server and s.lower() in current_server.lower() %}ep-active{% else %}bg-[#232323] border-white/10 text-white/70 hover:border-white/20 hover:text-white{% endif %}" title="Server {{ s }}">
+          <span class="text-sm">{{ loop.index }}</span><span class="text-[9px] opacity-60 truncate w-full text-center px-1"><i class="fa-solid fa-play text-[8px] mr-0.5" aria-hidden="true"></i>{{ s[:7] }}</span>
+        </a>
+        {% endfor %}
+      {% else %}
+        {% for i in range(1, 25) %}
+        <button class="aspect-square flex items-center justify-center rounded bg-[#232323] border border-white/10 text-white/70 hover:border-white/20 hover:text-white text-xs font-black {{ 'ep-active' if i==12 else '' }}"><i class="fa-solid fa-play text-[8px] mr-1 opacity-50"></i>{{ i }}</button>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <div class="flex flex-wrap gap-2 mt-4 text-[11px] font-bold">
+      <span class="bg-netflix text-white px-3 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-circle text-[6px]"></i> Sedang Ditonton</span>
+      <span class="bg-white/5 border border-white/10 text-white/60 px-3 py-1 rounded-full">Hover = border putih</span>
+    </div>
+  </div>
+</div>
+<script>
+async function checkAuthPlayer(){
+  try{
+    let r=await fetch('/api/auth/me'); let j=await r.json();
+    let nav=document.getElementById('authNavPlayer');
+    if(j.logged_in){
+      document.getElementById('btnLoginPlayer')?.classList.add('hidden');
+      document.getElementById('btnRegisterPlayer')?.classList.add('hidden');
+      if(nav){ nav.classList.add('hidden'); nav.style.display='none'; }
+      let um=document.getElementById('userMenuPlayer'); if(um){ um.classList.remove('hidden'); um.classList.add('flex'); document.getElementById('navAvatarPlayer').src=j.user.avatar||'https://i.pravatar.cc/100?u='+encodeURIComponent(j.user.username); }
+    }
+  }catch(e){}
+}
+document.addEventListener('DOMContentLoaded', checkAuthPlayer);
+window.addEventListener('click', e=>{ if(!e.target.closest('#userMenuPlayer')){ let d=document.getElementById('userDropdownPlayer'); if(d) d.classList.add('hidden'); } if(!e.target.closest('#mobileMenuPlayer') && !e.target.closest('#mobileMenuBtnPlayer')){ let m=document.getElementById('mobileMenuPlayer'); if(m) m.classList.add('hidden'); }});
+</script>
+</body>
+</html>

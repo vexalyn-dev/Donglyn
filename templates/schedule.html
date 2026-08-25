@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Schedule — VEXORA</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="/static/css/output.css"/>
+</head>
+<body class="bg-dark text-white min-h-screen selection:bg-netflix selection:text-white">
+  <nav class="fixed top-0 w-full z-50 bg-[#141414] border-b border-white/10">
+    <div class="max-w-[1600px] mx-auto px-3 md:px-8 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-6">
+          <a href="/" class="flex items-center">
+            <img src="/asset/logo.png" alt="VEXORA" title="VEXORA" class="h-8 md:h-9 lg:h-10 w-auto object-contain max-h-[40px]" onerror="this.style.display='none'" />
+          </a>
+        <div class="hidden lg:flex items-center gap-5 text-[13px] font-medium">
+          <a href="/" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-house text-xs"></i> Beranda</a>
+          <a href="/genre" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-layer-group text-xs"></i> Genre</a>
+          <a href="/schedule" class="text-white font-bold border-b-2 border-netflix pb-1 flex items-center gap-1"><i class="fa-solid fa-calendar text-xs"></i> Schedule</a>
+          <a href="/" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-bolt text-xs"></i> Terbaru</a>
+          <a href="/bookmark" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-bookmark text-xs"></i> Bookmark</a>
+          <a href="/riwayat" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-clock-rotate-left text-xs"></i> Riwayat</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="relative hidden md:flex items-center">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 text-white/60 text-sm"></i>
+          <input id="searchInputSchedule" type="text" placeholder="Cari jadwal..." aria-label="Cari jadwal" class="bg-black/60 border border-white/30 pl-9 pr-3 py-1.5 text-sm w-[200px] focus:bg-black focus:border-white placeholder:text-white/60 outline-none transition-all"/>
+        </div>
+        <div id="authNav" class="flex items-center gap-2">
+          <a href="/login" id="btnLogin" class="hidden md:inline-flex bg-netflix hover:bg-red-700 text-white px-4 py-1.5 rounded text-xs font-black">Masuk</a>
+          <a href="/register" id="btnRegister" class="hidden md:inline-flex bg-white/10 hover:bg-white/20 border border-white/20 text-white px-3 py-1.5 rounded text-xs font-bold">Daftar</a>
+          <div id="userMenu" class="hidden items-center cursor-pointer" onclick="toggleUserDropdown()">
+            <img id="navAvatar" src="https://i.pravatar.cc/100?u=vexora" alt="Foto profil" title="Foto profil" class="w-8 h-8 rounded-full object-cover border border-white/20"/>
+            <div id="userDropdown" class="hidden absolute right-4 md:right-10 top-[56px] w-52 bg-black border border-white/20 shadow-2xl rounded overflow-hidden z-50">
+              <div class="p-3 border-b border-white/10 flex items-center gap-2">
+                <img id="dropAvatar" src="https://i.pravatar.cc/100?u=vexora" alt="Foto profil" class="w-9 h-9 rounded object-cover"/>
+                <div class="min-w-0"><p id="dropName" class="text-xs font-bold truncate">User</p><p id="dropEmail" class="text-[11px] text-white/50 truncate">email</p></div>
+              </div>
+              <a href="/profile" class="flex items-center gap-2 px-3 py-2.5 text-xs font-bold hover:bg-white/10"><i class="fa-solid fa-user w-4"></i> Profil & Ganti Foto</a>
+              <button onclick="doLogout()" class="w-full text-left flex items-center gap-2 px-3 py-2.5 text-xs font-bold hover:bg-white/10 text-red-400"><i class="fa-solid fa-right-from-bracket w-4"></i> Keluar</button>
+            </div>
+          </div>
+        </div>
+        <button id="mobileMenuBtn" class="lg:hidden w-8 h-8 flex items-center justify-center border border-white/10 rounded bg-white/5" onclick="toggleMobileMenu()" aria-label="Buka menu"><i class="fa-solid fa-bars text-sm"></i></button>
+      </div>
+    </div>
+    <div id="mobileMenu" class="hidden lg:hidden bg-black border-t border-white/10 px-4 py-3 space-y-1">
+      <a href="/" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-house w-5"></i> Beranda</a>
+      <a href="/genre" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-layer-group w-5"></i> Genre</a>
+      <a href="/schedule" class="flex py-2 text-sm font-bold text-white items-center gap-2"><i class="fa-solid fa-calendar w-5"></i> Schedule</a>
+      <a href="/bookmark" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-bookmark w-5"></i> Bookmark</a>
+      <a href="/riwayat" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-clock-rotate-left w-5"></i> Riwayat</a>
+    </div>
+  </nav>
+
+  <section class="pt-20 md:pt-24 pb-6 bg-gradient-to-b from-black to-dark">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-10">
+      <div class="flex items-center gap-2 text-netflix text-xs font-black tracking-[0.18em]"><i class="fa-solid fa-clock"></i> JADWAL RILIS</div>
+      <h1 class="font-black text-[28px] md:text-[36px] leading-none mt-2">Schedule VEXORA</h1>
+      <div id="dayTabs" class="flex gap-2 mt-6 overflow-x-auto scrollbar-hide pb-2"></div>
+    </div>
+  </section>
+
+  <div class="max-w-[1600px] mx-auto px-4 md:px-10 pb-10">
+    <div id="loading" class="py-12 text-center">
+      <div class="w-10 h-10 rounded-full border-2 border-white/10 border-t-netflix animate-spin mx-auto"></div>
+      <p class="text-xs font-bold tracking-widest text-white/50 mt-3 animate-pulse">MEMUAT JADWAL...</p>
+    </div>
+    <div id="scheduleContainer" class="space-y-8 hidden"></div>
+  </div>
+
+  <footer class="bg-black border-t border-white/10">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-10 py-8">
+      <p class="text-[11px] text-white/20">© 2026 VEXORA — Schedule • Data dari Anichin.moe</p>
+    </div>
+  </footer>
+
+<script>
+let scheduleData=[];
+async function loadSchedule(){
+  try{
+    let r=await fetch('/api/schedule');
+    let j=await r.json();
+    scheduleData = j.schedule || [];
+    if(!scheduleData.length) throw new Error('kosong');
+    renderTabs(scheduleData);
+    renderSchedule(scheduleData);
+  }catch(e){
+    document.getElementById('loading').innerHTML=`<p class="text-red-400 font-bold">Gagal memuat schedule: ${e.message}</p>`;
+  } finally{
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('scheduleContainer').classList.remove('hidden');
+  }
+}
+function renderTabs(data){
+  const c=document.getElementById('dayTabs');
+  c.innerHTML='';
+  data.forEach((d,i)=>{
+    let btn=document.createElement('button');
+    btn.className = (i===0?'bg-netflix text-white border-netflix':'bg-white/5 border-white/10 text-white/70 hover:bg-white/10') + ' border px-4 py-2 rounded-full text-xs font-black whitespace-nowrap';
+    btn.textContent = d.day;
+    btn.onclick=()=>{ document.querySelectorAll('#dayTabs button').forEach(b=>{b.className='bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 px-4 py-2 rounded-full text-xs font-black whitespace-nowrap'}); btn.className='bg-netflix text-white border border-netflix px-4 py-2 rounded-full text-xs font-black whitespace-nowrap'; document.querySelectorAll('.schedule-day').forEach(el=>el.classList.add('hidden')); document.getElementById('day-'+i).classList.remove('hidden'); };
+    c.appendChild(btn);
+  });
+}
+function renderSchedule(data){
+  const cont=document.getElementById('scheduleContainer');
+  cont.innerHTML='';
+  data.forEach((day, idx)=>{
+    let sec=document.createElement('div');
+    sec.id='day-'+idx;
+    sec.className='schedule-day '+(idx===0?'':'hidden');
+    sec.innerHTML=`<h2 class="font-bold text-lg flex items-center gap-2 mb-3"><i class="fa-solid fa-calendar-day text-netflix"></i> ${day.day} <span class="bg-white/10 border border-white/10 text-xs px-2 py-0.5 rounded">${day.total_items} judul</span></h2>`;
+    let grid=document.createElement('div');
+    grid.className='grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3';
+    (day.data||[]).forEach(anime=>{
+      grid.innerHTML+=`
+        <a href="${anime.url}" class="group premium-card bg-[#181818] rounded overflow-hidden border border-white/5 hover:border-white/20 transition hover:scale-[1.03]">
+          <div class="relative aspect-[2/3] overflow-hidden bg-black">
+            <img src="${anime.thumbnail}" alt="${anime.title}" title="${anime.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy"/>
+            <span class="absolute bottom-1 left-1 bg-netflix text-white text-[10px] font-black px-1.5 py-0.5 rounded">${anime.episode||''}</span>
+          </div>
+          <div class="p-2"><h3 class="text-xs font-semibold line-clamp-2 min-h-[30px]">${anime.title}</h3><p class="text-[11px] text-white/40 mt-1">${anime.type||'VEXORA'}</p></div>
+        </a>`;
+    });
+    sec.appendChild(grid);
+    cont.appendChild(sec);
+  });
+}
+document.addEventListener('DOMContentLoaded', ()=>{ checkAuthSchedule(); loadSchedule(); });
+async function checkAuthSchedule(){
+  try{
+    let r=await fetch('/api/auth/me'); let j=await r.json();
+    let loginBtn=document.getElementById('btnLogin');
+    let regBtn=document.getElementById('btnRegister');
+    if(j.logged_in){
+      [loginBtn, regBtn].forEach(el=>{ if(el){ el.classList.add('hidden'); el.classList.add('md:hidden'); el.classList.remove('md:inline-flex'); el.style.display='none'; }});
+      let um=document.getElementById('userMenu'); if(um){um.classList.remove('hidden'); um.classList.add('flex');}
+      let av=j.user.avatar || 'https://i.pravatar.cc/100?u='+encodeURIComponent(j.user.username);
+      document.getElementById('navAvatar').src=av;
+      document.getElementById('dropAvatar').src=av;
+      document.getElementById('dropName').textContent=j.user.username;
+      document.getElementById('dropEmail').textContent=j.user.email;
+    } else {
+      [loginBtn, regBtn].forEach(el=>{ if(el){ el.classList.remove('hidden','md:hidden'); el.style.display=''; }});
+      if(loginBtn) loginBtn.classList.add('md:inline-flex');
+      if(regBtn) regBtn.classList.add('md:inline-flex');
+    }
+  }catch(e){}
+}
+document.addEventListener('DOMContentLoaded', ()=>{ checkAuthSchedule(); loadSchedule(); });
+</script>
+</body>
+</html>
