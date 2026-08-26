@@ -3,9 +3,31 @@ import sys
 import asyncio
 import json
 import time
+import re
 import urllib.parse
+import requests
 from bs4 import BeautifulSoup
 from core.browser import get_page_content
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "Referer": "https://anichin.moe/",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+}
+
+async def get_page_content_fast(url: str):
+    def _fetch():
+        try:
+            r = requests.get(url, headers=HEADERS, timeout=8)
+            if r.status_code == 200 and "Just a moment" not in r.text and "cf-challenge" not in r.text.lower():
+                return r.text
+            return None
+        except Exception:
+            return None
+    html = await asyncio.to_thread(_fetch)
+    if html:
+        return html, None
+    return await get_page_content(url)
 
 # ANSI Colors - Tema Pink, Ungu, Biru
 C_PURPLE = "\033[35m"  # Ungu gelap
@@ -48,7 +70,7 @@ async def scrape_search(query: str):
     encoded_query = urllib.parse.quote(query)
     url = f"https://anichin.moe/?s={encoded_query}"
     
-    html_content, error = await get_page_content(url)
+    html_content, error = await get_page_content_fast(url)
     
     response = {
         "creator": "Vexalyn Developer",
@@ -69,49 +91,76 @@ async def scrape_search(query: str):
 
     soup = BeautifulSoup(html_content, 'html.parser')
     extracted_data = []
-    seen_urls = set() # Filter anti-duplikat
+    seen_urls = set()
     
-    items = soup.select('div.utao, article.bs, div.bsx')
+    items = soup.select('div.utao, article.bs, div.bsx, .kanan, .film-list li')
     
     for item in items:
         try:
             a_tag = item.find('a')
             if not a_tag: continue
             
-            # --- FIX URL ---
             link = a_tag.get('href')
             if not link: continue
             
-            # Tambahkan domain anichin.moe kalau url-nya relative
             if not link.startswith('http'):
                 link = f"https://anichin.moe{link}" if link.startswith('/') else f"https://anichin.moe/{link}"
             
-            # Skip kalau link ini udah diproses (Anti Duplikat)
             if link in seen_urls:
                 continue
             seen_urls.add(link)
 
-            # --- FIX JUDUL ---
-            title = a_tag.get('title')
-            if not title:
-                title_el = item.find(['h2', 'div'], class_=lambda c: c and 'tt' in c)
-                title = title_el.text.strip() if title_el else None
-            
-            if not title: continue
+            # Judul — bersihkan dobel Episode/Subtitle + dobel string
+            title_el = item.select_one('h2, .title, .tt, .entry-title')
+            raw_title = (a_tag.get('title') or "").strip()
+            if not raw_title and title_el:
+                raw_title = title_el.get_text(strip=True)
+            if not raw_title:
+                raw_title = a_tag.get_text(strip=True)
+            if not raw_title: continue
+            clean_title = re.sub(r'\s*Episode\s+\d+.*$', '', raw_title, flags=re.IGNORECASE).strip()
+            clean_title = re.sub(r'\s*Subtitle\s+Indonesia.*$', '', clean_title, flags=re.IGNORECASE).strip()
+            half = len(clean_title)//2
+            if len(clean_title)%2==0 and half>5 and clean_title[:half]==clean_title[half:]:
+                title = clean_title[:half]
+            else:
+                title = clean_title or "Tanpa Judul"
 
-            # --- FIX THUMBNAIL ---
+            # Thumbnail — prioritas data-src (lazy) baru src/srcset
             img_tag = item.find('img')
-            thumb = img_tag.get('data-src') or img_tag.get('src') if img_tag else "No Thumbnail"
+            thumb = ""
+            if img_tag:
+                thumb = img_tag.get('data-src') or img_tag.get('src') or ""
+                if not thumb and img_tag.get('srcset'):
+                    thumb = img_tag.get('srcset').split(',')[0].split()[0]
+            if not thumb: thumb = "No Thumbnail"
             
-            # --- FIX LABEL / BADGES (Sesuai gambar web target) ---
-            status_el = item.find(['div', 'span'], class_=lambda c: c and ('epx' in c or 'status' in c))
-            status = status_el.text.strip() if status_el else "N/A"
+            # Status/Type/Label — pakai logic konsisten home.py
+            card_text = item.get_text(' ', strip=True).lower()
+            status_el = item.select_one('.epx, .bt .ep, .score, .status')
+            status = status_el.get_text(strip=True) if status_el else ""
+            if not status or status.lower() in ["ongoing","completed","tamat","hiatus","sub","dub","n/a"]:
+                # fallback dari teks kartu tapi hindari salah ambil
+                for el in item.select('span, div'):
+                    txt = el.get_text(strip=True)
+                    if txt and txt.lower() not in ["ongoing","completed","tamat","hiatus","sub","dub"]:
+                        if re.match(r'^(Ep\s*)?\d+', txt, re.I) or txt.lower().startswith('ep'):
+                            status = txt; break
+            if not status or status.lower() in ["ongoing","completed"]:
+                # ambil status sebenarnya
+                if "completed" in card_text or "tamat" in card_text: status = "Completed"
+                elif "hiatus" in card_text: status = "Hiatus"
+                elif status in ["ongoing","completed"]: pass
+                else: status = "Ongoing" if not status else status
             
-            type_el = item.find(['div', 'span'], class_=lambda c: c and 'typez' in c)
-            anime_type = type_el.text.strip() if type_el else "N/A"
+            type_el = item.select_one('.typez, .type, span.type')
+            anime_type = type_el.get_text(strip=True) if type_el else ("Anime" if "anime" in card_text and "donghua" not in card_text else "Donghua")
+            if anime_type not in ["Donghua","Anime"]: anime_type = "Donghua" if "donghua" in card_text else "Anime" if "anime" in card_text else "Donghua"
             
-            sub_el = item.find(['div', 'span'], class_=lambda c: c and ('sb' in c or 'sub' in c))
-            sub = sub_el.text.strip() if sub_el else "N/A"
+            sub_el = item.select_one('.sb, span.sub, .sub, .term')
+            sub = sub_el.get_text(strip=True) if sub_el else ("Dub" if "dub" in card_text else "Sub")
+            if sub not in ["Sub","Dub"] and "dub" in sub.lower(): sub="Dub"
+            elif sub not in ["Sub","Dub"]: sub="Sub"
             
             extracted_data.append({
                 "title": title,

@@ -18,7 +18,8 @@ RESET = "\033[0m"
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-    "Referer": "https://anichin.moe/"
+    "Referer": "https://anichin.moe/",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 }
 
 def print_banner():
@@ -158,11 +159,29 @@ async def main():
     start_time = time.time()
 
     iframe_url = None
+    # fast pre-check: kalau halaman sudah punya iframe statis dan user minta server default, skip browser
+    _soup_static = soup
+    _iframe_static = _soup_static.select_one('iframe, .pframe iframe, div.player-embed iframe')
+    if _iframe_static:
+        _src = _iframe_static.get('src') or _iframe_static.get('data-src')
+        if _src and "googleads" not in _src and server_keyword.lower() in ["default","auto","iframe","player"]:
+            iframe_url = f"https://anichin.moe{_src}" if _src.startswith('/') else _src
+            execution_time = round(time.time() - start_time, 2)
+            print(f"\n {C_PURPLE}──────────────────────────────────────────────────────────────────────{RESET}")
+            print(f"{C_PINK}[SUCCESS]{RESET} {C_BLUE}Server Terpilih : {C_CYAN}Default (Static Iframe - No Browser){RESET}")
+            print(f"{C_PINK}[SUCCESS]{RESET} {C_BLUE}Elapsed Time    : {C_CYAN}{execution_time} seconds{RESET}")
+            print(f" {C_PURPLE}──────────────────────────────────────────────────────────────────────{RESET}")
+            final_output = {"creator": "Vexalyn Developer","statusCode": 200,"status": "success","data": {"title": title,"url": target_url,"selected_server": "Default (Static)","iframe_fallback": iframe_url,"download_links": download_links}}
+            print(f"{C_PINK}[RAW JSON DATA BUFFER]:{RESET}")
+            print(f"{C_CYAN}{json.dumps(final_output, indent=4, ensure_ascii=False)}{RESET}")
+            print(f"{C_PURPLE} ──────────────────────────────────────────────────────────────────────{RESET}")
+            print(f"{C_PINK}[!] Operational complete. Vexalyn Scraper core closed safely.{RESET}\n")
+            return
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(
             headless=True,
-            args=["--disable-dev-shm-usage", "--no-sandbox", "--disable-gpu"]
+            args=["--disable-dev-shm-usage", "--no-sandbox", "--disable-gpu", "--blink-settings=imagesEnabled=false"]
         )
         context = await browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
@@ -170,9 +189,9 @@ async def main():
         page = await context.new_page()
 
         try:
-            await page.route("**/*.{png,jpg,jpeg,gif,svg,css,ico}", lambda route: route.abort())
+            await page.route("**/*.{png,jpg,jpeg,gif,svg,css,ico,woff,woff2,font}", lambda route: route.abort())
             await page.goto(target_url, wait_until="domcontentloaded", timeout=10000)
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(0.3)
 
             locators = page.locator('.mobius select option, .pushserver option, ul.player-server li, .select-server li, div.player_option, div.pselect select option, .server_option, .eps-item, select#select-server option')
             count = await locators.count()
@@ -200,13 +219,15 @@ async def main():
                 else:
                     await target_locator.click(force=True)
                 
-                await asyncio.sleep(0.8)
+                try: await page.wait_for_selector('iframe', timeout=2500)
+                except: await asyncio.sleep(0.4)
             else:
                 if count > 0:
                     first_item = locators.nth(0)
                     matched_name = (await first_item.inner_text()).strip() + " (Fallback First)"
                     await first_item.click(force=True)
-                    await asyncio.sleep(0.8)
+                    try: await page.wait_for_selector('iframe', timeout=2500)
+                    except: await asyncio.sleep(0.4)
 
             current_html = await page.content()
             current_soup = BeautifulSoup(current_html, 'html.parser')

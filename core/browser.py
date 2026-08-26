@@ -28,7 +28,7 @@ async def get_page_content(url: str):
             
             # Pastikan elemen utama judul sudah termuat
             try:
-                await page.wait_for_selector('h1.entry-title, h1', timeout=3000)
+                await page.wait_for_selector('h2[itemprop="partOfSeries"], .infolimit h2, .desc.mindes, h1.entry-title, h1', timeout=3000)
             except:
                 pass
                 

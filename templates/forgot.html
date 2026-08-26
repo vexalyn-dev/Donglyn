@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>VEXORA — Lupa Sandi</title>
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 <link rel="stylesheet" href="/static/css/output.css">
@@ -11,14 +12,14 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
 body{min-height:100vh;display:flex;flex-direction:column;background:#141414}
-.bg-hero{position:fixed;inset:0;z-index:0;background:url('/asset/bg-login & register.png') center/cover no-repeat}
-.bg-hero::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.55)}
+.bg-hero{position:fixed;top:0;right:0;bottom:0;left:0;z-index:0;background:url('/asset/bg-login & register.png') center/cover no-repeat}
+.bg-hero::after{content:'';position:absolute;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,0.55)}
 .container{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column}
 .navbar{display:flex;align-items:center;padding:16px 32px}
 .navbar img{height:42px;width:auto}
 .main{flex:1;display:flex;align-items:center;justify-content:center;padding:0 16px 60px}
 .login-box{background:rgba(0,0,0,0.75);border-radius:4px;padding:48px 68px 60px;width:100%;max-width:450px;min-height:500px;display:flex;flex-direction:column}
-@media(max-width:500px){.login-box{padding:40px 28px;max-width:100%;min-height:auto}}
+@media(max-width:500px){.login-box{padding:40px 28px;max-width:100%}}
 .login-box h1{color:#fff;font-size:32px;font-weight:700;margin-bottom:8px}
 .login-sub{color:#8c8c8c;font-size:16px;margin-bottom:28px;line-height:1.5}
 .field{position:relative;margin-bottom:16px}
@@ -50,6 +51,9 @@ body{min-height:100vh;display:flex;flex-direction:column;background:#141414}
 .tab-switch{display:flex;gap:4px;background:#1a1a1a;border-radius:8px;padding:4px;margin-bottom:24px}
 .tab-btn{flex:1;padding:10px;border:none;background:transparent;color:#8c8c8c;font-weight:600;font-size:13px;border-radius:6px;cursor:pointer;transition:all 0.2s}
 .tab-btn.active{background:#333;color:#fff}
+.hidden-section{display:none}
+.btn-link-block{display:block;text-align:center;text-decoration:none;margin-top:20px}
+.btn-back-custom{display:inline-block;text-align:center;width:100%;margin-top:16px;text-decoration:none}
 .footer{position:relative;z-index:10;padding:0 32px 24px}
 .footer p{color:#808080;font-size:13px}
 .footer a{color:#0071eb;text-decoration:none}
@@ -70,7 +74,22 @@ body{min-height:100vh;display:flex;flex-direction:column;background:#141414}
 <div class="container">
   <nav class="navbar">
     <a href="/"><img src="/asset/logo.png" alt="VEXORA"></a>
-  </nav>
+      <button id="mobileMenuBtn" onclick="toggleMobileMenu()" aria-label="Buka menu" class="lg:hidden ml-auto w-8 h-8 flex items-center justify-center border border-white/10 rounded bg-white/5"><i class="fa-solid fa-bars text-sm text-white/70"></i></button>
+  <div id="mobileMenu" class="lg:hidden bg-[#0a0a0a] border-t border-white/10 px-4 py-3 space-y-1">
+      <a href="/" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-house w-5 text-center"></i> <span data-i18n="nav0">Beranda</span></a>
+      <a href="/genre" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-layer-group w-5 text-center"></i> <span data-i18n="nav1">Genre</span></a>
+      <a href="/schedule" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-calendar w-5 text-center"></i> <span data-i18n="nav2">Schedule</span></a>
+      <a href="/bookmark" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-bookmark w-5 text-center"></i> <span data-i18n="nav4">Bookmark</span></a>
+      <a href="/riwayat" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-clock-rotate-left w-5 text-center"></i> <span data-i18n="nav5">Riwayat</span></a>
+      <div class="pt-3 mt-2 border-t border-white/10 flex items-center gap-2">
+        <span class="text-[10px] font-black tracking-widest text-white/40 mr-1" data-i18n="menu_lang">BAHASA</span>
+        <button onclick="setLang('id')" id="lang-id" class="lang-btn">ID</button>
+        <button onclick="setLang('en')" id="lang-en" class="lang-btn">EN</button>
+        <button onclick="setLang('ja')" id="lang-ja" class="lang-btn">JA</button>
+        <button onclick="setLang('zh')" id="lang-zh" class="lang-btn">ZH</button>
+      </div>
+  </div>
+</nav>
 
   <div class="main">
     <div class="login-box">
@@ -88,7 +107,7 @@ body{min-height:100vh;display:flex;flex-direction:column;background:#141414}
         <!-- Email -->
         <form id="emailForm">
           <div class="field">
-            <input id="emailInput" type="email" placeholder=" " required>
+            <input id="emailInput" type="email" placeholder=" " required aria-label="Email">
             <span class="label-text">Email</span>
           </div>
           <p id="errEmail" class="error-msg"></p>
@@ -96,16 +115,16 @@ body{min-height:100vh;display:flex;flex-direction:column;background:#141414}
         </form>
 
         <!-- Phone -->
-        <div id="phoneForm" style="display:none">
+        <div id="phoneForm" class="hidden-section">
           <div class="field">
-            <input id="phoneInput" type="tel" placeholder=" " required>
+            <input id="phoneInput" type="tel" placeholder=" " required aria-label="Nomor Telepon">
             <span class="label-text">Nomor telepon</span>
           </div>
           <p id="errPhone" class="error-msg"></p>
           <button type="button" id="btnPhone" class="btn-primary" onclick="sendPhoneOTP()">Kirim Kode Verifikasi</button>
         </div>
 
-        <a href="/login" class="btn-back" style="display:inline-block;text-align:center;width:100%;margin-top:16px;text-decoration:none">Kembali ke Masuk</a>
+        <a href="/login" class="btn-back btn-back-custom">Kembali ke Masuk</a>
       </div>
 
       <!-- Step 2: Enter OTP -->
@@ -148,7 +167,7 @@ body{min-height:100vh;display:flex;flex-direction:column;background:#141414}
         <div class="check-icon"><i class="fa-solid fa-circle-check"></i></div>
         <h1>Sandi Berhasil Diubah!</h1>
         <p class="login-sub">Sandi kamu sudah berhasil diubah. Silakan masuk dengan sandi baru.</p>
-        <a href="/login" class="btn-primary" style="display:block;text-align:center;text-decoration:none;margin-top:20px">Masuk Sekarang</a>
+        <a href="/login" class="btn-primary btn-link-block">Masuk Sekarang</a>
       </div>
 
     </div>
@@ -164,6 +183,17 @@ let currentTab = 'email';
 let resetType = '';
 let resetTarget = '';
 let otpTimer = null;
+
+function getCsrfToken() {
+  const meta = document.querySelector('meta[name="csrf-token"]');
+  return meta ? meta.getAttribute('content') : '';
+}
+
+function autoHideErrors() {
+  document.querySelectorAll('.error-msg.show').forEach(el => {
+    setTimeout(() => { el.classList.remove('show'); el.style.display = 'none'; }, 5000);
+  });
+}
 
 function showTab(tab) {
   currentTab = tab;
@@ -192,11 +222,12 @@ document.getElementById('emailForm').addEventListener('submit', async (e) => {
   const btn = document.getElementById('btnEmail');
   const err = document.getElementById('errEmail');
   btn.disabled = true;
-  btn.textContent = 'Mengirim...';
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim...';
   try {
     const res = await fetch('/api/auth/forgot-password', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
+      credentials: 'include',
       body: JSON.stringify({ email })
     });
     const j = await res.json();
@@ -209,10 +240,12 @@ document.getElementById('emailForm').addEventListener('submit', async (e) => {
     } else {
       err.textContent = j.message;
       err.classList.add('show');
+      autoHideErrors();
     }
   } catch (e) {
     err.textContent = 'Terjadi kesalahan';
     err.classList.add('show');
+    autoHideErrors();
   } finally {
     btn.disabled = false;
     btn.textContent = 'Kirim Kode Verifikasi';
@@ -226,11 +259,12 @@ async function sendPhoneOTP() {
   const btn = document.getElementById('btnPhone');
   const err = document.getElementById('errPhone');
   btn.disabled = true;
-  btn.textContent = 'Mengirim...';
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim...';
   try {
     const res = await fetch('/api/auth/forgot-password', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
+      credentials: 'include',
       body: JSON.stringify({ phone })
     });
     const j = await res.json();
@@ -243,10 +277,12 @@ async function sendPhoneOTP() {
     } else {
       err.textContent = j.message;
       err.classList.add('show');
+      autoHideErrors();
     }
   } catch (e) {
     err.textContent = 'Terjadi kesalahan';
     err.classList.add('show');
+    autoHideErrors();
   } finally {
     btn.disabled = false;
     btn.textContent = 'Kirim Kode Verifikasi';
@@ -265,11 +301,12 @@ async function verifyOtp() {
   const btn = document.getElementById('btnOtp');
   const err = document.getElementById('errOtp');
   btn.disabled = true;
-  btn.textContent = 'Memverifikasi...';
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memverifikasi...';
   try {
     const res = await fetch('/api/auth/verify-reset-otp', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
+      credentials: 'include',
       body: JSON.stringify({ type: resetType, target: resetTarget, otp })
     });
     const j = await res.json();
@@ -278,10 +315,12 @@ async function verifyOtp() {
     } else {
       err.textContent = j.message;
       err.classList.add('show');
+      autoHideErrors();
     }
   } catch (e) {
     err.textContent = 'Gagal memverifikasi';
     err.classList.add('show');
+    autoHideErrors();
   } finally {
     btn.disabled = false;
     btn.textContent = 'Verifikasi';
@@ -307,11 +346,12 @@ async function resetPassword() {
 
   const btn = document.getElementById('btnReset');
   btn.disabled = true;
-  btn.textContent = 'Menyimpan...';
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
   try {
     const res = await fetch('/api/auth/reset-password', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
+      credentials: 'include',
       body: JSON.stringify({ type: resetType, target: resetTarget, password: newPass })
     });
     const j = await res.json();
@@ -320,10 +360,12 @@ async function resetPassword() {
     } else {
       err.textContent = j.message;
       err.classList.add('show');
+      autoHideErrors();
     }
   } catch (e) {
     err.textContent = 'Gagal reset sandi';
     err.classList.add('show');
+    autoHideErrors();
   } finally {
     btn.disabled = false;
     btn.textContent = 'Simpan Sandi Baru';
@@ -353,12 +395,32 @@ async function resendCode() {
   try {
     await fetch('/api/auth/forgot-password', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
+      credentials: 'include',
       body: JSON.stringify(payload)
     });
     startResendTimer();
   } catch (e) {}
 }
 </script>
+    <!-- FOOTER -->
+  <footer class="bg-black border-t border-white/10 mt-8">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-10 py-8">
+      <img src="/asset/logo.png" alt="VEXORA" class="h-7 w-auto object-contain mb-4"/>
+      <div class="flex items-center gap-2 mb-3">
+        <span id="footerCrafted" class="text-[10px] font-black tracking-widest text-white/40" data-i18n="footer_crafted">CRAFTED BY</span>
+        <span class="text-netflix text-[10px] font-black tracking-widest">VEXALYN DEV</span>
+      </div>
+      <p id="footerCopy" class="text-[11px] text-white/40" data-i18n="footer_copy">© 2026 VEXORA • Dibuat oleh Vexalyn Developer [Vio Atmajaya]</p>
+      <div class="flex gap-2 mt-4">
+        <button onclick="setLang('id')" id="ftr-lang-id" class="ftr-lang">ID</button>
+        <button onclick="setLang('en')" id="ftr-lang-en" class="ftr-lang">EN</button>
+        <button onclick="setLang('ja')" id="ftr-lang-ja" class="ftr-lang">JA</button>
+        <button onclick="setLang('zh')" id="ftr-lang-zh" class="ftr-lang">ZH</button>
+      </div>
+    </div>
+  </footer>
+
+<script src="/static/js/ui.js"></script>
 </body>
 </html>

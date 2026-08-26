@@ -11,6 +11,12 @@
   <style>
     .section-card{position:relative;display:flex;flex-direction:column;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;text-decoration:none;color:inherit;transition:all 0.35s cubic-bezier(0.23,1,0.32,1)}
     .section-card:hover{transform:translateY(-6px) scale(1.02);border-color:rgba(229,9,20,0.35);box-shadow:0 12px 40px rgba(0,0,0,0.5),0 0 20px rgba(229,9,20,0.1)}
+    #mobileMenu{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1),opacity .25s ease;opacity:0;padding:0 1rem}
+    #mobileMenu.open{max-height:400px;opacity:1;padding:0.75rem 1rem}
+    /* Nav sliding indicator */
+    .nav-wrap{position:relative}
+    .nav-indicator{position:absolute;bottom:-2px;height:2px;background:#e50914;border-radius:2px;transition:left .35s cubic-bezier(.4,0,.2,1),width .35s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px rgba(229,9,20,.7),0 0 20px rgba(229,9,20,.3);pointer-events:none;opacity:0}
+    .nav-indicator.active{opacity:1}
   </style>
 </head>
 <body class="bg-[#0a0a0a] text-white min-h-screen font-['Inter',sans-serif]">
@@ -20,14 +26,14 @@
         <a href="/" class="flex items-center">
           <img src="/asset/logo.png" alt="VEXORA" title="VEXORA" class="h-8 md:h-9 lg:h-10 w-auto object-contain max-h-[40px]" onerror="this.style.display='none'"/>
         </a>
-        <button class="lg:hidden w-8 h-8 flex items-center justify-center border border-white/10 rounded-md bg-white/5 hover:bg-white/10 transition" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" aria-label="Buka menu"><i class="fa-solid fa-bars text-sm text-white/60"></i></button>
-        <div class="hidden lg:flex items-center gap-6 text-[13px] font-semibold">
-          <a href="/" class="text-white/50 hover:text-white transition flex items-center gap-2 py-1"><i class="fa-solid fa-house text-xs"></i> Beranda</a>
-          <a href="/genre" class="text-white/50 hover:text-white transition flex items-center gap-2 py-1"><i class="fa-solid fa-layer-group text-xs"></i> Genre</a>
-          <a href="/schedule" class="text-white/50 hover:text-white transition flex items-center gap-2 py-1"><i class="fa-solid fa-calendar text-xs"></i> Jadwal</a>
-          <a href="/" class="text-white/50 hover:text-white transition flex items-center gap-2 py-1"><i class="fa-solid fa-bolt text-xs"></i> Terbaru</a>
-          <a href="/bookmark" class="text-white/50 hover:text-white transition flex items-center gap-2 py-1"><i class="fa-solid fa-bookmark text-xs"></i> Bookmark</a>
-          <a href="/riwayat" class="text-white/50 hover:text-white transition flex items-center gap-2 py-1"><i class="fa-solid fa-clock-rotate-left text-xs"></i> Riwayat</a>
+        <div class="hidden lg:flex items-center gap-6 text-[13px] font-semibold nav-wrap">
+          <a href="/" data-nav="beranda" class="text-white/70 hover:text-white transition cursor-pointer pb-1 border-b-2 border-transparent flex items-center gap-2"><i class="fa-solid fa-house text-xs"></i> Beranda</a>
+          <a href="/genre" data-nav="genre" class="text-white/70 hover:text-white transition cursor-pointer pb-1 border-b-2 border-transparent flex items-center gap-2"><i class="fa-solid fa-layer-group text-xs"></i> Genre</a>
+          <a href="/schedule" data-nav="schedule" class="text-white/70 hover:text-white transition cursor-pointer pb-1 border-b-2 border-transparent flex items-center gap-2"><i class="fa-solid fa-calendar text-xs"></i> Jadwal</a>
+          <a href="/terbaru" data-nav="terbaru" class="text-white/70 hover:text-white transition cursor-pointer pb-1 border-b-2 border-transparent flex items-center gap-2"><i class="fa-solid fa-bolt text-xs"></i> Terbaru</a>
+          <a href="/bookmark" data-nav="bookmark" class="text-white/70 hover:text-white transition cursor-pointer pb-1 border-b-2 border-transparent flex items-center gap-2"><i class="fa-solid fa-bookmark text-xs"></i> Bookmark</a>
+          <a href="/riwayat" data-nav="riwayat" class="text-white/70 hover:text-white transition cursor-pointer pb-1 border-b-2 border-transparent flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-xs"></i> Riwayat</a>
+          <span class="nav-indicator"></span>
         </div>
       </div>
       <div class="flex items-center gap-3">
@@ -37,17 +43,22 @@
         </div>
         <div id="userMenu" class="hidden items-center cursor-pointer" onclick="document.getElementById('userDropdown').classList.toggle('hidden')">
           <img id="navAvatar" src="https://i.pravatar.cc/100?u=netflix" alt="Foto profil" title="Foto profil" class="w-8 h-8 rounded-full object-cover border border-white/15"/>
-          <div id="userDropdown" class="hidden absolute right-4 md:right-10 top-16 w-44 bg-[#161616] border border-white/10 rounded-lg shadow-2xl z-50 overflow-hidden">
+          <div id="userDropdown" class="hidden absolute right-0 top-16 w-44 bg-[#161616] border border-white/10 rounded-lg shadow-2xl z-50 overflow-hidden">
             <a href="/profile" class="block px-4 py-2.5 text-xs font-bold hover:bg-white/[0.06] transition"><i class="fa-solid fa-user mr-2 text-white/40"></i>Profil</a>
             <button onclick="fetch('/api/auth/logout',{method:'POST'}).then(()=>location.href='/')" class="w-full text-left px-4 py-2.5 text-xs font-bold text-red-400 hover:bg-white/[0.06] transition"><i class="fa-solid fa-right-from-bracket mr-2"></i>Keluar</button>
           </div>
         </div>
+        <button id="mobileMenuBtn" class="lg:hidden w-8 h-8 flex items-center justify-center border border-white/10 rounded-md bg-white/5 hover:bg-white/10 transition" onclick="document.getElementById('mobileMenu').classList.toggle('open')" aria-label="Buka menu"><i class="fa-solid fa-bars text-sm text-white/60"></i></button>
       </div>
     </div>
-    <div id="mobileMenu" class="hidden lg:hidden bg-[#0e0e0e] border-t border-white/[0.06] px-4 py-3 space-y-1">
+    <div id="mobileMenu" class="lg:hidden bg-[#0e0e0e] border-t border-white/[0.06]">
       <a href="/" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-house w-5 text-center"></i> Beranda</a>
       <a href="/genre" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-layer-group w-5 text-center"></i> Genre</a>
       <a href="/schedule" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-calendar w-5 text-center"></i> Jadwal</a>
+        <div class="border-t border-white/[0.06] mt-2 pt-2 space-y-1">
+          <a href="/login" class="flex py-2 text-sm font-bold text-white items-center gap-2"><i class="fa-solid fa-right-to-bracket w-5"></i> Masuk</a>
+          <a href="/register" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-user-plus w-5"></i> Daftar</a>
+        </div>
     </div>
   </nav>
 
@@ -66,7 +77,7 @@
 
   <section id="sectionGrid" class="hidden max-w-[1600px] mx-auto px-4 md:px-10 pb-10">
     <div id="animeGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4"></div>
-    <div id="loadMoreWrap" class="hidden flex justify-center mt-6">
+    <div id="loadMoreWrap" class="hidden justify-center mt-6">
       <button id="loadMoreBtn" class="group bg-[#e50914] hover:bg-[#b20710] text-white px-5 py-2 rounded-lg text-xs font-black flex items-center gap-2 transition">
         <span>Next</span> <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-0.5 transition"></i>
       </button>
@@ -100,7 +111,7 @@ async function loadSection() {
         card.className = 'section-card';
         card.innerHTML = `
           <div class="relative aspect-[2/3] overflow-hidden bg-[#1a1a1a]">
-            <img src="${anime.poster || ''}" alt="${anime.title || ''}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.style.display='none'"/>
+            <img loading="lazy" src="${anime.poster || ''}" alt="${anime.title || ''}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.style.display='none'"/>
             ${anime.episode ? `<span class="absolute top-2 left-2 bg-[#e50914] text-white text-[10px] font-black px-2 py-0.5 rounded">${anime.episode}</span>` : ''}
             ${anime.type ? `<span class="absolute top-2 right-2 bg-black/60 backdrop-blur text-white text-[10px] font-bold px-2 py-0.5 rounded">${anime.type}</span>` : ''}
           </div>
@@ -118,6 +129,7 @@ async function loadSection() {
       const nextUrl = data.next_url || data.more_url;
       if (nextUrl) {
         document.getElementById('loadMoreWrap').classList.remove('hidden');
+        document.getElementById('loadMoreWrap').classList.add('flex');
         document.getElementById('loadMoreBtn').onclick = async function () {
           this.disabled = true;
           this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memuat...';
@@ -132,7 +144,7 @@ async function loadSection() {
                 card.className = 'section-card';
                 card.innerHTML = `
                   <div class="relative aspect-[2/3] overflow-hidden bg-[#1a1a1a]">
-                    <img src="${anime.poster || ''}" alt="${anime.title || ''}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.style.display='none'"/>
+                    <img loading="lazy" src="${anime.poster || ''}" alt="${anime.title || ''}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.style.display='none'"/>
                     ${anime.episode ? `<span class="absolute top-2 left-2 bg-[#e50914] text-white text-[10px] font-black px-2 py-0.5 rounded">${anime.episode}</span>` : ''}
                     ${anime.type ? `<span class="absolute top-2 right-2 bg-black/60 backdrop-blur text-white text-[10px] font-bold px-2 py-0.5 rounded">${anime.type}</span>` : ''}
                   </div>
@@ -193,7 +205,7 @@ async function loadNextPage(url) {
         card.className = 'section-card';
         card.innerHTML = `
           <div class="relative aspect-[2/3] overflow-hidden bg-[#1a1a1a]">
-            <img src="${anime.poster || ''}" alt="${anime.title || ''}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.style.display='none'"/>
+            <img loading="lazy" src="${anime.poster || ''}" alt="${anime.title || ''}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.style.display='none'"/>
             ${anime.episode ? `<span class="absolute top-2 left-2 bg-[#e50914] text-white text-[10px] font-black px-2 py-0.5 rounded">${anime.episode}</span>` : ''}
             ${anime.type ? `<span class="absolute top-2 right-2 bg-black/60 backdrop-blur text-white text-[10px] font-bold px-2 py-0.5 rounded">${anime.type}</span>` : ''}
           </div>
@@ -227,7 +239,7 @@ async function loadNextPage(url) {
 
 async function checkAuth() {
   try {
-    const r = await fetch('/api/auth/me');
+    const r = await fetch('/api/auth/me', {credentials: 'include'});
     const j = await r.json();
     if (j.logged_in) {
       document.getElementById('btnLogin')?.classList.add('hidden');
@@ -242,6 +254,23 @@ async function checkAuth() {
 
 document.addEventListener('DOMContentLoaded', () => { checkAuth(); loadSection(); });
 window.addEventListener('click', e => { if (!e.target.closest('#userMenu')) { let d = document.getElementById('userDropdown'); if (d) d.classList.add('hidden'); } });
+function moveNavIndicator(el){
+  let ind=document.querySelector('.nav-indicator'); if(!ind||!el) return;
+  let wrap=el.parentElement; let wRect=wrap.getBoundingClientRect(); let eRect=el.getBoundingClientRect();
+  ind.classList.add('active');
+  ind.style.left=(eRect.left-wRect.left)+'px';
+  ind.style.width=eRect.width+'px';
+}
+function setupNavIndicator(){
+  let wrap=document.querySelector('.nav-wrap'); if(!wrap) return;
+  let active=wrap.querySelector('a.text-white:not(.text-white\\/70)');
+  if(active) moveNavIndicator(active);
+  wrap.querySelectorAll('a[data-nav]').forEach(a=>{
+    a.addEventListener('mouseenter',()=>moveNavIndicator(a));
+    a.addEventListener('mouseleave',()=>{let cur=wrap.querySelector('a.text-white:not(.text-white\\/70)'); if(cur) moveNavIndicator(cur);});
+  });
+}
+document.addEventListener('DOMContentLoaded', setupNavIndicator);
 </script>
 </body>
 </html>

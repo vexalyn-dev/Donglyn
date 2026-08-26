@@ -1,9 +1,15 @@
 {
-  "name": "donghua",
+  "name": "vexora",
   "private": true,
+  "browserslist": [
+    "> 0.5%",
+    "last 2 versions",
+    "not dead",
+    "Safari >= 14"
+  ],
   "scripts": {
-    "build": "tailwindcss -i ./static/src/input.css -o ./static/css/output.css --minify",
-    "dev": "tailwindcss -i ./static/src/input.css -o ./static/css/output.css --watch"
+    "build": "tailwindcss -i ./static/src/input.css -o ./static/css/output.css --minify --postcss",
+    "dev": "tailwindcss -i ./static/src/input.css -o ./static/css/output.css --watch --postcss"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.1",

@@ -8,6 +8,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="stylesheet" href="/static/css/output.css"/>
+  <style>
+    #mobileMenu{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1),opacity .25s ease;opacity:0;padding:0 1rem}
+    #mobileMenu.open{max-height:400px;opacity:1;padding:0.75rem 1rem}
+    /* Nav sliding indicator */
+    .nav-wrap{position:relative}
+    .nav-indicator{position:absolute;bottom:-2px;height:2px;background:#e50914;border-radius:2px;transition:left .35s cubic-bezier(.4,0,.2,1),width .35s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px rgba(229,9,20,.7),0 0 20px rgba(229,9,20,.3);pointer-events:none;opacity:0}
+    .nav-indicator.active{opacity:1}
+  </style>
 </head>
 <body class="bg-dark text-white min-h-screen selection:bg-netflix selection:text-white">
   <nav class="fixed top-0 w-full z-50 bg-[#141414] border-b border-white/10">
@@ -16,13 +24,14 @@
           <a href="/" class="flex items-center">
             <img src="/asset/logo.png" alt="VEXORA" title="VEXORA" class="h-8 md:h-9 lg:h-10 w-auto object-contain max-h-[40px]" onerror="this.style.display='none'" />
           </a>
-        <div class="hidden lg:flex items-center gap-5 text-[13px] font-medium">
-          <a href="/" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-house text-xs"></i> Beranda</a>
-          <a href="/genre" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-layer-group text-xs"></i> Genre</a>
-          <a href="/schedule" class="text-white font-bold border-b-2 border-netflix pb-1 flex items-center gap-1"><i class="fa-solid fa-calendar text-xs"></i> Schedule</a>
-          <a href="/" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-bolt text-xs"></i> Terbaru</a>
-          <a href="/bookmark" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-bookmark text-xs"></i> Bookmark</a>
-          <a href="/riwayat" class="text-white/70 hover:text-white transition pb-1 flex items-center gap-1"><i class="fa-solid fa-clock-rotate-left text-xs"></i> Riwayat</a>
+        <div class="hidden lg:flex items-center gap-5 text-[13px] font-medium nav-wrap">
+          <a href="/" class="text-white/70 hover:text-white transition cursor-pointer pb-1 border-b-2 border-transparent flex items-center gap-1" data-nav="beranda"><i class="fa-solid fa-house text-xs"></i> Beranda</a>
+          <a href="/genre" class="text-white/70 hover:text-white transition cursor-pointer pb-1 border-b-2 border-transparent flex items-center gap-1" data-nav="genre"><i class="fa-solid fa-layer-group text-xs"></i> Genre</a>
+          <a href="/schedule" class="text-white font-bold border-b-2 border-transparent cursor-pointer pb-1 flex items-center gap-1" data-nav="schedule"><i class="fa-solid fa-calendar text-xs"></i> Schedule</a>
+          <a href="/terbaru" class="text-white/70 hover:text-white transition cursor-pointer pb-1 border-b-2 border-transparent flex items-center gap-1" data-nav="terbaru"><i class="fa-solid fa-bolt text-xs"></i> Terbaru</a>
+          <a href="/bookmark" class="text-white/70 hover:text-white transition cursor-pointer pb-1 border-b-2 border-transparent flex items-center gap-1" data-nav="bookmark"><i class="fa-solid fa-bookmark text-xs"></i> Bookmark</a>
+          <a href="/riwayat" class="text-white/70 hover:text-white transition cursor-pointer pb-1 border-b-2 border-transparent flex items-center gap-1" data-nav="riwayat"><i class="fa-solid fa-clock-rotate-left text-xs"></i> Riwayat</a>
+          <span class="nav-indicator"></span>
         </div>
       </div>
       <div class="flex items-center gap-3">
@@ -35,7 +44,7 @@
           <a href="/register" id="btnRegister" class="hidden md:inline-flex bg-white/10 hover:bg-white/20 border border-white/20 text-white px-3 py-1.5 rounded text-xs font-bold">Daftar</a>
           <div id="userMenu" class="hidden items-center cursor-pointer" onclick="toggleUserDropdown()">
             <img id="navAvatar" src="https://i.pravatar.cc/100?u=vexora" alt="Foto profil" title="Foto profil" class="w-8 h-8 rounded-full object-cover border border-white/20"/>
-            <div id="userDropdown" class="hidden absolute right-4 md:right-10 top-[56px] w-52 bg-black border border-white/20 shadow-2xl rounded overflow-hidden z-50">
+            <div id="userDropdown" class="hidden absolute right-0 top-[56px] w-52 bg-black border border-white/20 shadow-2xl rounded overflow-hidden z-50">
               <div class="p-3 border-b border-white/10 flex items-center gap-2">
                 <img id="dropAvatar" src="https://i.pravatar.cc/100?u=vexora" alt="Foto profil" class="w-9 h-9 rounded object-cover"/>
                 <div class="min-w-0"><p id="dropName" class="text-xs font-bold truncate">User</p><p id="dropEmail" class="text-[11px] text-white/50 truncate">email</p></div>
@@ -44,16 +53,20 @@
               <button onclick="doLogout()" class="w-full text-left flex items-center gap-2 px-3 py-2.5 text-xs font-bold hover:bg-white/10 text-red-400"><i class="fa-solid fa-right-from-bracket w-4"></i> Keluar</button>
             </div>
           </div>
+          <button id="mobileMenuBtn" class="lg:hidden w-8 h-8 flex items-center justify-center border border-white/10 rounded bg-white/5" onclick="toggleMobileMenu()" aria-label="Buka menu"><i class="fa-solid fa-bars text-sm"></i></button>
         </div>
-        <button id="mobileMenuBtn" class="lg:hidden w-8 h-8 flex items-center justify-center border border-white/10 rounded bg-white/5" onclick="toggleMobileMenu()" aria-label="Buka menu"><i class="fa-solid fa-bars text-sm"></i></button>
       </div>
     </div>
-    <div id="mobileMenu" class="hidden lg:hidden bg-black border-t border-white/10 px-4 py-3 space-y-1">
+    <div id="mobileMenu" class="lg:hidden bg-black border-t border-white/10">
       <a href="/" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-house w-5"></i> Beranda</a>
       <a href="/genre" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-layer-group w-5"></i> Genre</a>
       <a href="/schedule" class="flex py-2 text-sm font-bold text-white items-center gap-2"><i class="fa-solid fa-calendar w-5"></i> Schedule</a>
+      <a href="/terbaru" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-bolt w-5"></i> Terbaru</a>
       <a href="/bookmark" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-bookmark w-5"></i> Bookmark</a>
       <a href="/riwayat" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-clock-rotate-left w-5"></i> Riwayat</a>
+        <div class="border-t border-white/10 mt-2 pt-2">
+          <a href="/login" class="flex py-2 text-sm font-bold text-white items-center gap-2"><i class="fa-solid fa-right-to-bracket w-5"></i> Masuk</a>
+        </div>
     </div>
   </nav>
 
@@ -73,13 +86,61 @@
     <div id="scheduleContainer" class="space-y-8 hidden"></div>
   </div>
 
-  <footer class="bg-black border-t border-white/10">
-    <div class="max-w-[1600px] mx-auto px-4 md:px-10 py-8">
-      <p class="text-[11px] text-white/20">© 2026 VEXORA — Schedule • Data dari Anichin.moe</p>
+  <footer class="bg-black border-t border-white/10 mt-8">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-10 py-10">
+      <img src="/asset/logo.png" alt="VEXORA" title="VEXORA" class="h-8 w-auto object-contain mb-5"/>
+      <div class="flex gap-4 text-white/60">
+        <a href="#" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition" aria-label="Instagram VEXORA" title="Instagram"><i class="fa-brands fa-instagram text-sm" aria-hidden="true"></i></a>
+        <a href="#" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition" aria-label="TikTok VEXORA" title="TikTok"><i class="fa-brands fa-tiktok text-sm" aria-hidden="true"></i></a>
+        <a href="#" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition" aria-label="Github VEXORA" title="Github"><i class="fa-brands fa-github text-sm" aria-hidden="true"></i></a>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-xs">
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80 hover:underline">Audio Description</a>
+          <a href="#" class="block hover:text-white/80">Investor Relations</a>
+          <a href="#" class="block hover:text-white/80">Legal Notices</a>
+          <a href="#" onclick="loadHome()" class="block hover:text-white">Beranda</a>
+        </div>
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80">Help Center</a>
+          <a href="#" class="block hover:text-white/80">Jobs</a>
+          <a href="#" class="block hover:text-white/80">Cookie Preferences</a>
+          <a href="/genre" class="block hover:text-white">Genre</a>
+        </div>
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80">Gift Cards</a>
+          <a href="#" class="block hover:text-white/80">Terms of Use</a>
+          <a href="#" class="block hover:text-white/80">Corporate Information</a>
+          <a href="/terbaru" class="block hover:text-white">Terbaru</a>
+        </div>
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80">Media Center</a>
+          <a href="#" class="block hover:text-white/80">Privacy</a>
+          <a href="#" class="block hover:text-white/80">Contact Us</a>
+          <a href="/bookmark" class="block hover:text-white">Bookmark</a>
+        </div>
+      </div>
+      <div class="mt-4">
+        <span class="text-[10px] font-black tracking-[0.25em] text-[#e50914] uppercase">CRAFTED BY</span>
+        <button id="vexalynSecretTrigger" type="button" class="mt-0.5 block cursor-pointer rounded-lg border border-white/10 transition hover:border-red-500/60 hover:shadow-[0_0_18px_rgba(229,9,20,.25)]" aria-label="Vexalyn Developer" title="Vexalyn Developer">
+          <img src="/asset/dev-logo.png" alt="Vexalyn Developer" class="h-7 w-24 object-contain"/>
+        </button>
+      </div>
+      <div class="flex items-center justify-between mt-4">
+        <div class="flex items-center gap-1.5">
+          <span class="text-[10px] text-white/30"><i class="fa-solid fa-globe"></i></span>
+          <button onclick="setLang('id')" id="ftr-lang-id" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-[#e50914] text-white">ID</button>
+          <button onclick="setLang('en')" id="ftr-lang-en" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/50">EN</button>
+          <button onclick="setLang('ja')" id="ftr-lang-ja" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/50">JP</button>
+          <button onclick="setLang('zh')" id="ftr-lang-zh" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/50">CN</button>
+        </div>
+        <p class="text-[11px] text-white/20">© 2026 VEXORA • Dibuat oleh Vexalyn Developer <span class="text-[#e50914] font-bold">[Vio Atmajaya]</span></p>
+      </div>
     </div>
   </footer>
 
 <script>
+function toggleMobileMenu(){let m=document.getElementById('mobileMenu');m.classList.toggle('open');}
 let scheduleData=[];
 async function loadSchedule(){
   try{
@@ -118,14 +179,7 @@ function renderSchedule(data){
     let grid=document.createElement('div');
     grid.className='grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3';
     (day.data||[]).forEach(anime=>{
-      grid.innerHTML+=`
-        <a href="${anime.url}" class="group premium-card bg-[#181818] rounded overflow-hidden border border-white/5 hover:border-white/20 transition hover:scale-[1.03]">
-          <div class="relative aspect-[2/3] overflow-hidden bg-black">
-            <img src="${anime.thumbnail}" alt="${anime.title}" title="${anime.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy"/>
-            <span class="absolute bottom-1 left-1 bg-netflix text-white text-[10px] font-black px-1.5 py-0.5 rounded">${anime.episode||''}</span>
-          </div>
-          <div class="p-2"><h3 class="text-xs font-semibold line-clamp-2 min-h-[30px]">${anime.title}</h3><p class="text-[11px] text-white/40 mt-1">${anime.type||'VEXORA'}</p></div>
-        </a>`;
+      grid.innerHTML += createCard(anime, true);
     });
     sec.appendChild(grid);
     cont.appendChild(sec);
@@ -134,7 +188,7 @@ function renderSchedule(data){
 document.addEventListener('DOMContentLoaded', ()=>{ checkAuthSchedule(); loadSchedule(); });
 async function checkAuthSchedule(){
   try{
-    let r=await fetch('/api/auth/me'); let j=await r.json();
+    let r=await fetch('/api/auth/me',{credentials:'include'}); let j=await r.json();
     let loginBtn=document.getElementById('btnLogin');
     let regBtn=document.getElementById('btnRegister');
     if(j.logged_in){
@@ -153,6 +207,51 @@ async function checkAuthSchedule(){
   }catch(e){}
 }
 document.addEventListener('DOMContentLoaded', ()=>{ checkAuthSchedule(); loadSchedule(); });
+function moveNavIndicator(el){
+  let ind=document.querySelector('.nav-indicator'); if(!ind||!el) return;
+  let wrap=el.parentElement; let wRect=wrap.getBoundingClientRect(); let eRect=el.getBoundingClientRect();
+  ind.classList.add('active');
+  ind.style.left=(eRect.left-wRect.left)+'px';
+  ind.style.width=eRect.width+'px';
+}
+function setupNavIndicator(){
+  let wrap=document.querySelector('.nav-wrap'); if(!wrap) return;
+  let active=wrap.querySelector('a.text-white:not(.text-white\\/70)');
+  if(active) moveNavIndicator(active);
+  wrap.querySelectorAll('a[data-nav]').forEach(a=>{
+    a.addEventListener('mouseenter',()=>moveNavIndicator(a));
+    a.addEventListener('mouseleave',()=>{let cur=wrap.querySelector('a.text-white:not(.text-white\\/70)'); if(cur) moveNavIndicator(cur);});
+  });
+}
+// Unified card design (same as index.html)
+function createCard(anime, isGrid){
+  let isCompleted=anime.status.toLowerCase().includes("completed")||anime.status.toLowerCase().includes("tamat");
+  let baseClass = isGrid ? "w-[148px] md:w-auto shrink-0 md:shrink" : "w-[148px] md:w-[170px] shrink-0";
+  return `
+  <div class="netflix-card premium-card group relative ${baseClass} bg-card rounded overflow-hidden flex flex-col snap-start border border-white/5 hover:border-netflix/30">
+    <a href="${anime.url}" class="block relative aspect-[2/3] overflow-hidden bg-[#181818]">
+      <img src="${anime.thumbnail}" alt="${anime.title}" class="w-full h-full object-cover group-hover:scale-[1.04] transition duration-500" loading="lazy">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-play text-black text-sm ml-0.5"></i></div>
+      </div>
+      <span class="absolute top-1.5 right-1.5 bg-black/70 backdrop-blur text-[10px] font-bold px-1.5 py-0.5 rounded text-white border border-white/20">${anime.label}</span>
+      ${isCompleted?`<span class="absolute top-1.5 left-1.5 bg-netflix text-white text-[9px] font-black px-1.5 py-0.5 rounded">TAMAT</span>`:`<span class="absolute top-1.5 left-1.5 bg-netflix text-white text-[9px] font-black px-1.5 py-0.5 rounded">BARU</span>`}
+      <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black to-transparent p-2 pt-6">
+        <span class="inline-flex items-center gap-1 bg-netflix text-white text-[10px] font-black px-1.5 py-0.5 rounded"><i class="fa-solid fa-closed-captioning text-[10px]"></i> ${anime.episode}</span>
+      </div>
+    </a>
+    <div class="premium-shine"></div>
+    <div class="p-2 bg-[#181818] group-hover:bg-[#232323] transition relative z-10">
+      <a href="${anime.url}" class="block"><h3 class="text-[12px] font-semibold leading-tight line-clamp-2 min-h-[32px] group-hover:text-white">${anime.title}</h3></a>
+      <div class="flex items-center justify-between mt-1.5">
+        <span class="text-[11px] text-white/40 font-medium flex items-center gap-1"><i class="fa-solid fa-film text-[10px]"></i> ${anime.type}</span>
+        <span class="text-[11px] font-bold ${isCompleted?'text-emerald-400':'text-netflix'}">${anime.status}</span>
+      </div>
+    </div>
+  </div>`;
+}
+document.addEventListener('DOMContentLoaded', setupNavIndicator);
 </script>
 </body>
 </html>

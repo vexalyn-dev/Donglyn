@@ -5,8 +5,36 @@ import json
 import time
 import urllib.parse
 import re
+import requests
 from bs4 import BeautifulSoup
 from core.browser import get_page_content
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "Referer": "https://anichin.moe/",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+}
+
+async def get_page_content_fast(url: str):
+    """Fast path pakai requests (0.5-1s), fallback ke Playwright kalau kena CF/403."""
+    def _fetch():
+        try:
+            r = requests.get(url, headers=HEADERS, timeout=8)
+            if r.status_code == 200:
+                txt = r.text
+                # deteksi Cloudflare challenge
+                if "Just a moment" in txt or "cf-challenge" in txt.lower() or "Attention Required" in txt:
+                    return None
+                return txt
+            return None
+        except Exception:
+            return None
+    html = await asyncio.to_thread(_fetch)
+    if html:
+        return html, None
+    # fallback lambat
+    return await get_page_content(url)
 
 # ANSI Colors - Tema Pink, Ungu, Biru
 C_PURPLE = "\033[35m"
@@ -56,7 +84,7 @@ async def resolve_target_url(query: str):
     encoded_query = urllib.parse.quote(clean_query)
     search_url = f"https://anichin.moe/?s={encoded_query}"
     
-    html_content, error = await get_page_content(search_url)
+    html_content, error = await get_page_content_fast(search_url)
     if error:
         return None
 
@@ -83,7 +111,7 @@ async def scrape_detail(user_input: str):
             "data": {}
         }
 
-    html_content, error = await get_page_content(target_url)
+    html_content, error = await get_page_content_fast(target_url)
     
     response = {
         "creator": "Vexalyn Developer",
@@ -104,32 +132,45 @@ async def scrape_detail(user_input: str):
     soup = BeautifulSoup(html_content, 'html.parser')
     
     try:
-        # 1. Judul Utama
-        title_el = soup.select_one('h1.entry-title, .post-title h1, h1')
+        # 1. Judul Utama — prefer series name h2[itemprop="partOfSeries"] like The Emperor of Myriad Realms
+        title_el = soup.select_one('h2[itemprop="partOfSeries"], .infolimit h2, .infox h2, h1.entry-title, .post-title h1, h1')
         title = title_el.text.strip() if title_el else "Unknown Title"
+        title = re.sub(r'\s*Episode\s+\d+.*$', '', title, flags=re.IGNORECASE).strip()
 
-        # 2. Rating
+        # 2. Rating — real from .rating strong "Rating 7.89" or .rtb width 78.9%
         rating_val = "N/A"
-        rt_div = soup.select_one('.rt, .rating, [itemprop="ratingValue"], .numval')
+        rt_div = soup.select_one('.rating strong, .rt strong, [itemprop="ratingValue"], .rating, .numval')
         if rt_div:
-            raw_rt = rt_div.text.strip()
-            match_rt = re.search(r'\d+\.\d+|\d+', raw_rt)
+            raw_rt = rt_div.get_text(' ', strip=True)
+            match_rt = re.search(r'(\d+\.\d+|\d+)', raw_rt)
             if match_rt:
-                rating_val = match_rt.group()
+                rating_val = match_rt.group(1)
+        if rating_val == "N/A":
+            rtb = soup.select_one('.rtb span')
+            if rtb and rtb.get('style'):
+                m = re.search(r'width:\s*([0-9.]+)%', rtb.get('style'))
+                if m:
+                    try: rating_val = str(round(float(m.group(1))/10, 2))
+                    except: pass
 
         # 3. Thumbnail Poster
-        poster_img = soup.select_one('.thumb img, .infox .thumb img, .fotoimg img')
-        thumbnail = poster_img.get('data-src') or poster_img.get('src') if poster_img else "No Thumbnail"
+        poster_img = soup.select_one('.thumb img, .bigcontent .thumb img, .infox .thumb img, .fotoimg img')
+        thumbnail = (poster_img.get('data-src') or poster_img.get('src')) if poster_img else "No Thumbnail"
 
-        # 4. Genre List (div.genxed a)
+        # 4. Genre List — only real genres from .genxed (avoid network/studio pollution)
         genres = []
-        genre_tags = soup.select('div.genxed a, .genx a')
+        genre_tags = soup.select('div.genxed a[rel="tag"], div.genxed a[href*="/genres/"], .genx a[href*="/genres/"]')
         for tag in genre_tags:
             g_text = tag.text.strip()
             if g_text and g_text not in genres:
                 genres.append(g_text)
+        if not genres:
+            for tag in soup.select('div.genx a'):
+                g_text = tag.text.strip()
+                if g_text and g_text not in genres:
+                    genres.append(g_text)
 
-        # 5. Metadata
+        # 5. Metadata — from .info-content .spe span
         metadata = {
             "status": "N/A",
             "studio": "N/A",
@@ -142,15 +183,13 @@ async def scrape_detail(user_input: str):
             "type": "N/A",
             "subber": "N/A"
         }
-
-        info_items = soup.select('.info-content span, .spe span, .ts-infox .inex span, .alter, .infox p')
+        info_items = soup.select('.info-content .spe span, .infox .spe span')
         for item in info_items:
-            text = item.text.strip()
+            text = item.get_text(' ', strip=True)
             if ":" in text:
                 key, val = text.split(":", 1)
                 key_clean = key.strip().lower()
                 val_clean = val.strip()
-                
                 if "status" in key_clean: metadata["status"] = val_clean
                 elif "studio" in key_clean: metadata["studio"] = val_clean
                 elif "durasi" in key_clean: metadata["duration"] = val_clean
@@ -162,16 +201,49 @@ async def scrape_detail(user_input: str):
                 elif "tipe" in key_clean: metadata["type"] = val_clean
                 elif "subber" in key_clean: metadata["subber"] = val_clean
 
-        # 6. Sinopsis Presisi -> Sesuai Inspect: div.bixbox.synp div.entry-content p
+        # 6. Sinopsis — real story in .desc.mindes (bukan SEO spam Download/Mirrored)
+        SPAM_MARKERS = ["Download", "Nonton", "jangan lupa mengklik tombol like", "Mirrored", "PixelDrain", "Terabox", "360p", "480p", "1080p"]
         synopsis = "No Synopsis Available"
-        synp_p = soup.select_one('div.bixbox.synp div.entry-content p, div.synp div.entry-content p')
-        if synp_p:
-            synopsis = synp_p.text.strip()
-        else:
-            # Fallback jika div.synp tidak ketemu
-            desc_alt = soup.select_one('div.entry-content[itemprop="description"] p')
-            if desc_alt:
-                synopsis = desc_alt.text.strip()
+        for sel in ['.desc.mindes', '.desc', '.synopsis', '.synp', '[itemprop="description"]']:
+            el = soup.select_one(sel)
+            if not el: continue
+            txt = el.get_text(' ', strip=True)
+            if any(m.lower() in txt.lower() for m in SPAM_MARKERS) and len(txt) > 200:
+                continue
+            if len(txt) < 40:
+                continue
+            # strip leading "Sinopsis" + duplicate H3 title (e.g. "Sinopsis The Emperor ... The Emperor ... Tujuh...")
+            for _ in range(3):
+                low = txt.lower()
+                if low.startswith("sinopsis"):
+                    txt = txt[8:].lstrip(' :–—-').strip()
+                    continue
+                if low.startswith(title.lower()):
+                    txt = txt[len(title):].lstrip(' :–—-.').strip()
+                    continue
+                break
+            synopsis = txt.strip()
+            break
+        if synopsis == "No Synopsis Available":
+            # fallback: try div.entry-content but filter spam
+            for sel in ['div.bixbox.synp div.entry-content p', 'div.entry-content']:
+                el = soup.select_one(sel)
+                if not el: continue
+                txt = el.get_text(' ', strip=True)
+                if any(m.lower() in txt.lower() for m in SPAM_MARKERS) and len(txt) > 200:
+                    continue
+                if len(txt) > 40:
+                    for _ in range(3):
+                        low = txt.lower()
+                        if low.startswith("sinopsis"):
+                            txt = txt[8:].lstrip(' :–—-').strip()
+                            continue
+                        if low.startswith(title.lower()):
+                            txt = txt[len(title):].lstrip(' :–—-.').strip()
+                            continue
+                        break
+                    synopsis = txt.strip()
+                    break
 
         response["data"] = {
             "title": title,

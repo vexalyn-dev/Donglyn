@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>VEXORA — Daftar</title>
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 <link rel="stylesheet" href="/static/css/output.css">
@@ -11,6 +12,7 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+html,body{overflow-x:hidden}
 body{min-height:100vh;display:flex;flex-direction:column;background:#141414}
 
 .bg-hero{position:fixed;inset:0;z-index:0;background:url('/asset/bg-login & register.png') center/cover no-repeat}
@@ -26,8 +28,8 @@ body{min-height:100vh;display:flex;flex-direction:column;background:#141414}
 .main{flex:1;display:flex;align-items:center;justify-content:center;padding:0 16px 60px}
 
 /* Login card */
-.login-box{background:rgba(0,0,0,0.75);border-radius:4px;padding:48px 68px 60px;width:100%;max-width:450px;min-height:700px;display:flex;flex-direction:column}
-@media(max-width:500px){.login-box{padding:40px 28px;max-width:100%;min-height:auto}}
+.login-box{background:rgba(0,0,0,0.75);border-radius:4px;padding:48px 68px 60px;width:100%;max-width:450px;display:flex;flex-direction:column}
+@media(max-width:500px){.login-box{padding:40px 28px;max-width:100%}}
 
 .login-box h1{color:#fff;font-size:32px;font-weight:700;margin-bottom:8px}
 .login-sub{color:#8c8c8c;font-size:16px;margin-bottom:28px}
@@ -58,6 +60,10 @@ body{min-height:100vh;display:flex;flex-direction:column;background:#141414}
 .btn-kode:hover{background:rgba(255,255,255,0.08);border-color:#fff}
 .btn-kode.active{background:#333;border-color:#333}
 
+/* Spasi antar tombol bantuan (Kode Masuk <-> Google) */
+.google-wrap{margin-top:16px}
+.google-wrap .g_id_signin{width:100%!important}
+
 /* Sign in */
 .signup-text{color:#8c8c8c;font-size:14px;margin-top:auto;padding-top:60px}
 .signup-text a{color:#fff;text-decoration:none;font-weight:600}
@@ -86,8 +92,9 @@ body{min-height:100vh;display:flex;flex-direction:column;background:#141414}
 .resend-otp:hover{text-decoration:underline}
 .resend-otp.disabled{color:#666;cursor:not-allowed;pointer-events:none}
 
-/* Footer */
-.footer{position:relative;z-index:10;padding:0 32px 24px}
+/* Success message */
+.otp-success{background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.3)!important;color:#4ade80!important}
+.hidden-section{display:none}
 .footer p{color:#808080;font-size:13px}
 .footer a{color:#0071eb;text-decoration:none}
 .footer a:hover{text-decoration:underline}
@@ -101,7 +108,21 @@ body{min-height:100vh;display:flex;flex-direction:column;background:#141414}
   <!-- Navbar -->
   <nav class="navbar">
     <a href="/"><img src="/asset/logo.png" alt="VEXORA"></a>
-  </nav>
+  <div id="mobileMenu" class="lg:hidden bg-[#0a0a0a] border-t border-white/10 px-4 py-3 space-y-1">
+      <a href="/" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-house w-5 text-center"></i> <span data-i18n="nav0">Beranda</span></a>
+      <a href="/genre" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-layer-group w-5 text-center"></i> <span data-i18n="nav1">Genre</span></a>
+      <a href="/schedule" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-calendar w-5 text-center"></i> <span data-i18n="nav2">Schedule</span></a>
+      <a href="/bookmark" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-bookmark w-5 text-center"></i> <span data-i18n="nav4">Bookmark</span></a>
+      <a href="/riwayat" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"><i class="fa-solid fa-clock-rotate-left w-5 text-center"></i> <span data-i18n="nav5">Riwayat</span></a>
+      <div class="pt-3 mt-2 border-t border-white/10 flex items-center gap-2">
+        <span class="text-[10px] font-black tracking-widest text-white/40 mr-1" data-i18n="menu_lang">BAHASA</span>
+        <button onclick="setLang('id')" id="lang-id" class="lang-btn">ID</button>
+        <button onclick="setLang('en')" id="lang-en" class="lang-btn">EN</button>
+        <button onclick="setLang('ja')" id="lang-ja" class="lang-btn">JA</button>
+        <button onclick="setLang('zh')" id="lang-zh" class="lang-btn">ZH</button>
+      </div>
+  </div>
+</nav>
 
   <!-- Main -->
   <div class="main">
@@ -112,15 +133,15 @@ body{min-height:100vh;display:flex;flex-direction:column;background:#141414}
       <!-- Email Form -->
       <form id="emailForm" class="email-section">
         <div class="field">
-          <input id="username" type="text" placeholder=" " required minlength="3" autocomplete="username">
+          <input id="username" type="text" placeholder=" " required autocomplete="username" aria-label="Username">
           <span class="label-text">Username</span>
         </div>
         <div class="field">
-          <input id="email" type="email" placeholder=" " required autocomplete="email">
+          <input id="email" type="email" placeholder=" " required autocomplete="email" aria-label="Email">
           <span class="label-text">Email</span>
         </div>
         <div class="field">
-          <input id="password" type="password" placeholder=" " required minlength="6" autocomplete="new-password">
+          <input id="password" type="password" placeholder=" " required autocomplete="new-password" aria-label="Sandi">
           <span class="label-text">Sandi</span>
           <span class="toggle-pass" onclick="let p=document.getElementById('password');p.type=p.type==='password'?'text':'password';this.querySelector('i').classList.toggle('fa-eye');this.querySelector('i').classList.toggle('fa-eye-slash')"><i class="fa-regular fa-eye"></i></span>
         </div>
@@ -140,10 +161,10 @@ body{min-height:100vh;display:flex;flex-direction:column;background:#141414}
             <span class="label-text">Username</span>
           </div>
           <p id="errPhone" class="error-msg"></p>
-          <p id="otpMsg" class="error-msg" style="background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.3);color:#4ade80"></p>
+          <p id="otpMsg" class="error-msg otp-success"></p>
           <button type="button" id="btnSendOtp" class="btn-daftar" onclick="sendOTP()">Kirim Kode OTP</button>
         </div>
-        <div id="phoneStep2" style="display:none">
+        <div id="phoneStep2" class="hidden-section">
           <div class="otp-group">
             <input id="otpCode" class="otp-input" type="text" maxlength="6" placeholder=" " required>
             <span class="label-text">Masukkan kode</span>
@@ -161,8 +182,10 @@ body{min-height:100vh;display:flex;flex-direction:column;background:#141414}
       <button type="button" id="btnKodeMasuk" class="btn-kode" onclick="togglePhoneMode()">Gunakan Kode Masuk</button>
 
       <!-- Google Sign Up -->
-      <div id="g_id_onload" data-client_id="{{ client_id }}" data-callback="handleGoogle" data-auto_prompt="false"></div>
-      <div class="g_id_signin w-full" data-type="standard" data-theme="filled_black" data-size="large" data-text="signup_with" data-shape="rectangular"></div>
+      <div class="google-wrap">
+        <div id="g_id_onload" data-client_id="{{ client_id }}" data-callback="handleGoogle" data-auto_prompt="false"></div>
+        <div class="g_id_signin w-full" data-type="standard" data-theme="filled_black" data-size="large" data-text="signup_with" data-shape="rectangular"></div>
+      </div>
 
       <!-- Sign in -->
       <p class="signup-text">Sudah punya akun? <a href="/login">Masuk.</a></p>
@@ -170,15 +193,17 @@ body{min-height:100vh;display:flex;flex-direction:column;background:#141414}
     </div>
   </div>
 
-  <!-- Footer -->
-  <div class="footer">
-    <p>Pertanyaan? Hubungi <a href="#">dukungan kami</a>.</p>
   </div>
 </div>
 
 <script>
 let otpTimer = null;
 let isPhoneMode = false;
+
+function getCsrfToken() {
+  const meta = document.querySelector('meta[name="csrf-token"]');
+  return meta ? meta.getAttribute('content') : '';
+}
 
 function togglePhoneMode() {
   isPhoneMode = !isPhoneMode;
@@ -214,11 +239,12 @@ document.getElementById('emailForm').addEventListener('submit', async (e) => {
   const btn = document.getElementById('btnEmail');
   const err = document.getElementById('errEmail');
   btn.disabled = true;
-  btn.textContent = 'Membuat akun...';
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Membuat akun...';
   try {
     const res = await fetch('/api/auth/register', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
+      credentials: 'include',
       body: JSON.stringify({
         username: document.getElementById('username').value.trim(),
         email: document.getElementById('email').value.trim(),
@@ -226,11 +252,23 @@ document.getElementById('emailForm').addEventListener('submit', async (e) => {
       })
     });
     const j = await res.json();
-    if (j.status === 'success') location.href = '/';
-    else { err.textContent = j.message; err.classList.add('show'); }
-  } catch (e) { err.textContent = 'Terjadi kesalahan'; err.classList.add('show'); }
+    if (j.status === 'success') {
+      if (j.need_verify) {
+        location.href = '/verify-email-sent?email=' + encodeURIComponent(j.email || '');
+      } else {
+        location.href = '/';
+      }
+    }     else { err.textContent = j.message; err.classList.add('show'); autoHideErrors(); }
+  } catch (e) { err.textContent = 'Terjadi kesalahan'; err.classList.add('show'); autoHideErrors(); }
   finally { btn.disabled = false; btn.textContent = 'Daftar'; }
 });
+
+// Auto-hide error messages after 5 seconds
+function autoHideErrors() {
+  document.querySelectorAll('.error-msg.show').forEach(el => {
+    setTimeout(() => { el.classList.remove('show'); el.style.display = 'none'; }, 5000);
+  });
+}
 
 // Phone OTP
 async function sendOTP() {
@@ -238,17 +276,18 @@ async function sendOTP() {
   const username = document.getElementById('phoneUsername').value.trim();
   const err = document.getElementById('errPhone');
   const msg = document.getElementById('otpMsg');
-  if (!phone) { err.textContent = 'Masukkan nomor ponsel'; err.classList.add('show'); return; }
-  if (!username || username.length < 3) { err.textContent = 'Username minimal 3 karakter'; err.classList.add('show'); return; }
+  if (!phone) { err.textContent = 'Masukkan nomor ponsel'; err.classList.add('show'); autoHideErrors(); return; }
+  if (!username || username.length < 3) { err.textContent = 'Username minimal 3 karakter'; err.classList.add('show'); autoHideErrors(); return; }
 
   const btn = document.getElementById('btnSendOtp');
   btn.disabled = true;
-  btn.textContent = 'Mengirim...';
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim...';
 
   try {
     const res = await fetch('/api/auth/send-otp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ phone })
     });
     const j = await res.json();
@@ -265,6 +304,7 @@ async function sendOTP() {
   } catch (e) {
     err.textContent = 'Gagal mengirim OTP';
     err.classList.add('show');
+    autoHideErrors();
   } finally {
     btn.disabled = false;
     btn.textContent = 'Kirim Kode OTP';
@@ -301,12 +341,13 @@ async function verifyOTP() {
 
   const btn = document.getElementById('btnVerifyOtp');
   btn.disabled = true;
-  btn.textContent = 'Membuat akun...';
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Membuat akun...';
 
   try {
     const res = await fetch('/api/auth/verify-phone', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ phone, otp, username })
     });
     const j = await res.json();
@@ -315,6 +356,7 @@ async function verifyOTP() {
   } catch (e) {
     err.textContent = 'Gagal membuat akun';
     err.classList.add('show');
+    autoHideErrors();
   } finally {
     btn.disabled = false;
     btn.textContent = 'Daftar';
@@ -327,6 +369,7 @@ async function handleGoogle(resp) {
     const res = await fetch('/api/auth/google', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ credential: resp.credential })
     });
     const j = await res.json();
@@ -336,17 +379,75 @@ async function handleGoogle(resp) {
     const err = document.getElementById('errEmail');
     err.textContent = 'Gagal mendaftar dengan Google';
     err.classList.add('show');
+    autoHideErrors();
   }
 }
 
 async function checkAuth() {
   try {
-    const r = await fetch('/api/auth/me');
+    const r = await fetch('/api/auth/me', {
+      credentials: 'include'
+    });
     const j = await r.json();
     if (j.logged_in) location.href = '/';
   } catch (e) {}
 }
 document.addEventListener('DOMContentLoaded', checkAuth);
 </script>
+    <!-- FOOTER (sesuai index) -->
+  <footer class="relative z-10 bg-black border-t border-white/10 mt-8">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-10 py-10">
+      <img src="/asset/logo.png" alt="VEXORA" title="VEXORA" class="h-8 w-auto object-contain mb-5"/>
+      <div class="flex gap-4 text-white/60">
+        <a href="#" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition" aria-label="Instagram VEXORA" title="Instagram"><i class="fa-brands fa-instagram text-sm" aria-hidden="true"></i></a>
+        <a href="#" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition" aria-label="TikTok VEXORA" title="TikTok"><i class="fa-brands fa-tiktok text-sm" aria-hidden="true"></i></a>
+        <a href="#" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition" aria-label="Github VEXORA" title="Github"><i class="fa-brands fa-github text-sm" aria-hidden="true"></i></a>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-xs">
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80 hover:underline">Audio Description</a>
+          <a href="#" class="block hover:text-white/80">Investor Relations</a>
+          <a href="#" class="block hover:text-white/80">Legal Notices</a>
+          <a href="/" class="block hover:text-white">Beranda</a>
+        </div>
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80">Help Center</a>
+          <a href="#" class="block hover:text-white/80">Jobs</a>
+          <a href="#" class="block hover:text-white/80">Cookie Preferences</a>
+          <a href="/genre" class="block hover:text-white">Genre</a>
+        </div>
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80">Gift Cards</a>
+          <a href="#" class="block hover:text-white/80">Terms of Use</a>
+          <a href="#" class="block hover:text-white/80">Corporate Information</a>
+          <a href="/terbaru" class="block hover:text-white">Terbaru</a>
+        </div>
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80">Media Center</a>
+          <a href="#" class="block hover:text-white/80">Privacy</a>
+          <a href="#" class="block hover:text-white/80">Contact Us</a>
+          <a href="/bookmark" class="block hover:text-white">Bookmark</a>
+        </div>
+      </div>
+      <div class="mt-4">
+        <span class="text-[10px] font-black tracking-[0.25em] text-[#e50914] uppercase">CRAFTED BY</span>
+        <button id="vexalynSecretTrigger" type="button" class="mt-0.5 block cursor-pointer rounded-lg border border-white/10 transition hover:border-red-500/60 hover:shadow-[0_0_18px_rgba(229,9,20,.25)]" aria-label="Vexalyn Developer" title="Vexalyn Developer">
+          <img src="/asset/dev-logo.png" alt="Vexalyn Developer" class="h-7 w-24 object-contain"/>
+        </button>
+      </div>
+      <div class="flex items-center justify-between mt-4">
+        <div class="flex items-center gap-1.5">
+          <span class="text-[10px] text-white/30"><i class="fa-solid fa-globe"></i></span>
+          <button onclick="setLang('id')" id="ftr-lang-id" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-[#e50914] text-white">ID</button>
+          <button onclick="setLang('en')" id="ftr-lang-en" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/50">EN</button>
+          <button onclick="setLang('ja')" id="ftr-lang-ja" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/50">JP</button>
+          <button onclick="setLang('zh')" id="ftr-lang-zh" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/50">CN</button>
+        </div>
+        <p class="text-[11px] text-white/20">© 2026 VEXORA • Dibuat oleh Vexalyn Developer <span class="text-[#e50914] font-bold">[Vio Atmajaya]</span></p>
+      </div>
+    </div>
+  </footer>
+
+<script src="/static/js/ui.js"></script>
 </body>
 </html>

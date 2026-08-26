@@ -15,39 +15,103 @@
     .swiper-pagination-bullet-active{background:#E50914;transform:scale(1.3)}
     .swiper-pagination{right:1.5rem !important;left:auto !important;bottom:1.5rem !important;width:auto !important;display:flex;gap:6px;justify-content:flex-end}
     @media(max-width:640px){.swiper-pagination{right:1rem !important;bottom:1rem !important}}
+    #mobileMenu{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1),opacity .25s ease;opacity:0;padding:0 1rem}
+    #mobileMenu.open{max-height:400px;opacity:1;padding:0.75rem 1rem}
+    .dev-secret-modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(4,7,10,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);z-index:100}
+    .dev-secret-modal.open{display:grid}
+    .dev-secret-panel{width:min(90vw,420px);background:linear-gradient(145deg,rgba(22,26,28,.96),rgba(8,10,11,.98));border:1px solid rgba(206,220,227,.24);border-radius:12px;box-shadow:0 25px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.05);padding:28px}
+    .dev-secret-panel input{width:100%;box-sizing:border-box;padding:12px 14px;border-radius:8px;border:1px solid rgba(206,220,227,.2);background:#030506;color:#fff;margin-top:12px;outline:none}
+    .dev-secret-panel input:focus{border-color:rgba(229,237,241,.68);box-shadow:0 0 0 3px rgba(229,237,241,.09)}
+    .dev-secret-panel form button{width:100%;padding:12px;border:1px solid rgba(255,255,255,.35);border-radius:8px;background:linear-gradient(135deg,#dce6ea,#77858d);color:#0b0e0f;font-weight:900;cursor:pointer;margin-top:12px;transition:all .2s ease;box-shadow:0 8px 20px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.4)}
+    .dev-secret-panel form button:hover{background:linear-gradient(135deg,#f4f8f9,#9eabb2)}
+    .dev-secret-close{position:absolute;top:16px;right:16px;width:32px;height:32px;padding:0;border:1px solid rgba(206,220,227,.18);border-radius:6px;background:rgba(206,220,227,.06);color:rgba(229,237,241,.75);font-size:20px;line-height:28px;cursor:pointer}
+    .dev-secret-close:hover{color:#fff}
+    .dev-cyber-overlay{position:fixed;inset:0;display:none;place-items:center;background:#04070a;z-index:120;color:#e7ece9;overflow:hidden}
+    .dev-cyber-overlay.open{display:grid}
+    .dev-cyber-overlay:before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(206,220,227,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(206,220,227,.045) 1px,transparent 1px);background-size:32px 32px;-webkit-mask-image:linear-gradient(to bottom,transparent,#000,transparent);mask-image:linear-gradient(to bottom,transparent,#000,transparent);animation:cyberGrid 1.2s linear infinite}
+    .dev-cyber-core{position:relative;width:min(88vw,540px);text-align:center;border:1px solid rgba(206,220,227,.42);background:linear-gradient(145deg,rgba(22,26,28,.94),rgba(8,10,11,.97));box-shadow:0 0 35px rgba(0,0,0,.45),inset 0 0 28px rgba(206,220,227,.05);padding:34px 24px;animation:cyberIn .35s ease-out}
+    .dev-cyber-core:before,.dev-cyber-core:after{content:"";position:absolute;width:24px;height:24px;border-color:#dce6ea;border-style:solid}
+    .dev-cyber-core:before{top:-1px;left:-1px;border-width:2px 0 0 2px}.dev-cyber-core:after{right:-1px;bottom:-1px;border-width:0 2px 2px 0}
+    .dev-cyber-kicker{font-size:10px;letter-spacing:.35em;color:#aeb8bf;font-weight:900;text-transform:uppercase}
+    .dev-cyber-title{margin:14px 0 8px;font-size:clamp(24px,5vw,42px);letter-spacing:.12em;font-weight:900;text-transform:uppercase;color:#e5edf1;text-shadow:0 0 18px rgba(229,237,241,.35)}
+    .dev-cyber-status{color:rgba(229,237,241,.6);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+    .dev-cyber-bar{height:3px;margin:24px auto 0;max-width:300px;background:rgba(206,220,227,.15);overflow:hidden}.dev-cyber-bar span{display:block;width:0;height:100%;background:#dce6ea;box-shadow:0 0 12px #dce6ea;animation:cyberBar 1.3s ease-in-out forwards}
+    .dev-unlocked .dev-cyber-core{border-color:rgba(183,255,220,.7);box-shadow:0 0 55px rgba(57,255,142,.2),inset 0 0 28px rgba(183,255,220,.08)}
+    .dev-unlocked .dev-cyber-kicker,.dev-unlocked .dev-cyber-title{color:#b7ffdc;text-shadow:0 0 18px rgba(183,255,220,.55)}
+    .dev-unlocked .dev-cyber-bar span{background:#b7ffdc;box-shadow:0 0 12px #b7ffdc}
+    .dev-danger{animation:dangerFlash .18s steps(2) infinite}
+    .dev-danger .dev-cyber-core{border-color:#ff304f;box-shadow:0 0 55px rgba(255,48,79,.35),inset 0 0 28px rgba(255,48,79,.1)}
+    .dev-danger .dev-cyber-kicker,.dev-danger .dev-cyber-title{color:#ff304f;text-shadow:0 0 18px rgba(255,48,79,.8)}
+    @keyframes cyberGrid{to{transform:translateY(32px)}}
+    @keyframes cyberIn{from{opacity:0;transform:scale(.94);filter:blur(6px)}to{opacity:1;transform:scale(1);filter:blur(0)}}
+    @keyframes cyberBar{to{width:100%}}
+    @keyframes dangerFlash{50%{filter:brightness(1.8)}}
+    @keyframes devModalShake{0%,100%{transform:translate(0,0)}15%{transform:translate(-7px,2px)}30%{transform:translate(6px,-2px)}45%{transform:translate(-5px,-1px)}60%{transform:translate(5px,2px)}75%{transform:translate(-3px,0)}90%{transform:translate(3px,-1px)}}
+    .dev-modal-shake .dev-secret-panel{animation:devModalShake .48s cubic-bezier(.36,.07,.19,.97)}
+    .dev-invalid-message{border-color:rgba(255,71,87,.6) !important;background:rgba(255,71,87,.1) !important;color:#ff6478 !important;font-weight:900;letter-spacing:.08em;text-shadow:0 0 10px rgba(255,71,87,.55);animation:devInvalidPulse 1s ease-in-out infinite}
+    @keyframes devInvalidPulse{0%,100%{opacity:1;box-shadow:0 0 0 rgba(255,71,87,0)}50%{opacity:.68;box-shadow:0 0 18px rgba(255,71,87,.22)}}
+    .auth-nav-button{height:36px !important;align-items:center;justify-content:center;line-height:1}
+    #searchInputMobile{padding-right:5rem}
+    #searchInputMobile + button{height:36px;width:68px;padding-left:0;padding-right:0;font-size:10px;letter-spacing:.02em}
+
+    /* Loading Screen */
+    #loadingScreen{position:fixed;inset:0;z-index:9999;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s ease,visibility .5s ease}
+    #loadingScreen.hide{opacity:0;visibility:hidden;pointer-events:none}
+    .loader-logo{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:6px;color:#fff;margin-bottom:40px;animation:logoPulse 1.5s ease-in-out infinite}
+    .loader-bar-track{width:200px;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden}
+    .loader-bar{height:100%;background:linear-gradient(90deg,#e50914,#ff3b44,#e50914);border-radius:2px;width:0%;animation:loaderFill 1.8s ease-in-out forwards}
+    .loader-dots{display:flex;gap:6px;margin-top:20px}
+    .loader-dots span{width:6px;height:6px;border-radius:50%;background:#555;animation:dotPulse 1.2s ease-in-out infinite}
+    .loader-dots span:nth-child(2){animation-delay:.15s}
+    .loader-dots span:nth-child(3){animation-delay:.3s}
+    .loader-text{color:#525252;font-size:11px;margin-top:16px;letter-spacing:2px;text-transform:uppercase}
+    @keyframes logoPulse{0%,100%{opacity:1}50%{opacity:.7}}
+    @keyframes loaderFill{0%{width:0%}50%{width:70%}100%{width:100%}}
+    @keyframes dotPulse{0%,100%{background:#555;transform:scale(1)}50%{background:#e50914;transform:scale(1.3)}}
+    /* Nav sliding indicator */
+    .nav-wrap{position:relative}
+    .nav-indicator{position:absolute;bottom:-2px;height:2px;background:#e50914;border-radius:2px;transition:left .35s cubic-bezier(.4,0,.2,1),width .35s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px rgba(229,9,20,.7),0 0 20px rgba(229,9,20,.3);pointer-events:none;opacity:0}
+    .nav-indicator.active{opacity:1}
   </style>
 </head>
 <body class="bg-dark text-white min-h-screen selection:bg-netflix selection:text-white">
+  <!-- Loading Screen -->
+  <div id="loadingScreen">
+    <div class="loader-logo">VEXORA</div>
+    <div class="loader-bar-track"><div class="loader-bar"></div></div>
+    <div class="loader-dots"><span></span><span></span><span></span></div>
+    <div class="loader-text">Memuat konten terbaik untukmu</div>
+  </div>
+
   <!-- NAVBAR Netflix -->
   <nav class="fixed top-0 w-full z-50 bg-gradient-to-b from-black via-black/70 to-transparent md:bg-[#141414] md:bg-none border-b border-white/0 md:border-white/10">
     <div class="max-w-[1600px] mx-auto px-3 md:px-8 py-3.5 flex items-center justify-between gap-4">
       <div class="flex items-center gap-6">
-        <a href="/" class="flex items-center" onclick="loadHome()">
+        <a href="/" id="vexoraSecretTrigger" class="flex items-center" onclick="loadHome()">
           <img src="/asset/logo.png" alt="VEXORA" title="VEXORA" class="h-8 md:h-9 lg:h-10 w-auto object-contain max-h-[40px]" onerror="this.onerror=null; this.src='/assets/Logo.png'; this.onerror=function(){this.style.display='none'}"/>
         </a>
-        <button id="mobileMenuBtn" class="lg:hidden w-8 h-8 flex items-center justify-center border border-white/10 rounded bg-white/5" onclick="toggleMobileMenu()" aria-label="Buka menu" title="Menu"><i class="fa-solid fa-bars text-sm"></i></button>
-        <div class="hidden lg:flex items-center gap-5 text-[13px] font-medium">
-          <a onclick="loadHome()" id="navBeranda" class="cursor-pointer text-white font-bold border-b-2 border-netflix pb-1 flex items-center gap-1"><i class="fa-solid fa-house text-xs"></i> Beranda</a>
-          <a href="/genre" id="navGenre" class="cursor-pointer text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1"><i class="fa-solid fa-layer-group text-xs"></i> Genre</a>
-          <a href="/schedule" id="navSchedule" class="cursor-pointer text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1"><i class="fa-solid fa-calendar text-xs"></i> Schedule</a>
-          <a onclick="showTerbaru()" id="navTerbaru" class="cursor-pointer text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1"><i class="fa-solid fa-bolt text-xs"></i> Terbaru</a>
-          <a href="/bookmark" id="navBookmark" class="cursor-pointer text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1"><i class="fa-solid fa-bookmark text-xs"></i> Bookmark</a>
-          <a href="/riwayat" id="navRiwayat" class="cursor-pointer text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1"><i class="fa-solid fa-clock-rotate-left text-xs"></i> Riwayat</a>
+        <div class="hidden lg:flex items-center gap-5 text-[13px] font-medium nav-wrap">
+          <a onclick="loadHome()" id="navBeranda" class="cursor-pointer text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1" data-nav="beranda"><i class="fa-solid fa-house text-xs"></i> Beranda</a>
+          <a href="/genre" id="navGenre" class="cursor-pointer text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1" data-nav="genre"><i class="fa-solid fa-layer-group text-xs"></i> Genre</a>
+          <a href="/schedule" id="navSchedule" class="cursor-pointer text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1" data-nav="schedule"><i class="fa-solid fa-calendar text-xs"></i> Schedule</a>
+          <a href="/terbaru" id="navTerbaru" class="cursor-pointer text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1" data-nav="terbaru"><i class="fa-solid fa-bolt text-xs"></i> Terbaru</a>
+          <a href="/bookmark" id="navBookmark" class="cursor-pointer text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1" data-nav="bookmark"><i class="fa-solid fa-bookmark text-xs"></i> Bookmark</a>
+          <a href="/riwayat" id="navRiwayat" class="cursor-pointer text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1" data-nav="riwayat"><i class="fa-solid fa-clock-rotate-left text-xs"></i> Riwayat</a>
+          <span class="nav-indicator"></span>
         </div>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 order-last md:order-none">
         <div class="relative hidden md:flex items-center">
           <i class="fa-solid fa-magnifying-glass absolute left-3 text-white/60 text-sm"></i>
-          <input id="searchInput" type="text" placeholder="Judul, orang, genre" aria-label="Cari judul donghua" title="Cari judul" class="bg-black/60 border border-white/30 pl-9 pr-3 py-1.5 text-sm w-[240px] focus:w-[300px] focus:bg-black focus:border-white placeholder:text-white/60 outline-none transition-all" onkeydown="if(event.key==='Enter')handleSearch()"/>
+          <input id="searchInput" type="text" placeholder="Cari judul donghua..." aria-label="Cari judul donghua" title="Cari judul" class="h-9 bg-[#232323] border border-white/10 pl-9 pr-14 py-2 text-sm w-[280px] focus:w-[340px] focus:border-white/30 placeholder:text-white/40 outline-none transition-all rounded-none" onkeydown="if(event.key==='Enter'){handleSearch()}"/>
+          <button onclick="handleSearch()" class="absolute right-0 top-0 bottom-0 h-9 bg-[#e50914] hover:bg-[#f40612] px-5 text-xs font-black text-white transition">CARI</button>
         </div>
-        <button onclick="handleSearch()" class="md:hidden w-8 h-8 flex items-center justify-center" aria-label="Cari donghua" title="Cari"><i class="fa-solid fa-magnifying-glass text-white" aria-hidden="true"></i></button>
         <!-- AUTH -->
-        <div id="authNav" class="flex items-center gap-2">
-          <a href="/login" id="btnLogin" class="hidden md:inline-flex bg-netflix hover:bg-red-700 text-white px-4 py-1.5 rounded text-xs font-black">Masuk</a>
-          <a href="/register" id="btnRegister" class="hidden md:inline-flex bg-white/10 hover:bg-white/20 border border-white/20 text-white px-3 py-1.5 rounded text-xs font-bold">Daftar</a>
+        <div id="authNav" class="ml-auto -mr-2 flex items-center gap-2">
+          <a href="/login" id="btnLogin" class="auth-nav-button hidden md:inline-flex h-9 bg-netflix hover:bg-red-700 text-white px-4 rounded text-xs font-black">Masuk</a>
           <div id="userMenu" class="hidden items-center cursor-pointer" onclick="toggleUserDropdown()">
             <img id="navAvatar" src="https://i.pravatar.cc/100?u=netflix" alt="Foto profil pengguna" title="Foto profil" class="w-8 h-8 rounded-full object-cover border border-white/20"/>
-            <div id="userDropdown" class="hidden absolute right-4 md:right-10 top-[56px] w-52 bg-black border border-white/20 shadow-2xl rounded overflow-hidden z-50">
+            <div id="userDropdown" class="hidden absolute right-0 top-[52px] w-52 bg-black border border-white/20 shadow-2xl rounded overflow-hidden z-50">
               <div class="p-3 border-b border-white/10 flex items-center gap-2">
                 <img id="dropAvatar" src="https://i.pravatar.cc/100?u=netflix" alt="Foto profil dropdown" title="Foto profil" class="w-9 h-9 rounded object-cover"/>
                 <div class="min-w-0"><p id="dropName" class="text-xs font-bold truncate">User</p><p id="dropEmail" class="text-[11px] text-white/50 truncate">email</p></div>
@@ -56,6 +120,7 @@
               <button onclick="doLogout()" class="w-full text-left flex items-center gap-2 px-3 py-2.5 text-xs font-bold hover:bg-white/10 text-red-400"><i class="fa-solid fa-right-from-bracket w-4"></i> Keluar</button>
             </div>
           </div>
+          <button id="mobileMenuBtn" class="hidden lg:hidden w-8 h-8 items-center justify-center border border-white/10 rounded bg-white/5" onclick="toggleMobileMenu()" aria-label="Buka menu" title="Menu"><i class="fa-solid fa-bars text-sm"></i></button>
         </div>
       </div>
     </div>
@@ -63,20 +128,56 @@
     <div class="md:hidden px-4 pb-3">
       <div class="relative">
         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-sm"></i>
-        <input id="searchInputMobile" type="text" placeholder="Cari judul donghua..." aria-label="Cari judul donghua mobile" title="Cari judul" class="w-full bg-[#232323] border border-white/10 pl-9 pr-12 py-2.5 text-sm placeholder:text-white/40 focus:border-white/30 outline-none" onkeydown="if(event.key==='Enter'){document.getElementById('searchInput').value=this.value;handleSearch()}"/>
-        <button onclick="document.getElementById('searchInput').value=document.getElementById('searchInputMobile').value;handleSearch()" class="absolute right-1 top-1 bottom-1 bg-netflix px-4 text-xs font-black">CARI</button>
+        <input id="searchInputMobile" type="text" placeholder="Cari judul donghua..." aria-label="Cari judul donghua mobile" title="Cari judul" class="w-full bg-[#232323] border border-white/10 pl-9 pr-14 py-2.5 text-sm placeholder:text-white/40 focus:border-white/30 outline-none" onkeydown="if(event.key==='Enter'){handleSearch()}"/>
+        <button onclick="handleSearch()" class="absolute right-0 top-0 bottom-0 h-9 bg-[#e50914] hover:bg-[#f40612] px-5 text-xs font-black text-white transition">CARI</button>
       </div>
     </div>
     <!-- Mobile menu Netflix -->
-    <div id="mobileMenu" class="hidden lg:hidden bg-black border-t border-white/10 px-4 py-3 space-y-1">
+    <div id="mobileMenu" class="lg:hidden bg-black border-t border-white/10">
       <a onclick="loadHome(); toggleMobileMenu()" class="flex py-2 text-sm font-bold text-white items-center gap-2"><i class="fa-solid fa-house w-5"></i> Beranda</a>
       <a href="/genre" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-layer-group w-5"></i> Genre</a>
       <a href="/schedule" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-calendar w-5"></i> Schedule</a>
-      <a onclick="showTerbaru(); toggleMobileMenu()" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-fire w-5"></i> Terbaru</a>
+      <a href="/terbaru" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-fire w-5"></i> Terbaru</a>
       <a href="/bookmark" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-bookmark w-5"></i> Bookmark</a>
       <a href="/riwayat" class="flex py-2 text-sm font-bold text-white/70 items-center gap-2"><i class="fa-solid fa-clock-rotate-left w-5"></i> Riwayat</a>
+      <div class="border-t border-white/10 mt-2 pt-2">
+          <a href="/login" class="flex py-2 text-sm font-bold text-white items-center gap-2"><i class="fa-solid fa-right-to-bracket w-5"></i> Masuk</a>
+        </div>
+        <div class="border-t border-white/10 mt-2 pt-2">
+        <p class="text-[11px] text-white/40 font-bold mb-1.5 px-1"><i class="fa-solid fa-globe"></i> Bahasa</p>
+        <div class="flex gap-1.5 px-1">
+          <button onclick="setLang('id')" id="lang-id" class="lang-btn flex-1 py-1.5 text-[11px] font-bold rounded bg-[#e50914] text-white">ID</button>
+          <button onclick="setLang('en')" id="lang-en" class="lang-btn flex-1 py-1.5 text-[11px] font-bold rounded bg-white/10 text-white/60">EN</button>
+          <button onclick="setLang('ja')" id="lang-ja" class="lang-btn flex-1 py-1.5 text-[11px] font-bold rounded bg-white/10 text-white/60">JP</button>
+          <button onclick="setLang('zh')" id="lang-zh" class="lang-btn flex-1 py-1.5 text-[11px] font-bold rounded bg-white/10 text-white/60">CN</button>
+        </div>
+      </div>
     </div>
   </nav>
+
+  <div id="devCyberOverlay" class="dev-cyber-overlay" aria-hidden="true">
+    <div class="dev-cyber-core">
+      <div class="dev-cyber-kicker" id="devCyberKicker">Secure channel / initializing</div>
+      <div class="dev-cyber-title" id="devCyberTitle">Establishing Link</div>
+      <div class="dev-cyber-status" id="devCyberStatus">Decrypting developer access gateway...</div>
+      <div class="dev-cyber-bar"><span></span></div>
+    </div>
+  </div>
+
+  <div id="devSecretModal" class="dev-secret-modal" aria-modal="true" role="dialog" aria-labelledby="devSecretTitle">
+    <div class="dev-secret-panel relative">
+      <button type="button" class="dev-secret-close" aria-label="Close dev login" onclick="closeDevSecretModal()">×</button>
+      <div class="text-[10px] font-black uppercase tracking-[0.28em] text-red-400">Vexora Dev</div>
+      <h2 id="devSecretTitle" class="mt-3 text-2xl font-black">Secret Access</h2>
+      <p class="mt-2 text-sm text-white/60">Masukkan passcode untuk membuka Developer Dashboard.</p>
+      <form id="devSecretForm" class="mt-5">
+        <label class="text-xs uppercase tracking-[0.2em] text-white/45" for="devSecretInput">Passcode</label>
+        <input id="devSecretInput" name="secret_key" type="password" placeholder="Masukkan secret key" autocomplete="off" required />
+        <div id="devSecretMessage" class="mt-3 hidden rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-200"></div>
+        <button type="submit">Unlock Dev Panel</button>
+      </form>
+    </div>
+  </div>
 
   <!-- HERO SLIDER Netflix — banner.py → /api/banner : Swiper, dot kanan, 3 detik, swipe & drag, creative/pull effect -->
   <section id="hero" class="group relative w-full h-[58vh] sm:h-[68vh] md:h-[78vh] lg:h-[86vh] min-h-[420px] md:min-h-[480px] overflow-hidden bg-black hidden">
@@ -132,7 +233,7 @@
           <a href="#" class="block hover:text-white/80">Gift Cards</a>
           <a href="#" class="block hover:text-white/80">Terms of Use</a>
           <a href="#" class="block hover:text-white/80">Corporate Information</a>
-          <a href="#" onclick="showTerbaru()" class="block hover:text-white">Terbaru</a>
+          <a href="/terbaru" class="block hover:text-white">Terbaru</a>
         </div>
         <div class="space-y-3 text-white/40">
           <a href="#" class="block hover:text-white/80">Media Center</a>
@@ -143,9 +244,20 @@
       </div>
       <div class="mt-4">
         <span class="text-[10px] font-black tracking-[0.25em] text-[#e50914] uppercase">CRAFTED BY</span>
-        <img src="/asset/dev-logo.png" alt="Vexalyn Developer" title="Vexalyn Developer" class="h-7 w-24 object-contain rounded-lg border border-white/10 mt-0.5 block"/>
+        <button id="vexalynSecretTrigger" type="button" class="mt-0.5 block cursor-pointer rounded-lg border border-white/10 transition hover:border-red-500/60 hover:shadow-[0_0_18px_rgba(229,9,20,.25)]" aria-label="Vexalyn Developer" title="Vexalyn Developer">
+          <img src="/asset/dev-logo.png" alt="Vexalyn Developer" class="h-7 w-24 object-contain"/>
+        </button>
       </div>
-      <p class="text-[11px] text-white/20 mt-4 text-center">© 2026 VEXORA • Dibuat oleh Vexalyn Developer <span class="text-[#e50914] font-bold">[Vio Atmajaya]</span></p>
+      <div class="flex items-center justify-between mt-4">
+        <div class="flex items-center gap-1.5">
+          <span class="text-[10px] text-white/30"><i class="fa-solid fa-globe"></i></span>
+          <button onclick="setLang('id')" id="ftr-lang-id" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-[#e50914] text-white">ID</button>
+          <button onclick="setLang('en')" id="ftr-lang-en" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/50">EN</button>
+          <button onclick="setLang('ja')" id="ftr-lang-ja" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/50">JP</button>
+          <button onclick="setLang('zh')" id="ftr-lang-zh" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/50">CN</button>
+        </div>
+        <p class="text-[11px] text-white/20">© 2026 VEXORA • Dibuat oleh Vexalyn Developer <span class="text-[#e50914] font-bold">[Vio Atmajaya]</span></p>
+      </div>
     </div>
   </footer>
 
@@ -159,32 +271,253 @@ async function initDashboard(){
   await loadHome();
 }
 document.addEventListener('DOMContentLoaded', initDashboard);
-window.addEventListener('load', ()=>{ if(!globalHomeData || !globalHomeData.sections) loadHome(); if(!bannerSlides.length) loadBannerSlider(); });
+window.addEventListener('load', ()=>{ if(!globalHomeData || !globalHomeData.sections) loadHome(); });
 async function checkAuth(){
   try{
-    let r=await fetch('/api/auth/me'); let j=await r.json();
+    let r=await fetch('/api/auth/me', {credentials: 'include'}); let j=await r.json();
     let loginBtn=document.getElementById('btnLogin');
-    let regBtn=document.getElementById('btnRegister');
     if(j.logged_in){
-      // hapus total tombol Masuk/Daftar kalau sudah daftar — fix hidden vs md:inline-flex conflict
-      [loginBtn, regBtn].forEach(el=>{ if(el){ el.classList.add('hidden'); el.classList.add('md:hidden'); el.classList.remove('md:inline-flex'); el.style.display='none'; }});
+      if(loginBtn) loginBtn.style.display='none';
       let um=document.getElementById('userMenu'); if(um){um.classList.remove('hidden'); um.classList.add('flex');}
       let av=j.user.avatar || 'https://i.pravatar.cc/100?u='+encodeURIComponent(j.user.username);
       document.getElementById('navAvatar').src=av;
       document.getElementById('dropAvatar').src=av;
       document.getElementById('dropName').textContent=j.user.username;
       document.getElementById('dropEmail').textContent=j.user.email;
+      let menuBtn=document.getElementById('mobileMenuBtn');
+      if(menuBtn){menuBtn.classList.remove('hidden'); menuBtn.classList.add('flex');}
     } else {
-      // pastikan muncul lagi kalau belum login
-      [loginBtn, regBtn].forEach(el=>{ if(el){ el.classList.remove('hidden','md:hidden'); el.style.display=''; }});
-      if(loginBtn) loginBtn.classList.add('md:inline-flex');
-      if(regBtn) regBtn.classList.add('md:inline-flex');
+      if(loginBtn) loginBtn.style.display='inline-flex';
+      let menuBtn=document.getElementById('mobileMenuBtn');
+      if(menuBtn){menuBtn.classList.add('hidden'); menuBtn.classList.remove('flex');}
     }
   }catch(e){}
 }
 function toggleUserDropdown(){document.getElementById('userDropdown').classList.toggle('hidden');}
-function toggleMobileMenu(){document.getElementById('mobileMenu').classList.toggle('hidden');}
-async function doLogout(){await fetch('/api/auth/logout',{method:'POST'}); location.reload();}
+function toggleMobileMenu(){let m=document.getElementById('mobileMenu');m.classList.toggle('open');}
+async function doLogout(){await fetch('/api/auth/logout',{method:'POST',credentials:'include'}); location.reload();}
+
+let secretClickCount = 0;
+let secretClickTimer = null;
+let devSecretAttempts = 0;
+let devSecretBusy = false;
+let devSecretLocked = false;
+let devHiddenAt = null;
+const devLockStorageKey = 'vexora_dev_lock_until';
+const devSecretSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'v', 'x'];
+let devSecretSequenceIndex = 0;
+const devUnlockedAudio = new Audio('/static/audio/dev-key-unlocked.wav');
+const devInvalidAudio = new Audio('/static/audio/dev-key-invalid.wav');
+const devDangerAudio = new Audio('/static/audio/dev-key-danger.wav');
+devUnlockedAudio.preload = 'auto';
+devInvalidAudio.preload = 'auto';
+devDangerAudio.preload = 'auto';
+devUnlockedAudio.load();
+devInvalidAudio.load();
+devDangerAudio.load();
+
+function playCustomDevSound(audio, volume){
+  try{
+    audio.pause();
+    audio.currentTime = 0;
+    audio.volume = volume;
+    const playback = audio.play();
+    if (playback) playback.catch(() => {});
+  }catch(error){}
+}
+
+function playDangerSound(){
+  playCustomDevSound(devDangerAudio, 1);
+}
+
+function playInvalidSound(){
+  playCustomDevSound(devInvalidAudio, 0.9);
+}
+
+function shakeDevScreen(){
+  const modal = document.getElementById('devSecretModal');
+  const message = document.getElementById('devSecretMessage');
+  if (!modal) return;
+  modal.classList.remove('dev-modal-shake');
+  void modal.offsetWidth;
+  modal.classList.add('dev-modal-shake');
+  if (message) message.classList.add('dev-invalid-message');
+  setTimeout(() => modal.classList.remove('dev-modal-shake'), 520);
+}
+
+function saveDevLock(){
+  try { localStorage.setItem(devLockStorageKey, String(Date.now() + 10000)); } catch(error) {}
+}
+
+function getDevLockRemaining(){
+  try {
+    const lockUntil = Number(localStorage.getItem(devLockStorageKey) || 0);
+    return Math.max(0, lockUntil - Date.now());
+  } catch(error) { return 0; }
+}
+
+function clearDevLock(){
+  try { localStorage.removeItem(devLockStorageKey); } catch(error) {}
+}
+
+      function handleDevVisibilityChange(){
+        if (document.hidden) devHiddenAt = performance.now();
+        else if (devHiddenAt !== null) devHiddenAt = null;
+      }
+
+      function runCyberGateway(mode, duration){
+        return new Promise(resolve => {
+          const overlay = document.getElementById('devCyberOverlay');
+          if (!overlay) { resolve(); return; }
+          const kicker = document.getElementById('devCyberKicker');
+          const title = document.getElementById('devCyberTitle');
+          const status = document.getElementById('devCyberStatus');
+          overlay.classList.remove('dev-unlocked', 'dev-danger');
+          if (mode === 'success') {
+            overlay.classList.add('dev-unlocked');
+            kicker.textContent = 'Secure channel / verified';
+            title.textContent = 'KEY UNLOCKED';
+            status.textContent = 'Developer identity accepted. Opening dashboard...';
+          } else if (mode === 'danger') {
+            overlay.classList.add('dev-danger');
+            kicker.textContent = 'Security protocol / lockdown';
+            title.textContent = 'ACCESS DENIED';
+            status.textContent = 'Invalid key. Gateway locked for 10 seconds.';
+          } else {
+            kicker.textContent = 'Secure channel / initializing';
+            title.textContent = 'ESTABLISHING LINK';
+            status.textContent = 'Decrypting developer access gateway...';
+          }
+          overlay.classList.add('open');
+          overlay.setAttribute('aria-hidden', 'false');
+          let remaining = duration;
+          let lastTick = performance.now();
+          const timer = setInterval(() => {
+            const now = performance.now();
+            if (!document.hidden) remaining -= now - lastTick;
+            lastTick = now;
+            if (remaining <= 0) {
+              clearInterval(timer);
+              overlay.classList.remove('open', 'dev-unlocked', 'dev-danger');
+              overlay.setAttribute('aria-hidden', 'true');
+              resolve();
+            }
+          }, 100);
+        });
+}
+
+async function openDevSecretModal(){
+  if (devSecretBusy || devSecretLocked) return;
+  devSecretBusy = true;
+  await runCyberGateway('loading', 1100);
+  const modal = document.getElementById('devSecretModal');
+  const input = document.getElementById('devSecretInput');
+  if (!modal || !input) { devSecretBusy = false; return; }
+  modal.classList.add('open');
+  setTimeout(() => input.focus(), 50);
+  const message = document.getElementById('devSecretMessage');
+  if (message) { message.classList.add('hidden'); message.classList.remove('dev-invalid-message'); message.textContent = ''; }
+  devSecretBusy = false;
+}
+
+function bindDevSecretEasterEgg(){
+  const form = document.getElementById('devSecretForm');
+  if (form) {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const input = document.getElementById('devSecretInput');
+      const msg = document.getElementById('devSecretMessage');
+      const secretKey = (input?.value || '').trim();
+
+      if (devSecretLocked || devSecretBusy) return;
+      if (!secretKey) {
+        if (msg) {
+          msg.textContent = 'PASSCODE REQUIRED';
+          msg.classList.remove('hidden');
+        }
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/dev/login', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ secret_key: secretKey })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.status === 'success') {
+          document.getElementById('devSecretModal').classList.remove('open');
+          devSecretBusy = true;
+          playCustomDevSound(devUnlockedAudio, 0.9);
+          await runCyberGateway('success', 1500);
+          window.location.href = data.redirect || '/dev-panel';
+          return;
+        }
+
+        devSecretAttempts += 1;
+        playInvalidSound();
+        shakeDevScreen();
+        if (msg) {
+          msg.textContent = 'ACCESS KEY INVALID';
+          msg.classList.remove('hidden');
+          msg.classList.add('dev-invalid-message');
+        }
+        if (devSecretAttempts >= 2) {
+          devSecretLocked = true;
+          saveDevLock();
+          document.getElementById('devSecretModal').classList.remove('open');
+          playDangerSound();
+          await runCyberGateway('danger', 10000);
+          devSecretLocked = false;
+          devSecretAttempts = 0;
+        }
+      } catch (error) {
+        shakeDevScreen();
+        if (msg) {
+          msg.textContent = 'SECURE CHANNEL UNAVAILABLE';
+          msg.classList.remove('hidden');
+        }
+      }
+    });
+  }
+
+  document.addEventListener('keydown', (event) => {
+    if (event.ctrlKey && event.shiftKey && (event.key.toLowerCase() === 'v')) {
+      event.preventDefault();
+      openDevSecretModal();
+    }
+
+    const sequenceKey = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+    if (sequenceKey === devSecretSequence[devSecretSequenceIndex]) {
+      devSecretSequenceIndex += 1;
+      if (devSecretSequenceIndex === devSecretSequence.length) {
+        devSecretSequenceIndex = 0;
+        openDevSecretModal();
+      }
+    } else {
+      devSecretSequenceIndex = sequenceKey === devSecretSequence[0] ? 1 : 0;
+    }
+
+    if (devSecretLocked || devSecretBusy) {
+      event.preventDefault();
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      const modal = document.getElementById('devSecretModal');
+      if (modal && modal.classList.contains('open')) closeDevSecretModal();
+    }
+  });
+
+  const modal = document.getElementById('devSecretModal');
+  if (modal) {
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) closeDevSecretModal();
+    });
+  }
+}
 
 // ===== BANNER SLIDER Netflix — Swiper wrapper, dot kanan, 3 detik, swipe mouse & hp =====
 let swiperInstance=null;
@@ -351,7 +684,6 @@ async function loadHome(){
     console.error(err);
     if(document.getElementById("debugText")) document.getElementById("debugText").textContent="Error: "+err.message+" — pakai mock lokal";
     if(document.getElementById("debugDot")) document.getElementById("debugDot").className="w-2 h-2 rounded-full bg-red-500";
-    // fallback client side — biar tidak kosong pas buka web
     const CLIENT_MOCK = [
       {section_name:"Trending Now — VEXORA Hot", data:[
         {title:"Battle Through the Heavens",url:"/detail?url=https://anichin.moe/btth/",thumbnail:"https://cdn.myanimelist.net/images/anime/1208/94745.jpg",episode:"Ep 120",type:"Donghua",label:"SUB",status:"Ongoing"},
@@ -369,19 +701,56 @@ async function loadHome(){
     ];
     globalHomeData={sections:CLIENT_MOCK};
     renderData(globalHomeData);
-  } finally{document.getElementById("loading").classList.add("hidden");}
+  } finally{
+    document.getElementById("loading").classList.add("hidden");
+    let ls=document.getElementById("loadingScreen"); if(ls) ls.classList.add("hide");
+  }
 }
 function handleSearch(){
-  let q=(document.getElementById("searchInput").value || document.getElementById("searchInputMobile").value || "").toLowerCase().trim();
+  let q=(document.getElementById("searchInput").value || document.getElementById("searchInputMobile").value || "").trim();
+  if(q){ window.location.href='/search?q='+encodeURIComponent(q); return; }
   if(!q){ if(globalHomeData) renderData(globalHomeData); return;}
-  if(globalHomeData && globalHomeData.sections){
-    let filtered=[];
-    globalHomeData.sections.forEach(sec=>{
-      let matched=sec.data.filter(i=>i.title.toLowerCase().includes(q));
-      if(matched.length) filtered.push({section_name:`Hasil untuk "${q}" di ${sec.section_name}`, data:matched});
+  let si=document.getElementById("searchInput"); if(si) si.value=q;
+  let sm=document.getElementById("searchInputMobile"); if(sm) sm.value=q;
+  let container=document.getElementById("resultContainer");
+  container.innerHTML='<div class="flex items-center justify-center py-20"><div class="text-center"><i class="fa-solid fa-spinner fa-spin text-3xl text-[#e50914] mb-3"></i><p class="text-sm text-white/60 font-bold">Mencari "'+q+'"...</p></div></div>';
+  document.getElementById("hero").classList.add("hidden");
+  document.getElementById("heroFallback").classList.remove("hidden");
+  fetch('/api/search?q='+encodeURIComponent(q))
+    .then(r=>r.json())
+    .then(j=>{
+      if(j.status==='success' && j.data && j.data.length){
+        let row=document.createElement("div");
+        row.className="animate-fade";
+        row.innerHTML='<div class="flex items-end justify-between mb-3"><h2 class="text-[16px] md:text-[19px] font-bold tracking-tight">Hasil untuk "'+q+'"</h2><span class="text-xs font-bold text-white/40">'+j.total+' judul</span></div>';
+        let track=document.createElement("div");
+        track.className="netflix-row flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide pb-3 snap-x";
+        j.data.forEach(a=>{
+          let badge=a.status||'';
+          let type=a.type||'';
+          let label=a.label||'';
+          track.innerHTML+=`<a href="${a.url}" class="flex-none w-[130px] md:w-[160px] snap-start group">
+            <div class="relative rounded overflow-hidden bg-[#181818] border border-white/5 group-hover:border-[#e50914]/50 transition">
+              <img src="${a.thumbnail}" alt="${a.title}" class="w-full aspect-[3/4] object-cover" loading="lazy" onerror="this.src='https://placehold.co/300x400/1a1a1a/555?text=No+Image'"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+              <div class="absolute bottom-0 left-0 right-0 p-2">
+                <p class="text-[11px] font-bold line-clamp-2 leading-tight">${a.title}</p>
+              </div>
+              ${badge?'<span class="absolute top-1.5 left-1.5 bg-[#e50914] text-[9px] font-black px-1.5 py-0.5 rounded">'+badge+'</span>':''}
+              ${type?'<span class="absolute top-1.5 right-1.5 bg-black/70 text-[9px] font-bold px-1.5 py-0.5 rounded">'+type+'</span>':''}
+            </div>
+          </a>`;
+        });
+        row.appendChild(track);
+        container.innerHTML="";
+        container.appendChild(row);
+      } else {
+        container.innerHTML='<div class="bg-[#181818] border border-white/10 p-10 text-center text-sm font-bold text-white/60">TIDAK ADA HASIL untuk "'+q+'". Coba kata kunci lain.</div>';
+      }
+    })
+    .catch(()=>{
+      container.innerHTML='<div class="bg-[#181818] border border-white/10 p-10 text-center text-sm font-bold text-red-400">Gagal mencari. Coba lagi.</div>';
     });
-    renderData({sections:filtered, isSearch:true});
-  }
 }
 function updateHero(anime){ /* deprecated — slider pakai /api/banner, tidak pakai section */ }
 function renderData(response){
@@ -497,9 +866,28 @@ function loadPrevSection(btn, url){
   }).catch(()=>{ if(nextBtn){ nextBtn.disabled=false; nextBtn.innerHTML=`<span>Next</span> <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-0.5 transition"></i>`; }});
 }
 function setActiveNav(id){
-  ['navBeranda','navGenre','navTerbaru','navBookmark','navRiwayat'].forEach(n=>{let el=document.getElementById(n); if(el){el.classList.remove('text-white','border-netflix'); el.classList.add('text-white/70','border-transparent')}});
-  let a=document.getElementById(id); if(a){a.classList.remove('text-white/70','border-transparent'); a.classList.add('text-white','border-netflix');}
+  ['navBeranda','navGenre','navTerbaru','navBookmark','navRiwayat'].forEach(n=>{let el=document.getElementById(n); if(el){el.classList.remove('text-white'); el.classList.add('text-white/70')}});
+  let a=document.getElementById(id); if(a){a.classList.remove('text-white/70'); a.classList.add('text-white');}
+  moveNavIndicator(a);
 }
+function moveNavIndicator(el){
+  let ind=document.querySelector('.nav-indicator'); if(!ind||!el) return;
+  let wrap=el.parentElement; let wRect=wrap.getBoundingClientRect(); let eRect=el.getBoundingClientRect();
+  ind.classList.add('active');
+  ind.style.left=(eRect.left-wRect.left)+'px';
+  ind.style.width=eRect.width+'px';
+}
+function setupNavIndicator(){
+  let wrap=document.querySelector('.nav-wrap'); if(!wrap) return;
+  let links=wrap.querySelectorAll('a[data-nav]');
+  let active=wrap.querySelector('a.text-white:not(.text-white\\/70)');
+  if(active) moveNavIndicator(active);
+  links.forEach(a=>{
+    a.addEventListener('mouseenter',()=>moveNavIndicator(a));
+    a.addEventListener('mouseleave',()=>{let cur=wrap.querySelector('a.text-white:not(.text-white\\/70)'); if(cur) moveNavIndicator(cur);});
+  });
+}
+document.addEventListener('DOMContentLoaded', setupNavIndicator);
 function showTerbaru(){
   setActiveNav('navTerbaru');
   if(!globalHomeData || !globalHomeData.sections) return;
@@ -545,6 +933,103 @@ function createCard(anime, isGrid){
     </div>
   </div>`;
 }
+
+// ===== LANGUAGE SYSTEM =====
+const LANG_DATA = {
+  id: {
+    search_placeholder: "Cari judul donghua...",
+    search_btn: "CARI",
+    welcome_title: "Pusat Streaming donghua Terlengkap",
+    welcome_sub: "Pilih judul di bawah atau gunakan pencarian.",
+    loading: "MEMUAT • LOADING...",
+    loading_sub: "Memuat konten terbaik untukmu",
+    nav: ["Beranda","Genre","Schedule","Terbaru","Bookmark","Riwayat"],
+    menu_nav: "Navigasi",
+    menu_lang: "Bahasa",
+    footer_crafted: "CRAFTED BY",
+    footer_copy: "© 2026 VEXORA • Dibuat oleh Vexalyn Developer [Vio Atmajaya]"
+  },
+  en: {
+    search_placeholder: "Search donghua title...",
+    search_btn: "SEARCH",
+    welcome_title: "Most Complete donghua Streaming Center",
+    welcome_sub: "Pick a title below or use search.",
+    loading: "LOADING...",
+    loading_sub: "Loading the best content for you",
+    nav: ["Home","Genre","Schedule","Latest","Bookmark","History"],
+    menu_nav: "Navigation",
+    menu_lang: "Language",
+    footer_crafted: "CRAFTED BY",
+    footer_copy: "© 2026 VEXORA • Made by Vexalyn Developer [Vio Atmajaya]"
+  },
+  ja: {
+    search_placeholder: "動画タイトルを検索...",
+    search_btn: "検索",
+    welcome_title: "最高峰の動画配信センター",
+    welcome_sub: "以下のタイトルを選択するか、検索を使用してください。",
+    loading: "読み込み中...",
+    loading_sub: "最良のコンテンツを読み込み中",
+    nav: ["ホーム","ジャンル","スケジュール","最新","ブックマーク","履歴"],
+    menu_nav: "ナビゲーション",
+    menu_lang: "言語",
+    footer_crafted: "制作者",
+    footer_copy: "© 2026 VEXORA • Vexalyn Developer [Vio Atmajaya] が制作"
+  },
+  zh: {
+    search_placeholder: "搜索动画标题...",
+    search_btn: "搜索",
+    welcome_title: "最完整的流媒体中心",
+    welcome_sub: "选择下面的标题或使用搜索。",
+    loading: "加载中...",
+    loading_sub: "正在为您加载最佳内容",
+    nav: ["首页","类型","日程","最新","收藏","历史"],
+    menu_nav: "导航",
+    menu_lang: "语言",
+    footer_crafted: "制作者",
+    footer_copy: "© 2026 VEXORA • 由 Vexalyn Developer [Vio Atmajaya] 制作"
+  }
+};
+let currentLang = localStorage.getItem('vexora_lang') || 'id';
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('vexora_lang', lang);
+  applyLang();
+  // Update button styles
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.className = 'lang-btn flex-1 py-1.5 text-[11px] font-bold rounded ' + (b.id === 'lang-'+lang ? 'bg-[#e50914] text-white' : 'bg-white/10 text-white/60');
+  });
+  document.querySelectorAll('.ftr-lang').forEach(b => {
+    b.className = 'ftr-lang px-2 py-0.5 text-[10px] font-bold rounded ' + (b.id === 'ftr-lang-'+lang ? 'bg-[#e50914] text-white' : 'bg-white/10 text-white/50');
+  });
+}
+
+function applyLang() {
+  const d = LANG_DATA[currentLang] || LANG_DATA.id;
+  // Search bar
+  let si = document.getElementById('searchInput'); if(si) si.placeholder = d.search_placeholder;
+  let sm = document.getElementById('searchInputMobile'); if(sm) sm.placeholder = d.search_placeholder;
+  // Search buttons
+  document.querySelectorAll('button').forEach(b => { if(b.textContent.trim() === 'CARI' || b.textContent.trim() === 'SEARCH' || b.textContent.trim() === '検索' || b.textContent.trim() === '搜索') b.textContent = d.search_btn; });
+  // Welcome text
+  let wf = document.querySelector('#heroFallback h2'); if(wf) wf.textContent = d.welcome_title;
+  let wp = document.querySelector('#heroFallback p'); if(wp) wp.textContent = d.search_placeholder ? d.welcome_sub : d.welcome_sub;
+  // Loading
+  let lt = document.querySelector('.loader-text'); if(lt) lt.textContent = d.loading_sub;
+  // Nav links
+  let navIds = ['navBeranda','navGenre','navSchedule','navTerbaru','navBookmark','navRiwayat'];
+  navIds.forEach((id, i) => { let el = document.getElementById(id); if(el && d.nav[i]) { let txt = el.querySelector('i'); el.innerHTML = txt ? txt.outerHTML + ' ' + d.nav[i] : d.nav[i]; }});
+  // Mobile menu labels
+  let mobileLinks = document.querySelectorAll('#mobileMenu > a');
+  mobileLinks.forEach((a, i) => { if(d.nav[i]) { let ic = a.querySelector('i'); a.innerHTML = ic ? ic.outerHTML + ' ' + d.nav[i] : d.nav[i]; }});
+}
+
+// Init language on load
+document.addEventListener('DOMContentLoaded', () => {
+  setLang(currentLang);
+  bindDevSecretEasterEgg();
+  restoreDevLock();
+});
 </script>
 </body>
 </html>
