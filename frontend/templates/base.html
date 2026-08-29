@@ -1,0 +1,524 @@
+﻿<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Donglyn
+{% endblock %}</title>
+  <link rel="icon" type="image/png" href="/asset/favicon.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/brands.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+  <link rel="stylesheet" href="/static/css/output.css"/>
+  <style>
+    .swiper-pagination-bullet{width:16px;height:4px;background:rgba(255,255,255,0.42);opacity:1;border-radius:999px;transition:width .35s ease,background .35s ease,transform .35s ease,box-shadow .35s ease}
+    .swiper-pagination-bullet-active{width:28px;background:#E50914;transform:none;box-shadow:0 0 9px rgba(229,9,20,.45)}
+    .swiper-pagination{right:1.5rem !important;left:auto !important;bottom:1.5rem !important;width:auto !important;display:flex;align-items:center;gap:5px;justify-content:flex-end}
+    @media(max-width:767px){.swiper-pagination{display:none !important}}
+     .bg-hero-gradient{background:linear-gradient(77deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,.55) 45%, rgba(0,0,0,.15) 75%, transparent 90%), linear-gradient(to top, #141414 0%, transparent 50%)}
+    .desktop-search{position:relative;align-items:center;width:310px;height:42px;padding:4px;background:rgba(25,25,25,.92);border:1px solid rgba(255,255,255,.12);border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.04);transition:width .3s ease,border-color .25s ease,box-shadow .25s ease}
+    @media(min-width:768px){.desktop-search{display:flex}}
+    .desktop-search:focus-within{width:380px;border-color:rgba(229,9,20,.65);box-shadow:0 0 0 3px rgba(229,9,20,.12),0 10px 28px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.05)}
+    .desktop-search-icon{width:34px;flex:none;text-align:center;color:rgba(255,255,255,.48);transition:color .25s ease}
+    .desktop-search:focus-within .desktop-search-icon{color:#e50914}
+    .desktop-search-input{min-width:0;flex:1;height:32px;padding:0 8px;color:#fff;background:transparent;border:0;outline:0;font-size:13px;font-weight:500}
+    .desktop-search-input::placeholder{color:rgba(255,255,255,.38)}
+    .desktop-search-key{flex:none;margin-right:7px;padding:3px 6px;color:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.12);border-radius:5px;font:600 10px/1 'Inter',sans-serif;transition:opacity .2s ease}
+    .desktop-search:focus-within .desktop-search-key{opacity:0;pointer-events:none}
+    .desktop-search-button{display:flex;align-items:center;justify-content:center;gap:6px;flex:none;height:32px;padding:0 13px;border:0;border-radius:999px;background:#e50914;color:#fff;font-size:11px;font-weight:900;letter-spacing:.02em;cursor:pointer;transition:background .2s ease,transform .2s ease}
+    .desktop-search-button:hover{background:#f40612;transform:translateY(-1px)}
+    .desktop-search-button:active{transform:translateY(0)}
+    #searchWrap{gap:10px !important;margin-left:auto;background:transparent !important;border:0 !important;overflow:visible !important;box-shadow:none !important}
+    #searchWrap .desktop-search{background:rgba(25,25,25,.92);border:1px solid rgba(255,255,255,.12);border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.04)}
+    #searchWrap .auth-nav-button{height:32px !important;margin-left:0;padding:0 13px !important;border-radius:999px !important;font-size:11px !important;box-shadow:0 2px 12px rgba(229,9,20,.35)}
+    #userDropdown.desktop-user-dropdown{position:fixed;top:72px;right:16px;left:auto;width:256px;max-width:calc(100vw - 32px)}
+    .guest-profile-icon{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid rgba(229,9,20,.35);border-radius:50%;background:rgba(229,9,20,.1);color:#e50914;font-size:15px;transition:transform .25s ease,background .25s ease,box-shadow .25s ease}
+    .guest-profile-icon.hidden{display:none}
+    #userMenu:hover .guest-profile-icon{transform:translateY(-1px);background:rgba(229,9,20,.18);box-shadow:0 0 0 4px rgba(229,9,20,.08),0 8px 18px rgba(0,0,0,.25)}
+    .guest-auth-card{padding:14px 16px 12px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .guest-auth-kicker{margin-bottom:3px;color:rgba(255,255,255,.42);font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+    .guest-auth-title{color:#fff;font-size:14px;font-weight:800}
+    .user-auth-panel{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .user-auth-panel.hidden{display:none}
+    @media(max-width:767px){
+      nav > div{gap:8px}
+      nav > div > div:first-child{gap:8px;min-width:0}
+      nav > div > div:first-child > a{flex:none}
+      .desktop-search{display:flex !important;width:min(210px,calc(100vw - 145px));height:36px;padding:3px}
+      .desktop-search-icon{width:28px;font-size:12px}
+      .desktop-search-input{height:28px;padding:0 5px;font-size:11px}
+      .desktop-search-key{display:none}
+      .desktop-search-button{height:28px;padding:0 10px;font-size:10px}
+      .desktop-search-button i{display:none}
+      #donglynSecretTrigger img{width:70px;height:auto;max-height:30px}
+      nav > div > div:last-child{gap:0;min-width:0}
+      #authNav{margin-left:0;margin-right:0}
+      #userMenu{display:none !important}
+      #mobileMenuBtn{position:relative;display:flex !important;width:36px;height:36px;flex:none;padding:0;border:1px solid rgba(255,255,255,.16);border-radius:8px;background:rgba(255,255,255,.06)}
+      #mobileMenuBtn .hamburger-line{display:block;width:16px;height:2px;left:50%;margin-left:-8px;border-radius:2px}
+      #mobileMenuBtn .hamburger-line:nth-child(1){top:9px}
+      #mobileMenuBtn .hamburger-line:nth-child(2){top:16px}
+      #mobileMenuBtn .hamburger-line:nth-child(3){top:23px}
+    }
+     #mobileMenu{position:fixed;top:0;right:0;bottom:0;width:300px;background:linear-gradient(180deg,#0a0a0a 0%,#050505 100%);border-left:1px solid rgba(229,9,20,0.12);z-index:200;transform:translateX(100%);transition:transform .45s cubic-bezier(.77,0,.18,1);overflow-y:auto;display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(0,0,0,.6)}
+     #mobileMenu.open{transform:translateX(0)}
+     #mobileMenuOverlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.75);z-index:199;opacity:0;pointer-events:none;transition:opacity .4s ease;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+     #mobileMenuOverlay.open{opacity:1;pointer-events:auto}
+     .hamburger-line{transform-origin:center}
+     #mobileMenuBtn.open .hamburger-line:nth-child(1){transform:translateY(7px) rotate(45deg);background:#e50914}
+     #mobileMenuBtn.open .hamburger-line:nth-child(2){opacity:0;transform:scaleX(0)}
+     #mobileMenuBtn.open .hamburger-line:nth-child(3){transform:translateY(-7px) rotate(-45deg);background:#e50914}
+    .user-dropdown{opacity:0;transform:translateY(-8px) scale(.97);pointer-events:none;transition:opacity .2s ease,transform .2s cubic-bezier(.4,0,.2,1)}
+    .user-dropdown.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+    .user-dropdown.closing{opacity:0;transform:translateY(-8px) scale(.97);pointer-events:none}
+    .dropdown-rounded{border-radius:4px}
+    .dev-secret-modal{position:fixed;top:0;left:0;right:0;bottom:0;display:none;place-items:center;background:rgba(4,7,10,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);z-index:100}
+    .dev-secret-modal.open{display:grid}
+    .dev-secret-panel{width:min(90vw,420px);background:linear-gradient(145deg,rgba(22,26,28,.96),rgba(8,10,11,.98));border:1px solid rgba(206,220,227,.24);border-radius:12px;box-shadow:0 25px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.05);padding:28px}
+    .dev-secret-panel input{width:100%;box-sizing:border-box;padding:12px 14px;border-radius:8px;border:1px solid rgba(206,220,227,.2);background:#030506;color:#fff;margin-top:12px;outline:none}
+    .dev-secret-panel input:focus{border-color:rgba(229,237,241,.68);box-shadow:0 0 0 3px rgba(229,237,241,.09)}
+    .dev-secret-panel form button{width:100%;padding:12px;border:1px solid rgba(255,255,255,.35);border-radius:8px;background:linear-gradient(135deg,#dce6ea,#77858d);color:#0b0e0f;font-weight:900;cursor:pointer;margin-top:12px;transition:all .2s ease;box-shadow:0 8px 20px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.4)}
+    .dev-secret-panel form button:hover{background:linear-gradient(135deg,#f4f8f9,#9eabb2)}
+    .dev-secret-close{position:absolute;top:16px;right:16px;width:32px;height:32px;padding:0;border:1px solid rgba(206,220,227,.18);border-radius:6px;background:rgba(206,220,227,.06);color:rgba(229,237,241,.75);font-size:20px;line-height:28px;cursor:pointer}
+    .dev-secret-close:hover{color:#fff}
+    .dev-cyber-overlay{position:fixed;top:0;left:0;right:0;bottom:0;display:none;place-items:center;background:#04070a;z-index:120;color:#e7ece9;overflow:hidden}
+    .dev-cyber-overlay.open{display:grid}
+    .dev-cyber-overlay:before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(rgba(206,220,227,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(206,220,227,.045) 1px,transparent 1px);background-size:32px 32px;-webkit-mask-image:linear-gradient(to bottom,transparent,#000,transparent);mask-image:linear-gradient(to bottom,transparent,#000,transparent);animation:cyberGrid 1.2s linear infinite}
+    .dev-cyber-core{position:relative;width:min(88vw,540px);text-align:center;border:1px solid rgba(206,220,227,.42);background:linear-gradient(145deg,rgba(22,26,28,.94),rgba(8,10,11,.97));box-shadow:0 0 35px rgba(0,0,0,.45),inset 0 0 28px rgba(206,220,227,.05);padding:34px 24px;animation:cyberIn .35s ease-out}
+    .dev-cyber-core:before,.dev-cyber-core:after{content:"";position:absolute;width:24px;height:24px;border-color:#dce6ea;border-style:solid}
+    .dev-cyber-core:before{top:-1px;left:-1px;border-width:2px 0 0 2px}.dev-cyber-core:after{right:-1px;bottom:-1px;border-width:0 2px 2px 0}
+    .dev-cyber-kicker{font-size:10px;letter-spacing:.35em;color:#aeb8bf;font-weight:900;text-transform:uppercase}
+    .dev-cyber-title{margin:14px 0 8px;font-size:clamp(24px,5vw,42px);letter-spacing:.12em;font-weight:900;text-transform:uppercase;color:#e5edf1;text-shadow:0 0 18px rgba(229,237,241,.35)}
+    .dev-cyber-status{color:rgba(229,237,241,.6);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+    .dev-cyber-bar{height:3px;margin:24px auto 0;max-width:300px;background:rgba(206,220,227,.15);overflow:hidden}.dev-cyber-bar span{display:block;width:0;height:100%;background:#dce6ea;box-shadow:0 0 12px #dce6ea;animation:cyberBar 1.3s ease-in-out forwards}
+    .dev-unlocked .dev-cyber-core{border-color:rgba(183,255,220,.7);box-shadow:0 0 55px rgba(57,255,142,.2),inset 0 0 28px rgba(183,255,220,.08)}
+    .dev-unlocked .dev-cyber-kicker,.dev-unlocked .dev-cyber-title{color:#b7ffdc;text-shadow:0 0 18px rgba(183,255,220,.55)}
+    .dev-unlocked .dev-cyber-bar span{background:#b7ffdc;box-shadow:0 0 12px #b7ffdc}
+    .dev-danger{animation:dangerFlash .18s steps(2) infinite}
+    .dev-danger .dev-cyber-core{border-color:#ff304f;box-shadow:0 0 55px rgba(255,48,79,.35),inset 0 0 28px rgba(255,48,79,.1)}
+    .dev-danger .dev-cyber-kicker,.dev-danger .dev-cyber-title{color:#ff304f;text-shadow:0 0 18px rgba(255,48,79,.8)}
+    @keyframes cyberGrid{to{transform:translateY(32px)}}
+    @keyframes cyberIn{from{opacity:0;transform:scale(.94);filter:blur(6px)}to{opacity:1;transform:scale(1);filter:blur(0)}}
+    @keyframes cyberBar{to{width:100%}}
+    @keyframes dangerFlash{50%{filter:brightness(1.8)}}
+    @keyframes devModalShake{0%,100%{transform:translate(0,0)}15%{transform:translate(-7px,2px)}30%{transform:translate(6px,-2px)}45%{transform:translate(-5px,-1px)}60%{transform:translate(5px,2px)}75%{transform:translate(-3px,0)}90%{transform:translate(3px,-1px)}}
+    .dev-modal-shake .dev-secret-panel{animation:devModalShake .48s cubic-bezier(.36,.07,.19,.97)}
+    .dev-invalid-message{border-color:rgba(255,71,87,.6) !important;background:rgba(255,71,87,.1) !important;color:#ff6478 !important;font-weight:900;letter-spacing:.08em;text-shadow:0 0 10px rgba(255,71,87,.55);animation:devInvalidPulse 1s ease-in-out infinite}
+    @keyframes devInvalidPulse{0%,100%{opacity:1;box-shadow:0 0 0 rgba(255,71,87,0)}50%{opacity:.68;box-shadow:0 0 18px rgba(255,71,87,.22)}}
+    .auth-nav-button{height:32px !important;align-items:center;justify-content:center;line-height:1;border-radius:999px !important;padding:0 13px !important;background:#e50914 !important;border:none !important;font-size:11px !important;font-weight:900 !important;letter-spacing:.02em;transition:background .2s ease,transform .15s ease,box-shadow .2s ease;box-shadow:0 2px 12px rgba(229,9,20,.35);margin-left:0;position:relative;z-index:1;cursor:pointer}
+    .auth-nav-button:hover{background:#b20710 !important;transform:translateY(-1px);box-shadow:inset -2px 0 0 rgba(0,0,0,.15),0 4px 20px rgba(229,9,20,.5)}
+    .auth-nav-button:active{transform:translateY(0)}
+    @media(max-width:767px){.auth-nav-button{display:none !important}}
+    #searchWrap{position:relative}
+    #searchWrap:focus-within .auth-nav-button{background:#b20710}
+    #searchInputMobile{padding-right:5rem}
+    #searchInputMobile + button{height:36px;width:68px;padding-left:0;padding-right:0;font-size:10px;letter-spacing:.02em}
+
+    /* Loading Screen */
+    #splash{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:1;transition:opacity .6s cubic-bezier(.4,0,.2,1),visibility .6s cubic-bezier(.4,0,.2,1);pointer-events:auto}
+    #splash.hidden{opacity:0;visibility:hidden;pointer-events:none}
+    #splashBg{position:absolute;top:0;right:0;bottom:0;left:0;overflow:hidden;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(229,9,20,.06) 0%,transparent 60%)}
+    #splashGrid{position:absolute;top:0;right:0;bottom:0;left:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:48px 48px;animation:gridMove 20s linear infinite}
+    @keyframes gridMove{from{transform:translateY(0)}to{transform:translateY(48px)}}
+    #splashContent{position:relative;z-index:1;text-align:center;display:flex;flex-direction:column;align-items:center}
+    #splashLogoWrap{position:relative;margin-bottom:32px}
+    #splashLogoImg{width:clamp(160px,34vw,260px);height:auto;object-fit:contain;animation:logoIn .7s cubic-bezier(.22,.61,.36,1) both;filter:drop-shadow(0 0 34px rgba(229,9,20,.42))}
+    @keyframes logoIn{from{opacity:0;transform:translateY(30px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+    #splashLogoRing{position:absolute;top:-16px;right:-16px;bottom:-16px;left:-16px;border:1px solid rgba(229,9,20,.15);border-radius:50%;animation:ringPulse 3s ease-in-out infinite;opacity:0}
+    #splashFallback{display:none;font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:.15em;color:#fff;filter:drop-shadow(0 0 20px rgba(229,9,20,.4))}
+    #splashFallback.visible{display:block}
+    #splashLogoWrap.show #splashLogoRing{opacity:1}
+    @keyframes ringPulse{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.08);opacity:.6}}
+    #splashDivider{width:40px;height:1px;background:linear-gradient(90deg,transparent,rgba(229,9,20,.6),transparent);margin-bottom:24px;animation:divIn .6s .2s ease both}
+    @keyframes divIn{from{opacity:0;width:0}to{opacity:1;width:40px}}
+    #splashBarWrap{width:160px;height:1px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden;animation:barIn .6s .35s ease both}
+    @keyframes barIn{from{opacity:0;transform:scaleX(0)}to{opacity:1;transform:scaleX(1)}}
+    #splashBar{position:relative;height:100%;width:0%;background:linear-gradient(90deg,#e50914,#ff6b6b);border-radius:999px;transition:width .25s ease;overflow:hidden}
+    #splashBar:after{content:'';position:absolute;top:0;bottom:0;left:0;width:42%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.8),transparent);transform:translateX(-120%);animation:splashBarSweep 1.15s ease-in-out infinite alternate}
+    #splash.done #splashBar:after{animation:none;opacity:0}
+    @keyframes splashBarSweep{from{transform:translateX(-120%)}to{transform:translateX(290%)}}
+    #splashStatus{margin-top:18px;font-family:'Inter',sans-serif;font-size:11px;font-weight:500;color:rgba(255,255,255,.25);letter-spacing:.08em;animation:statusIn .6s .5s ease both}
+    @keyframes statusIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    /* Nav sliding indicator */
+    .nav-wrap{position:relative}
+    .nav-indicator{position:absolute;bottom:-2px;height:2px;background:#e50914;border-radius:2px;transition:left .35s cubic-bezier(.4,0,.2,1),width .35s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px rgba(229,9,20,.7),0 0 20px rgba(229,9,20,.3);pointer-events:none;opacity:0}
+    .nav-indicator.active{opacity:1}
+    /* Pagination */
+    .page-number{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 12px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);font-size:13px;font-weight:800;color:#fff}
+    .prev-page,.next-page{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 20px;border-radius:8px;font-size:13px;font-weight:800;transition:background .2s ease,color .2s ease}
+    .prev-page{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+    .prev-page:hover{background:rgba(255,255,255,.14)}
+    .next-page{background:#e50914;border:1px solid #e50914}
+    .next-page:hover{background:#b20710;border-color:#b20710}
+    /* Lucide animated icons â€” lucide-animated.com style */
+    [data-lucide]{transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .25s ease, filter .25s ease; transform-origin: center; will-change: transform}
+    [data-lucide]:hover{transform: scale(1.18); filter: drop-shadow(0 0 6px currentColor)}
+    .icon-bounce[data-lucide]:hover{animation: iconBounce .5s cubic-bezier(.36,.07,.19,.97)}
+    .icon-pulse[data-lucide]:hover{animation: iconPulse .6s ease-in-out infinite alternate}
+    .icon-spin-hover[data-lucide]:hover{animation: iconSpin .6s cubic-bezier(.34,1.56,.64,1)}
+    .icon-shimmer[data-lucide]:hover{animation: iconShimmer .8s ease-in-out}
+    .icon-swing[data-lucide]:hover{animation: iconSwing .5s ease}
+    @keyframes iconBounce{0%,100%{transform:scale(1.18)}40%{transform:scale(1.32)}70%{transform:scale(1.08)}}
+    @keyframes iconPulse{from{transform:scale(1.1);opacity:1}to{transform:scale(1.25);opacity:.8}}
+    @keyframes iconSpin{from{transform:scale(1) rotate(0deg)}to{transform:scale(1.2) rotate(12deg)}}
+    @keyframes iconShimmer{0%{filter:drop-shadow(0 0 2px currentColor) brightness(1)}50%{filter:drop-shadow(0 0 12px currentColor) brightness(1.4)}100%{filter:drop-shadow(0 0 2px currentColor) brightness(1)}}
+    @keyframes iconSwing{0%,100%{transform:scale(1.18) rotate(0deg)}25%{transform:scale(1.18) rotate(-6deg)}75%{transform:scale(1.18) rotate(6deg)}}
+    .nav-wrap [data-lucide]{width:16px;height:16px}
+    .nav-wrap a:hover [data-lucide]{transform:scale(1.2)}
+    .search-btn-icon[data-lucide]{width:14px;height:14px}
+    .play-btn-circle[data-lucide]{width:18px;height:18px}
+  </style>
+  <style>{% block extra_css %}{% endblock %}</style>
+</head>
+<body class="bg-dark text-white min-h-screen selection:bg-Donglyn selection:text-white">
+  <!-- Splash Screen -->
+  <div id="splash">
+    <div id="splashBg"><div id="splashGrid"></div></div>
+    <div id="splashContent">
+      <div id="splashLogoWrap">
+        <img id="splashLogoImg" src="/asset/logo.png" alt="Donglyn" onerror="this.classList.add('hidden');document.getElementById('splashFallback').classList.add('visible')"/>
+        <div id="splashFallback">DONGLYN</div>
+        <div id="splashLogoRing"></div>
+      </div>
+      <div id="splashDivider"></div>
+      <div id="splashBarWrap"><div id="splashBar"></div></div>
+      <div id="splashStatus">Memuat</div>
+    </div>
+  </div>
+
+  <!-- NAVBAR Donglyn -->
+   <nav class="fixed top-0 w-full z-50 bg-gradient-to-b from-black via-black/70 to-transparent md:bg-[#141414] md:bg-none border-b border-white/0 md:border-white/10">
+     <div class="max-w-[1600px] mx-auto px-0 md:px-8 py-3.5 flex items-center justify-between gap-4">
+       <div class="flex items-center gap-6 pl-4 md:pl-0">
+         <a href="/" id="donglynSecretTrigger" class="flex items-center">
+           <img src="/asset/logo.png" alt="Donglyn" title="Donglyn" class="h-10 md:h-12 lg:h-14 w-auto object-contain max-h-[64px]" onerror="this.onerror=null; this.src='/asset/logo.png'; this.onerror=function(){this.style.display='none'}"/>
+         </a>
+        <div class="hidden lg:flex items-center gap-5 text-[13px] font-medium nav-wrap">
+           <a href="/" class="text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1" data-nav="beranda"><i data-lucide="home" class="w-4 h-4 icon-bounce"></i> Beranda</a>
+           <a href="/genre" class="text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1" data-nav="genre"><i data-lucide="layers" class="w-4 h-4 icon-pulse"></i> Genre</a>
+           <a href="/schedule" class="text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1" data-nav="schedule"><i data-lucide="calendar" class="w-4 h-4 icon-spin-hover"></i> Schedule</a>
+           <a href="/terbaru" class="text-white/70 hover:text-white transition pb-1 border-b-2 border-transparent flex items-center gap-1" data-nav="terbaru"><i data-lucide="zap" class="w-4 h-4 icon-shimmer"></i> Terbaru</a>
+          <span class="nav-indicator"></span>
+        </div>
+      </div>
+        <div class="flex items-center gap-0 order-last md:order-none bg-[rgba(25,25,25,.92)] border border-white/10 rounded-full overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,.2),inset_0_1px_0_rgba(255,255,255,.04)] transition-all duration-300 focus-within:border-red-500/65 focus-within:shadow-[0_0_0_3px_rgba(229,9,20,.12),0_10px_28px_rgba(0,0,0,.28),inset_0_1px_0_rgba(255,255,255,.05)]" id="searchWrap">
+        <div class="desktop-search hidden md:flex" role="search">
+          <i data-lucide="search" class="w-4 h-4 text-white/60"></i>
+          <input id="searchInput" type="text" placeholder="Cari judul donghua..." aria-label="Cari judul donghua" title="Cari judul" class="desktop-search-input" onkeydown="if(event.key==='Enter'){handleSearch()}"/>
+          <kbd class="desktop-search-key">ENTER</kbd>
+          <button type="button" onclick="handleSearch()" aria-label="Cari" class="desktop-search-button"><span>CARI</span><i data-lucide="arrow-right" class="w-3 h-3"></i></button>
+        </div>
+        <!-- AUTH â€” separate from search pill -->
+        <a href="/login" id="btnLogin" class="auth-nav-button hidden lg:inline-flex text-white text-xs font-black" title="Masuk">Masuk</a>
+        <!-- AUTH user menu -->
+        <div id="authNav" class="flex items-center gap-2 px-1">
+           <div id="userMenu" class="relative hidden md:flex items-center cursor-pointer" onclick="toggleUserDropdown()">
+            <span id="navAvatarFallback" class="guest-profile-icon hidden" aria-hidden="true"></span>
+            <img id="navAvatar" src="https://i.pravatar.cc/100?u=Donglyn" alt="Foto profil pengguna" title="Foto profil" class="hidden w-8 h-8 rounded-full object-cover border border-white/20" onerror="this.onerror=null;this.classList.add('hidden');document.getElementById('navAvatarFallback').classList.remove('hidden')"/>
+            <div id="userDropdown" class="desktop-user-dropdown hidden bg-black border border-white/10 shadow-2xl z-50 overflow-hidden user-dropdown dropdown-rounded">
+              <div id="guestAuthPanel" class="guest-auth-card">
+                <p class="guest-auth-kicker">Donglyn account</p>
+                <p class="guest-auth-title">Masuk untuk akses penuh</p>
+              </div>
+              <div id="guestAuthLinks" class="py-1">
+                <a href="/login" class="flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition"><i data-lucide="log-in" class="w-5 text-center text-[#e50914]""></i> Masuk</a>
+                <a href="/register" class="flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition"> Daftar</a>
+              </div>
+              <div id="userAuthPanel" class="hidden user-auth-panel">
+                <span id="dropAvatarFallback" class="guest-profile-icon hidden flex-shrink-0"><i class="" aria-hidden="true"></i></span>
+                <img id="dropAvatar" src="https://i.pravatar.cc/100?u=Donglyn" alt="Avatar" class="w-12 h-12 rounded object-cover border border-white/20 flex-shrink-0" onerror="this.onerror=null;this.classList.add('hidden');document.getElementById('dropAvatarFallback').classList.remove('hidden')"/>
+                <div class="min-w-0">
+                  <p id="dropName" class="text-sm font-bold truncate text-white">User</p>
+                  <p id="dropEmail" class="text-[11px] text-white/50 truncate mt-0.5">email</p>
+                </div>
+              </div>
+               <div id="userAuthLinks" class="hidden py-1">
+                <a href="/bookmark" class="flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition"> Bookmark</a>
+                <a href="/riwayat" class="flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition"> Riwayat</a>
+                <div class="border-t border-white/10 my-1"></div>
+                <button onclick="doLogout()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-[#e50914] hover:bg-white/10 transition text-left"><i data-lucide="log-out" class="w-5 text-center""></i> Keluar</button>
+              </div>
+            </div>
+          </div>
+            <button id="mobileMenuBtn" class="lg:hidden w-9 h-9 flex items-center justify-center border border-white/10 rounded bg-white/5 hover:bg-white/10 transition relative" onclick="toggleMobileMenu()" aria-label="Buka menu" title="Menu">
+               <span class="hamburger-line absolute w-4 h-[2px] bg-white/80 rounded left-1/2 -translate-x-1/2 top-[7px] transition-all duration-300 ease-in-out"></span>
+               <span class="hamburger-line absolute w-4 h-[2px] bg-white/80 rounded left-1/2 -translate-x-1/2 top-[14px] transition-all duration-300 ease-in-out"></span>
+               <span class="hamburger-line absolute w-4 h-[2px] bg-white/80 rounded left-1/2 -translate-x-1/2 top-[21px] transition-all duration-300 ease-in-out"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Mobile menu overlay -->
+      <div id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
+      <!-- Mobile slide-in menu -->
+      <div id="mobileMenu" class="lg:hidden">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-5 py-4 border-b border-white/10 flex-shrink-0">
+           <a href="/" onclick="toggleMobileMenu()"><img src="/asset/logo.png" alt="Donglyn" class="h-8 w-auto object-contain mobile-logo" onerror="this.classList.add('hidden');this.nextElementSibling.classList.remove('hidden')"/><span class="font-bebas text-xl text-Donglyn mobile-logo-text hidden">DONGLYN</span></a>
+           <button onclick="toggleMobileMenu()" class="w-8 h-8 flex items-center justify-center border border-white/10 rounded hover:bg-white/10 transition" title="Tutup menu"></button>
+        </div>
+         <!-- Nav items -->
+         <div class="flex-1 overflow-y-auto py-2">
+          <a href="/search" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-5 py-3 text-sm font-bold text-white/70 hover:text-white hover:bg-white/5 transition"> Cari</a>
+          <a href="/" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-5 py-3 text-sm font-bold text-white hover:bg-white/5 transition"> Beranda</a>
+          <a href="/genre" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-5 py-3 text-sm font-bold text-white/70 hover:bg-white/5 transition"> Genre</a>
+          <a href="/schedule" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-5 py-3 text-sm font-bold text-white/70 hover:bg-white/5 transition"> Schedule</a>
+          <a href="/terbaru" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-5 py-3 text-sm font-bold text-white/70 hover:bg-white/5 transition"> Terbaru</a>
+           <div id="mobileMenuGuestOnly" class="block">
+             <div class="border-t border-white/10 my-2"></div>
+             <a href="/login" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-5 py-3 text-sm font-bold text-white/70 hover:bg-white/5 transition"><i data-lucide="log-in" class="w-5 text-center text-white/50""></i> Masuk</a>
+             <a href="/register" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-5 py-3 text-sm font-bold text-white/70 hover:bg-white/5 transition"> Daftar</a>
+           </div>
+           <a href="/bookmark" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-5 py-3 text-sm font-bold text-white/70 hover:text-white hover:bg-white/5 transition"> Bookmark</a>
+           <a href="/riwayat" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-5 py-3 text-sm font-bold text-white/70 hover:text-white hover:bg-white/5 transition"> Riwayat</a>
+           <div id="mobileMenuUserOnly" class="hidden">
+            <a href="/profile" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-5 py-3 text-sm font-bold text-white/70 hover:text-white hover:bg-white/5 transition"> Profile</a>
+            <div class="border-t border-white/10 my-2"></div>
+            <button onclick="doLogout();toggleMobileMenu()" class="w-full flex items-center gap-3 px-5 py-3 text-sm font-bold text-[#e50914] hover:bg-white/5 transition text-left"><i data-lucide="log-out" class="w-5 text-center""></i> Keluar</button>
+          </div>
+        </div>
+         <!-- Footer credit -->
+         <div class="border-t border-white/10 px-5 py-4 flex-shrink-0 text-center">
+           <p class="text-[10px] font-black tracking-[0.25em] text-white/90">CRAFTED BY</p>
+           <p class="text-sm font-black tracking-wider text-[#e50914] mt-0.5">Vexalyn Dev</p>
+         </div>
+         <!-- Language selector -->
+         <div class="border-t border-white/10 px-5 py-4 flex-shrink-0">
+           <p class="text-[10px] font-black tracking-widest text-white/30 mb-2"> Bahasa</p>
+           <div class="flex gap-1.5">
+             <button onclick="setLang('id')" aria-label='Bahasa Indonesia' class="lang-btn flex-1 py-2 text-[11px] font-bold rounded bg-[#e50914] text-white">ID</button>
+             <button onclick="setLang('en')" aria-label='English' class="lang-btn flex-1 py-2 text-[11px] font-bold rounded bg-white/10 text-white/60 hover:bg-white/20">EN</button>
+             <button onclick="setLang('ja')" aria-label='æ—¥æœ¬èªž' class="lang-btn flex-1 py-2 text-[11px] font-bold rounded bg-white/10 text-white/60 hover:bg-white/20">JP</button>
+             <button onclick="setLang('zh')" aria-label='ä¸­æ–‡' class="lang-btn flex-1 py-2 text-[11px] font-bold rounded bg-white/10 text-white/60 hover:bg-white/20">CN</button>
+            </div>
+          </div>
+        </div>
+   </nav>
+
+   <!-- PAGE CONTENT -->
+   {% block content %}{% endblock %}
+
+     <div id="devCyberOverlay" class="dev-cyber-overlay" aria-hidden="true" style="display:none">
+      <div class="dev-cyber-core">
+        <div class="dev-cyber-kicker" id="devCyberKicker">Secure channel / initializing</div>
+        <div class="dev-cyber-title" id="devCyberTitle">Establishing Link</div>
+        <div class="dev-cyber-status" id="devCyberStatus">Decrypting developer access gateway...</div>
+        <div class="dev-cyber-bar"><span></span></div>
+      </div>
+    </div>
+
+      <div id="devSecretModal" class="dev-secret-modal" aria-modal="true" role="dialog" aria-labelledby="devSecretTitle" style="display:none">
+      <div class="dev-secret-panel relative">
+        <button type="button" class="dev-secret-close" aria-label="Close dev login" onclick="closeDevSecretModal()">&times;</button>
+        <div class="text-[10px] font-black uppercase tracking-[0.28em] text-red-400">Vexalyn Dev</div>
+        <h2 id="devSecretTitle" class="mt-3 text-2xl font-black">Secret Access</h2>
+        <p class="mt-2 text-sm text-white/60">Masukkan passcode untuk membuka Developer Dashboard.</p>
+        <form id="devSecretForm" class="mt-5">
+          <label class="text-xs uppercase tracking-[0.2em] text-white/45" for="devSecretInput">Passcode</label>
+          <input id="devSecretInput" name="secret_key" type="password" placeholder="Masukkan secret key" autocomplete="off" required />
+          <div id="devSecretMessage" class="mt-3 hidden rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-200"></div>
+          <button type="submit">Unlock Dev Panel</button>
+        </form>
+      </div>
+    </div>
+
+   <!-- FOOTER Elegant Donglyn -->
+  <footer class="bg-black border-t border-white/10 mt-8">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-10 py-10">
+      <img src="/asset/logo.png" alt="Donglyn" title="Donglyn" class="h-8 w-auto object-contain mb-5"/>
+      <div class="flex gap-4 text-white/60">
+        <a href="#" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition" aria-label="Instagram Donglyn" title="Instagram"><i class="fa-brands fa-instagram text-sm" aria-hidden="true"></i></a>
+        <a href="#" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition" aria-label="TikTok Donglyn" title="TikTok"><i class="fa-brands fa-tiktok text-sm" aria-hidden="true"></i></a>
+        <a href="#" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition" aria-label="Github Donglyn" title="Github"><i class="fa-brands fa-github text-sm" aria-hidden="true"></i></a>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-xs">
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80 hover:underline">Audio Description</a>
+          <a href="#" class="block hover:text-white/80">Investor Relations</a>
+          <a href="#" class="block hover:text-white/80">Legal Notices</a>
+          <a href="/" class="block hover:text-white">Beranda</a>
+        </div>
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80">Help Center</a>
+          <a href="#" class="block hover:text-white/80">Jobs</a>
+          <a href="#" class="block hover:text-white/80">Cookie Preferences</a>
+          <a href="/genre" class="block hover:text-white">Genre</a>
+        </div>
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80">Gift Cards</a>
+          <a href="#" class="block hover:text-white/80">Terms of Use</a>
+          <a href="#" class="block hover:text-white/80">Corporate Information</a>
+          <a href="/terbaru" class="block hover:text-white">Terbaru</a>
+        </div>
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80">Media Center</a>
+          <a href="#" class="block hover:text-white/80">Privacy</a>
+          <a href="#" class="block hover:text-white/80">Contact Us</a>
+          <a href="/bookmark" class="block hover:text-white">Bookmark</a>
+        </div>
+      </div>
+      <div class="mt-4">
+        <span class="text-[10px] font-black tracking-[0.25em] text-[#e50914] uppercase">CRAFTED BY</span>
+        <button id="donglynSecretBtn" type="button" class="mt-0.5 block cursor-pointer rounded-lg border border-white/10 transition hover:border-red-500/60 hover:shadow-[0_0_18px_rgba(229,9,20,.25)]" aria-label="Vexalyn Developer" title="Vexalyn Developer">
+          <img src="/asset/dev-logo.png" alt="Vexalyn Developer" class="h-7 w-24 object-contain"/>
+        </button>
+      </div>
+      <div class="flex items-center justify-between mt-4">
+        <div class="flex items-center gap-1.5">
+          <span class="text-[10px] text-white/30"></span>
+          <button onclick="setLang('id')" aria-label='Bahasa Indonesia' id="ftr-lang-id" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-[#e50914] text-white">ID</button>
+          <button onclick="setLang('en')" aria-label='English' id="ftr-lang-en" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/50">EN</button>
+          <button onclick="setLang('ja')" aria-label='æ—¥æœ¬èªž' id="ftr-lang-ja" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/50">JP</button>
+          <button onclick="setLang('zh')" aria-label='ä¸­æ–‡' id="ftr-lang-zh" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/50">CN</button>
+        </div>
+        <p class="text-[11px] text-white/20">Â© 2026 Donglyn â€¢ Dibuat oleh Vexalyn Developer <span class="text-[#e50914] font-bold">[Vio Atmajaya]</span></p>
+      </div>
+    </div>
+  </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="/static/js/ui.js"></script>
+<script src="/static/js/sync.js"></script>
+<script>
+// ===== SHARED DONGLYN JS =====
+let currentLang = localStorage.getItem('donglyn_lang') || 'id';
+const LANG_DATA = {
+  id: { search_placeholder: "Cari judul donghua...", search_btn: "CARI", welcome_title: "Pusat Streaming donghua Terlengkap", welcome_sub: "Pilih judul di bawah atau gunakan pencarian.", loading: "MEMUAT â€¢ LOADING...", loading_sub: "Memuat konten terbaik untukmu", nav: ["Beranda","Genre","Schedule","Terbaru","Bookmark","Riwayat"], menu_nav: "Navigasi", menu_lang: "Bahasa", footer_crafted: "CRAFTED BY", footer_copy: "Â© 2026 Donglyn â€¢ Dibuat oleh Vexalyn Developer [Vio Atmajaya]" },
+  en: { search_placeholder: "Search donghua title...", search_btn: "SEARCH", welcome_title: "Most Complete donghua Streaming Center", welcome_sub: "Pick a title below or use search.", loading: "LOADING...", loading_sub: "Loading the best content for you", nav: ["Home","Genre","Schedule","Latest","Bookmark","History"], menu_nav: "Navigation", menu_lang: "Language", footer_crafted: "CRAFTED BY", footer_copy: "Â© 2026 Donglyn â€¢ Made by Vexalyn Developer [Vio Atmajaya]" },
+  ja: { search_placeholder: "å‹•ç”»ã‚¿ã‚¤ãƒˆãƒ«ã‚’æ¤œç´¢...", search_btn: "æ¤œç´¢", welcome_title: "æœ€é«˜å³°ã®å‹•ç”»é…ä¿¡ã‚»ãƒ³ã‚¿ãƒ¼", welcome_sub: "ä»¥ä¸‹ã®ã‚¿ã‚¤ãƒˆãƒ«ã‚’é¸æŠžã™ã‚‹ã‹ã€æ¤œç´¢ã‚’ä½¿ç”¨ã—ã¦ãã ã•ã„ã€‚", loading: "èª­ã¿è¾¼ã¿ä¸­...", loading_sub: "æœ€è‰¯ã®ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’èª­ã¿è¾¼ã¿ä¸­", nav: ["ãƒ›ãƒ¼ãƒ ","ã‚¸ãƒ£ãƒ³ãƒ«","ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«","æœ€æ–°","ãƒ–ãƒƒã‚¯ãƒžãƒ¼ã‚¯","å±¥æ­´"], menu_nav: "ãƒŠãƒ“ã‚²ãƒ¼ã‚·ãƒ§ãƒ³", menu_lang: "è¨€èªž", footer_crafted: "åˆ¶ä½œè€…", footer_copy: "Â© 2026 Donglyn â€¢ Vexalyn Developer [Vio Atmajaya] ãŒåˆ¶ä½œ" },
+  zh: { search_placeholder: "æœç´¢åŠ¨ç”»æ ‡é¢˜...", search_btn: "æœç´¢", welcome_title: "æœ€å®Œæ•´çš„æµåª’ä½“ä¸­å¿ƒ", welcome_sub: "é€‰æ‹©ä¸‹é¢çš„æ ‡é¢˜æˆ–ä½¿ç”¨æœç´¢ã€‚", loading: "åŠ è½½ä¸­...", loading_sub: "æ­£åœ¨ä¸ºæ‚¨åŠ è½½æœ€ä½³å†…å®¹", nav: ["é¦–é¡µ","ç±»åž‹","æ—¥ç¨‹","æœ€æ–°","æ”¶è—","åŽ†å²"], menu_nav: "å¯¼èˆª", menu_lang: "è¯­è¨€", footer_crafted: "åˆ¶ä½œè€…", footer_copy: "Â© 2026 Donglyn â€¢ ç”± Vexalyn Developer [Vio Atmajaya] åˆ¶ä½œ" }
+};
+
+function setLang(lang) {
+  currentLang = lang;
+  try { localStorage.setItem('donglyn_lang', lang); } catch(e) {}
+  const d = LANG_DATA[lang] || LANG_DATA.id;
+  let si = document.getElementById('searchInput'); if(si) si.placeholder = d.search_placeholder;
+  let sm = document.getElementById('searchInputMobile'); if(sm) sm.placeholder = d.search_placeholder;
+  document.querySelectorAll('button').forEach(b => { const t = (b.textContent||'').trim(); if(t==='CARI'||t==='SEARCH'||t==='æ¤œç´¢'||t==='æœç´¢') b.textContent = d.search_btn; });
+  let lt = document.querySelector('.loader-text'); if(lt) lt.textContent = d.loading_sub;
+  document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if(d[k]!=null) el.textContent = d[k]; });
+  document.querySelectorAll('.lang-btn').forEach(b => { b.className = 'lang-btn flex-1 py-2 text-[11px] font-bold rounded ' + (b.id==='lang-'+lang ? 'bg-[#e50914] text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'); });
+  document.querySelectorAll('.ftr-lang').forEach(b => { b.className = 'ftr-lang px-2 py-0.5 text-[10px] font-bold rounded ' + (b.id==='ftr-lang-'+lang ? 'bg-[#e50914] text-white' : 'bg-white/10 text-white/50'); });
+}
+
+function toggleMobileMenu(){
+  let m=document.getElementById('mobileMenu');
+  let o=document.getElementById('mobileMenuOverlay');
+  let btn=document.getElementById('mobileMenuBtn');
+  let isOpen=m&&m.classList.contains('open');
+  if(m){m.classList.toggle('open');}
+  if(o){o.classList.toggle('open',!isOpen);}
+  if(btn){btn.classList.toggle('open',!isOpen);}
+}
+
+function toggleUserDropdown(){
+  let d=document.getElementById('userDropdown');
+  if(!d) return;
+  if(d.classList.contains('open')){d.classList.remove('open');d.classList.add('closing');setTimeout(()=>{d.classList.remove('closing');d.classList.add('hidden')},220);}
+  else{d.classList.remove('hidden','closing');void d.offsetWidth;d.classList.add('open');}
+}
+function closeUserDropdown(){
+  let d=document.getElementById('userDropdown');
+  if(!d||!d.classList.contains('open')) return;
+  d.classList.remove('open');d.classList.add('closing');
+  setTimeout(()=>{d.classList.remove('closing');d.classList.add('hidden')},220);
+}
+document.addEventListener('click',e=>{let ud=document.getElementById('userDropdown');let um=document.getElementById('userMenu');if(ud&&!ud.contains(e.target)&&!um?.contains(e.target))closeUserDropdown();});
+document.addEventListener('click',e=>{if(e.target===document.getElementById('mobileMenuOverlay'))toggleMobileMenu();});
+
+async function doLogout(){
+  try{ await fetch('/api/logout',{method:'POST',credentials:'include'}); }catch(e){}
+  window.location.href='/';
+}
+
+function handleSearch(){
+  let q=(document.getElementById('searchInput')||{}).value||'';
+  if(q.trim()) window.location.href='/search?q='+encodeURIComponent(q.trim());
+}
+
+// Nav sliding indicator
+function moveNavIndicator(el){
+  let ind=document.querySelector('.nav-indicator'); if(!ind||!el) return;
+  let wrap=el.parentElement; let wRect=wrap.getBoundingClientRect(); let eRect=el.getBoundingClientRect();
+  ind.classList.add('active');
+  ind.style.left=(eRect.left-wRect.left)+'px';
+  ind.style.width=eRect.width+'px';
+}
+function setupNavIndicator(){
+  let wrap=document.querySelector('.nav-wrap'); if(!wrap) return;
+  let active=wrap.querySelector('a.text-white:not(.text-white\\/70)');
+  if(active) moveNavIndicator(active);
+  wrap.querySelectorAll('a[data-nav]').forEach(a=>{
+    a.addEventListener('mouseenter',()=>moveNavIndicator(a));
+    a.addEventListener('mouseleave',()=>{let cur=wrap.querySelector('a.text-white:not(.text-white\\/70)'); if(cur) moveNavIndicator(cur);});
+  });
+}
+
+// Auth check (shared)
+async function checkAuth(){
+  try{
+    let r=await fetch('/api/auth/me',{credentials:'include'});
+    let j=await r.json();
+    let nav=document.getElementById('authNav');
+    if(j.logged_in){
+      document.getElementById('btnLogin')?.classList.add('hidden');
+      let um=document.getElementById('userMenu'); if(um){ um.classList.remove('hidden'); um.classList.add('flex'); }
+      let av=j.user?.avatar||'https://i.pravatar.cc/100?u='+encodeURIComponent(j.user?.username||'donglyn');
+      let avImg=document.getElementById('navAvatar'); let avFallback=document.getElementById('navAvatarFallback');
+      if(avImg){avImg.src=av;avImg.classList.remove('hidden');}
+      if(avFallback) avFallback.classList.add('hidden');
+      let dropName=document.getElementById('dropName'); let dropEmail=document.getElementById('dropEmail');
+      let dropAvatar=document.getElementById('dropAvatar'); let dropFallback=document.getElementById('dropAvatarFallback');
+      if(dropName) dropName.textContent=j.user?.username||'User';
+      if(dropEmail) dropEmail.textContent=j.user?.email||'';
+      if(dropAvatar){dropAvatar.src=av;dropAvatar.classList.remove('hidden');}
+      if(dropFallback) dropFallback.classList.add('hidden');
+      document.getElementById('guestAuthPanel')?.classList.add('hidden');
+      document.getElementById('guestAuthLinks')?.classList.add('hidden');
+      document.getElementById('userAuthPanel')?.classList.remove('hidden');
+      document.getElementById('userAuthLinks')?.classList.remove('hidden');
+      let guestOnly=document.getElementById('mobileMenuGuestOnly');
+      let userOnly=document.getElementById('mobileMenuUserOnly');
+      if(guestOnly) guestOnly.classList.add('hidden');
+      if(userOnly) userOnly.classList.remove('hidden');
+    } else {
+      let um=document.getElementById('userMenu'); if(um){ um.classList.add('hidden'); um.classList.remove('flex'); }
+      let avImg=document.getElementById('navAvatar'); let avFallback=document.getElementById('navAvatarFallback');
+      if(avImg) avImg.classList.add('hidden');
+      if(avFallback) avFallback.classList.remove('hidden');
+      document.getElementById('guestAuthPanel')?.classList.remove('hidden');
+      document.getElementById('guestAuthLinks')?.classList.remove('hidden');
+      document.getElementById('userAuthPanel')?.classList.add('hidden');
+      document.getElementById('userAuthLinks')?.classList.add('hidden');
+      let guestOnly=document.getElementById('mobileMenuGuestOnly');
+      let userOnly=document.getElementById('mobileMenuUserOnly');
+      if(guestOnly) guestOnly.classList.remove('hidden');
+      if(userOnly) userOnly.classList.add('hidden');
+    }
+  }catch(e){}
+}
+
+// Mobile search
+function handleSearchMobile(){
+  let q=(document.getElementById('searchInputMobile')||{}).value||'';
+  if(q.trim()) window.location.href='/search?q='+encodeURIComponent(q.trim());
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', ()=>{
+  setLang(currentLang);
+  checkAuth();
+  setupNavIndicator();
+  // Hide splash
+  setTimeout(()=>{
+    let splash=document.getElementById('splash');
+    if(splash){splash.classList.add('hidden');}
+  }, 800);
+});
+</script>
+<script>{% block extra_js %}{% endblock %}</script>
+<script>document.addEventListener("DOMContentLoaded", function(){ lucide.createIcons(); });</script></body>
+</html>

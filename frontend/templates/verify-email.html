@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Donglyn — Verifikasi Email</title>
+<link rel="icon" type="image/png" href="/asset/favicon.png">
+<link rel="stylesheet" href="/static/css/output.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+body{min-height:100vh;display:flex;flex-direction:column;background:#141414;color:#fff}
+.bg-hero{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;background:url('/asset/bg-login & register.png') center/cover no-repeat}
+.bg-hero::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55)}
+.container{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column}
+.main{flex:1;display:flex;align-items:center;justify-content:center;padding:0 16px 60px}
+.verify-box{background:rgba(0,0,0,0.75);border-radius:4px;padding:48px 68px 60px;width:100%;max-width:450px;text-align:center}
+@media(max-width:500px){.verify-box{padding:40px 28px;max-width:100%}}
+.verify-icon{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:36px}
+.verify-icon.success{background:rgba(34,197,94,0.15);color:#22c55e;border:2px solid rgba(34,197,94,0.3)}
+.verify-icon.error{background:rgba(239,68,68,0.15);color:#ef4444;border:2px solid rgba(239,68,68,0.3)}
+.verify-icon.expired{background:rgba(234,179,8,0.15);color:#eab308;border:2px solid rgba(234,179,8,0.3)}
+.verify-icon.invalid{background:rgba(148,163,184,0.15);color:#94a3b8;border:2px solid rgba(148,163,184,0.3)}
+.verify-box h1{font-size:22px;font-weight:700;margin-bottom:8px}
+.verify-box p{color:#8c8c8c;font-size:15px;line-height:1.6;margin-bottom:24px}
+.btn-login{display:inline-block;background:#e50914;color:#fff;font-size:14px;font-weight:700;padding:12px 36px;border:none;border-radius:2px;cursor:pointer;text-decoration:none;transition:background .2s}
+.btn-login:hover{background:#f40612}
+.nav-logo{height:42px;width:auto}
+</style>
+</head>
+<body>
+<div class="bg-hero"></div>
+<div class="container">
+  <nav class="flex items-center px-8 py-4">
+    <a href="/"><img src="/asset/logo.png" alt="Donglyn" title="Donglyn" class="nav-logo" onerror="this.style.display='none'"></a>
+  </nav>
+  <div class="main">
+    <div class="verify-box">
+      {% if status == 'success' %}
+      <div class="verify-icon success"></div>
+      <h1>Verifikasi Berhasil!</h1>
+      <p>{{ message }}</p>
+      <a href="/login" class="btn-login">Masuk Sekarang</a>
+      {% elif status == 'expired' %}
+      <div class="verify-icon expired"></div>
+      <h1>Link Expired</h1>
+      <p>{{ message }}</p>
+      <a href="/register" class="btn-login">Daftar Ulang</a>
+      {% elif status == 'error' %}
+      <div class="verify-icon error"></div>
+      <h1>Verifikasi Gagal</h1>
+      <p>{{ message }}</p>
+      <a href="/" class="btn-login">Kembali ke Beranda</a>
+      {% else %}
+      <div class="verify-icon invalid"></div>
+      <h1>Token Tidak Valid</h1>
+      <p>{{ message }}</p>
+      <a href="/register" class="btn-login">Daftar Ulang</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<script>document.addEventListener("DOMContentLoaded", function(){ lucide.createIcons(); });</script></body>
+</html>

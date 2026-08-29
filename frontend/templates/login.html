@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>Donglyn — Masuk</title>
+<link rel="icon" type="image/png" href="/asset/favicon.png">
+<link rel="stylesheet" href="/static/css/output.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/brands.min.css"/>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+html,body{overflow-x:hidden}
+body{min-height:100vh;display:flex;flex-direction:column;background:#141414}
+
+.bg-hero{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;background:url('/asset/bg-login & register.png') center/cover no-repeat}
+.bg-hero::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55)}
+
+.container{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column}
+
+/* Navbar */
+.navbar{display:flex;align-items:center;padding:16px 32px}
+.navbar img{height:42px;width:auto}
+
+/* Main content */
+.main{flex:1;display:flex;align-items:center;justify-content:center;padding:0 16px 60px}
+
+/* Login card */
+.login-box{background:rgba(0,0,0,0.75);border-radius:4px;padding:48px 68px 60px;width:100%;max-width:450px;display:flex;flex-direction:column}
+@media(max-width:500px){.login-box{padding:40px 28px;max-width:100%}}
+
+.login-box h1{color:#fff;font-size:32px;font-weight:700;margin-bottom:28px}
+
+/* Inputs */
+.field{position:relative;margin-bottom:16px}
+.field input{width:100%;background:#1a1a1a;border:1px solid #333;border-radius:2px;padding:18px 16px 6px;font-size:16px;color:#fff;outline:none;transition:border-color .2s}
+.field input:focus{border-color:#fff}
+.field input:placeholder-shown + .label-text{transform:translateY(0);font-size:16px;top:16px}
+.field input:focus + .label-text{font-size:12px;top:5px;color:#8c8c8c}
+.field .label-text{position:absolute;left:16px;top:5px;font-size:12px;color:#8c8c8c;pointer-events:none;transition:all .15s ease;z-index:1}
+.field .toggle-pass{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#8c8c8c;cursor:pointer;font-size:18px;padding:4px}
+.field .toggle-pass:hover{color:#fff}
+.field input:focus ~ .toggle-pass{top:16px;transform:none}
+
+/* Button Masuk */
+.btn-masuk{width:100%;background:#e50914;border:none;color:#fff;font-size:16px;font-weight:700;padding:14px;border-radius:2px;cursor:pointer;transition:background .2s;margin-top:16px}
+.btn-masuk:hover{background:#f40612}
+.btn-masuk:disabled{opacity:.5;cursor:not-allowed}
+
+/* Divider */
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0}
+.divider hr{flex:1;border:none;border-top:1px solid #333}
+.divider span{color:#8c8c8c;font-size:14px;white-space:nowrap}
+
+/* Gunakan Kode Masuk */
+.btn-kode{width:100%;background:transparent;border:1px solid #808080;border-radius:2px;color:#fff;font-size:14px;font-weight:600;padding:12px;cursor:pointer;transition:all .2s;text-align:center}
+.btn-kode:hover{background:rgba(255,255,255,0.08);border-color:#fff}
+.btn-kode.active{background:#333;border-color:#333}
+
+/* Spasi antar tombol bantuan (Kode Masuk <-> Google) */
+.google-wrap{margin-top:16px}
+.google-wrap .g_id_signin{width:100%!important}
+
+/* Links */
+.lupa-link{color:#fff;font-size:14px;text-decoration:underline;text-align:center;margin-top:14px;display:block;cursor:pointer}
+.lupa-link:hover{color:#b3b3b3}
+
+/* Remember */
+.remember-row{display:flex;align-items:center;gap:8px;margin-top:14px}
+.remember-row input[type="checkbox"]{width:16px;height:16px;accent-color:#e50914;cursor:pointer}
+.remember-row label{color:#b3b3b3;font-size:14px;cursor:pointer}
+
+/* Sign up */
+.signup-text{color:#8c8c8c;font-size:14px;margin-top:auto;padding-top:60px}
+.signup-text a{color:#fff;text-decoration:none;font-weight:600}
+.signup-text a:hover{text-decoration:underline}
+
+/* Recaptcha */
+.recaptcha-text{font-size:11px;color:#8c8c8c;line-height:1.5;margin-top:16px}
+
+/* Error */
+.error-msg{background:rgba(229,9,20,0.15);border:1px solid rgba(229,9,20,0.3);color:#f87171;padding:10px 14px;border-radius:2px;font-size:13px;margin-bottom:12px;display:none}
+.error-msg.show{display:block}
+.btn-resend-inline{background:none;border:1px solid #555;color:#e50914;padding:4px 10px;border-radius:2px;cursor:pointer;font-size:12px;margin-left:6px;transition:all .2s}
+.btn-resend-inline:hover{border-color:#e50914;background:rgba(229,9,20,0.1)}
+
+/* Phone OTP section */
+.phone-section{display:none}
+.phone-section.active{display:block}
+.email-section.hidden{display:none}
+
+.otp-group .otp-input{width:100%;background:#1a1a1a;border:1px solid #333;border-radius:2px;padding:18px 16px 6px;font-size:16px;color:#fff;outline:none;text-align:center;letter-spacing:12px;font-weight:700;font-size:28px}
+.otp-group .otp-input:focus{border-color:#fff}
+.otp-group .otp-input:placeholder-shown + .label-text{font-size:16px;top:16px;letter-spacing:normal;text-align:left}
+.otp-group .otp-input:focus + .label-text{font-size:12px;top:5px;letter-spacing:normal;text-align:left;color:#8c8c8c}
+.otp-group .label-text{position:absolute;left:16px;top:5px;font-size:12px;color:#8c8c8c;pointer-events:none;transition:all .15s ease}
+.otp-group{position:relative;margin-bottom:16px}
+
+.resend-otp{color:#e50914;font-size:14px;cursor:pointer;text-align:center;margin-top:10px}
+.resend-otp:hover{text-decoration:underline}
+.resend-otp.disabled{color:#666;cursor:not-allowed;pointer-events:none}
+
+/* Success message */
+.otp-success{background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.3)!important;color:#4ade80!important}
+.hidden-section{display:none}
+.footer p{color:#808080;font-size:13px}
+.footer a{color:#0071eb;text-decoration:none}
+.footer a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<div class="bg-hero"></div>
+
+<div class="container">
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="/"><img src="/asset/logo.png" alt="Donglyn"></a>
+  <div id="mobileMenu" class="lg:hidden bg-[#0a0a0a] border-t border-white/10 px-4 py-3 space-y-1">
+      <a href="/" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"> <span data-i18n="nav0">Beranda</span></a>
+      <a href="/genre" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"> <span data-i18n="nav1">Genre</span></a>
+      <a href="/schedule" class="flex py-2.5 text-sm font-bold text-white/60 hover:text-white items-center gap-3 rounded-lg hover:bg-white/5 px-3 transition"> <span data-i18n="nav2">Schedule</span></a>
+      <div class="pt-3 mt-2 border-t border-white/10 flex items-center gap-2">
+        <span class="text-[10px] font-black tracking-widest text-white/40 mr-1" data-i18n="menu_lang">BAHASA</span>
+        <button onclick="setLang('id')" aria-label='Bahasa Indonesia' id="lang-id" class="lang-btn">ID</button>
+        <button onclick="setLang('en')" aria-label='English' id="lang-en" class="lang-btn">EN</button>
+        <button onclick="setLang('ja')" aria-label='日本語' id="lang-ja" class="lang-btn">JA</button>
+        <button onclick="setLang('zh')" aria-label='中文' id="lang-zh" class="lang-btn">ZH</button>
+      </div>
+  </div>
+</nav>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="login-box">
+      <h1>Masuk</h1>
+
+      <!-- Email Form -->
+      <form id="emailForm" class="email-section">
+        <div class="field">
+          <input id="ident" type="text" placeholder=" " required autocomplete="username" aria-label="Email atau nomor ponsel">
+          <span class="label-text">Email atau nomor ponsel</span>
+        </div>
+        <div class="field">
+          <input id="password" type="password" placeholder=" " required autocomplete="current-password" aria-label="Sandi">
+          <span class="label-text">Sandi</span>
+          <span class="toggle-pass" onclick="let p=document.getElementById('password');p.type=p.type==='password'?'text':'password';this.querySelector('i').classList.toggle('fa-eye');this.querySelector('i').classList.toggle('fa-eye-slash')"><i data-lucide="eye"></i></span>
+        </div>
+        <p id="errEmail" class="error-msg"></p>
+        <button type="submit" id="btnEmail" class="btn-masuk">Masuk</button>
+      </form>
+
+      <!-- Phone OTP Section -->
+      <div id="phoneSection" class="phone-section">
+        <div id="phoneStep1">
+          <div class="field">
+            <input id="phone" type="tel" placeholder=" " required>
+            <span class="label-text">Nomor ponsel</span>
+          </div>
+          <p id="errPhone" class="error-msg"></p>
+          <p id="otpMsg" class="error-msg otp-success"></p>
+          <button type="button" id="btnSendOtp" class="btn-masuk" onclick="sendOTP()">Kirim Kode OTP</button>
+        </div>
+        <div id="phoneStep2" class="hidden-section">
+          <div class="otp-group">
+            <input id="otpCode" class="otp-input" type="text" maxlength="6" placeholder=" " required>
+            <span class="label-text">Masukkan kode</span>
+          </div>
+          <p id="otpVerifyMsg" class="error-msg"></p>
+          <button type="button" id="btnVerifyOtp" class="btn-masuk" onclick="verifyOTP()">Masuk</button>
+          <p id="resendOtp" class="resend-otp disabled" onclick="resendOTP()">Kirim ulang kode (60s)</p>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="divider" id="dividerMain"><hr><span>ATAU</span><hr></div>
+
+      <!-- Gunakan Kode Masuk -->
+      <button type="button" id="btnKodeMasuk" class="btn-kode" onclick="togglePhoneMode()">Gunakan Kode Masuk</button>
+
+      <!-- Google Login -->
+      <div class="google-wrap">
+        <div id="g_id_onload" data-client_id="{{ client_id }}" data-callback="handleGoogle" data-auto_prompt="false"></div>
+        <div class="g_id_signin w-full" data-type="standard" data-theme="filled_black" data-size="large" data-text="signin_with" data-shape="rectangular"></div>
+      </div>
+
+      <!-- Lupa Sandi -->
+      <a href="/forgot-password" class="lupa-link">Lupa sandi?</a>
+
+      <!-- Remember -->
+      <div class="remember-row">
+        <input type="checkbox" id="remember" checked>
+        <label for="remember">Ingat saya</label>
+      </div>
+
+      <!-- 2FA Section (hidden by default) -->
+      <div id="totpSection" class="hidden-section mt-4 pt-4 border-t border-white/10">
+        <p class="text-sm font-bold text-[#e50914] mb-3"> Verifikasi 2FA</p>
+        <div class="otp-group">
+          <input id="totpInput" class="otp-input" type="text" maxlength="6" placeholder=" " required>
+          <span class="label-text">Masukkan kode TOTP 6 digit</span>
+        </div>
+        <p id="errTotp" class="error-msg"></p>
+        <button type="button" onclick="submit2fa()" class="btn-masuk w-full">Masuk</button>
+      </div>
+
+      <!-- Sign up -->
+      <p class="signup-text">Baru di Donglyn? <a href="/register">Daftar sekarang.</a></p>
+      <p class="recaptcha-text">Halaman ini dilindungi oleh reCAPTCHA Google untuk memastikan kamu bukan bot.</p>
+    </div>
+  </div>
+
+  </div>
+</div>
+
+<script>
+let otpTimer = null;
+let isPhoneMode = false;
+
+function getCsrfToken() {
+  const meta = document.querySelector('meta[name="csrf-token"]');
+  return meta ? meta.getAttribute('content') : '';
+}
+
+function togglePhoneMode() {
+  isPhoneMode = !isPhoneMode;
+  const emailForm = document.getElementById('emailForm');
+  const phoneSection = document.getElementById('phoneSection');
+  const btnKode = document.getElementById('btnKodeMasuk');
+  const dividerMain = document.getElementById('dividerMain');
+
+  if (isPhoneMode) {
+    emailForm.classList.add('hidden');
+    phoneSection.classList.add('active');
+    btnKode.textContent = 'Gunakan Email';
+    btnKode.classList.add('active');
+    document.getElementById('phoneStep1').style.display = 'block';
+    document.getElementById('phoneStep2').style.display = 'none';
+  } else {
+    emailForm.classList.remove('hidden');
+    phoneSection.classList.remove('active');
+    btnKode.textContent = 'Gunakan Kode Masuk';
+    btnKode.classList.remove('active');
+    document.getElementById('phoneStep1').style.display = 'block';
+    document.getElementById('phoneStep2').style.display = 'none';
+  }
+  hideErrors();
+}
+
+function hideErrors() {
+  document.querySelectorAll('.error-msg').forEach(e => { e.classList.remove('show'); e.style.display = 'none'; e.textContent = ''; });
+}
+
+// Email login
+document.getElementById('emailForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('btnEmail');
+  const err = document.getElementById('errEmail');
+  btn.disabled = true;
+  btn.innerHTML = ' Masuk...';
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
+      credentials: 'include',
+      body: JSON.stringify({
+        username: document.getElementById('ident').value.trim(),
+        email: document.getElementById('ident').value.trim(),
+        password: document.getElementById('password').value,
+        remember: document.getElementById('remember').checked
+      })
+    });
+    const j = await res.json();
+    if (j.status === 'success') location.href = '/';
+    else if (j.status === 'needs_2fa') {
+      document.getElementById('totpSection').classList.remove('hidden-section');
+      document.getElementById('totpInput').focus();
+    } else {
+      if (j.not_verified) {
+        err.innerHTML = j.message + ' <button onclick="resendVerify(\'' + (j.email || '') + '\')" class="btn-resend-inline">Kirim Ulang</button>';
+      } else {
+        err.textContent = j.message;
+      }
+      err.classList.add('show');
+      autoHideErrors();
+    }
+  } catch (e) { err.textContent = 'Terjadi kesalahan'; err.classList.add('show'); autoHideErrors(); }
+  finally { btn.disabled = false; btn.textContent = 'Masuk'; }
+});
+
+// Auto-hide error messages after 5 seconds
+function autoHideErrors() {
+  document.querySelectorAll('.error-msg.show').forEach(el => {
+    setTimeout(() => { el.classList.remove('show'); el.style.display = 'none'; }, 5000);
+  });
+}
+
+async function resendVerify(email) {
+  try {
+    const res = await fetch('/api/auth/resend-verification', {
+      method: 'POST', headers: {'Content-Type':'application/json'}, credentials: 'include',
+      body: JSON.stringify({email})
+    });
+    const j = await res.json();
+    const err = document.getElementById('errEmail');
+    err.textContent = j.message || 'Email verifikasi dikirim ulang';
+    err.classList.add('show');
+  } catch { }
+}
+
+// 2FA TOTP login
+async function submit2fa() {
+  const code = document.getElementById('totpInput').value.trim();
+  const err = document.getElementById('errTotp');
+  if (!code || code.length !== 6) { err.textContent = 'Masukkan kode 6 digit'; err.classList.add('show'); return; }
+  try {
+    // Determine if this is Google login or password login
+    const isGoogle = window._googlePending || false;
+    const endpoint = isGoogle ? '/api/auth/2fa-login' : '/api/auth/2fa-login';
+    const res = await fetch(endpoint, {
+      method: 'POST', headers: {'Content-Type':'application/json'}, credentials: 'include',
+      body: JSON.stringify({code})
+    });
+    const j = await res.json();
+    if (j.status === 'success') {
+      window._googlePending = false;
+      location.href = '/';
+    } else {
+      err.textContent = j.message || 'Kode salah';
+      err.classList.add('show');
+    }
+  } catch (e) { err.textContent = 'Terjadi kesalahan'; err.classList.add('show'); }
+}
+async function sendOTP() {
+  const phone = document.getElementById('phone').value.trim();
+  const err = document.getElementById('errPhone');
+  const msg = document.getElementById('otpMsg');
+  if (!phone) { err.textContent = 'Masukkan nomor ponsel'; err.classList.add('show'); return; }
+
+  const btn = document.getElementById('btnSendOtp');
+  btn.disabled = true;
+  btn.innerHTML = ' Mengirim...';
+
+  try {
+    const res = await fetch('/api/auth/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ phone })
+    });
+    const j = await res.json();
+    if (j.status === 'success') {
+      document.getElementById('phoneStep1').style.display = 'none';
+      document.getElementById('phoneStep2').style.display = 'block';
+      msg.textContent = j.message || 'Kode OTP terkirim';
+      msg.style.display = 'block';
+      startResendTimer();
+    } else {
+      err.textContent = j.message;
+      err.classList.add('show');
+    }
+  } catch (e) {
+    err.textContent = 'Gagal mengirim OTP';
+    err.classList.add('show');
+    autoHideErrors();
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Kirim Kode OTP';
+  }
+}
+
+function startResendTimer() {
+  const resendEl = document.getElementById('resendOtp');
+  let sec = 60;
+  resendEl.classList.add('disabled');
+  resendEl.textContent = `Kirim ulang kode (${sec}s)`;
+  clearInterval(otpTimer);
+  otpTimer = setInterval(() => {
+    sec--;
+    if (sec <= 0) {
+      clearInterval(otpTimer);
+      resendEl.textContent = 'Kirim ulang kode';
+      resendEl.classList.remove('disabled');
+    } else {
+      resendEl.textContent = `Kirim ulang kode (${sec}s)`;
+    }
+  }, 1000);
+}
+
+async function resendOTP() { await sendOTP(); }
+
+async function verifyOTP() {
+  const phone = document.getElementById('phone').value.trim();
+  const otp = document.getElementById('otpCode').value.trim();
+  const err = document.getElementById('otpVerifyMsg');
+
+  if (!otp || otp.length < 4) { err.textContent = 'Masukkan kode OTP yang valid'; err.classList.add('show'); return; }
+
+  const btn = document.getElementById('btnVerifyOtp');
+  btn.disabled = true;
+  btn.innerHTML = ' Memverifikasi...';
+
+  try {
+    const res = await fetch('/api/auth/verify-phone', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ phone, otp })
+    });
+    const j = await res.json();
+    if (j.status === 'success') location.href = '/';
+    else { err.textContent = j.message; err.classList.add('show'); }
+  } catch (e) {
+    err.textContent = 'Gagal memverifikasi';
+    err.classList.add('show');
+    autoHideErrors();
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Masuk';
+  }
+}
+
+// Google
+async function handleGoogle(resp) {
+  try {
+    const res = await fetch('/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ credential: resp.credential })
+    });
+    const j = await res.json();
+    if (j.status === 'success') location.href = '/';
+    else if (j.status === 'needs_2fa') {
+      document.getElementById('totpSection').classList.remove('hidden-section');
+      document.getElementById('totpInput').focus();
+      window._googlePending = true;
+    } else {
+      const e = document.getElementById('errEmail');
+      e.textContent = j.message;
+      e.classList.add('show');
+    }
+  } catch (e) {
+    const err = document.getElementById('errEmail');
+    err.textContent = 'Gagal login dengan Google';
+    err.classList.add('show');
+    autoHideErrors();
+  }
+}
+
+async function checkAuth() {
+  try {
+    const r = await fetch('/api/auth/me', {credentials: 'include'});
+    const j = await r.json();
+    if (j.logged_in) location.href = '/';
+  } catch (e) {}
+}
+document.addEventListener('DOMContentLoaded', checkAuth);
+</script>
+  <!-- FOOTER (sesuai index) -->
+  <footer class="relative z-10 bg-black border-t border-white/10 mt-8">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-10 py-10">
+      <img src="/asset/logo.png" alt="Donglyn" title="Donglyn" class="h-8 w-auto object-contain mb-5"/>
+      <div class="flex gap-4 text-white/60">
+        <a href="#" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition" aria-label="Instagram Donglyn" title="Instagram"><i class="fa-brands fa-instagram text-sm" aria-hidden="true"></i></a>
+        <a href="#" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition" aria-label="TikTok Donglyn" title="TikTok"><i class="fa-brands fa-tiktok text-sm" aria-hidden="true"></i></a>
+        <a href="#" class="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition" aria-label="Github Donglyn" title="Github"><i class="fa-brands fa-github text-sm" aria-hidden="true"></i></a>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-xs">
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80 hover:underline">Audio Description</a>
+          <a href="#" class="block hover:text-white/80">Investor Relations</a>
+          <a href="#" class="block hover:text-white/80">Legal Notices</a>
+          <a href="/" class="block hover:text-white">Beranda</a>
+        </div>
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80">Help Center</a>
+          <a href="#" class="block hover:text-white/80">Jobs</a>
+          <a href="#" class="block hover:text-white/80">Cookie Preferences</a>
+          <a href="/genre" class="block hover:text-white">Genre</a>
+        </div>
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80">Gift Cards</a>
+          <a href="#" class="block hover:text-white/80">Terms of Use</a>
+          <a href="#" class="block hover:text-white/80">Corporate Information</a>
+          <a href="/terbaru" class="block hover:text-white">Terbaru</a>
+        </div>
+        <div class="space-y-3 text-white/40">
+          <a href="#" class="block hover:text-white/80">Media Center</a>
+          <a href="#" class="block hover:text-white/80">Privacy</a>
+          <a href="#" class="block hover:text-white/80">Contact Us</a>
+          <a href="/bookmark" class="block hover:text-white">Bookmark</a>
+        </div>
+      </div>
+      <div class="mt-4">
+        <span class="text-[10px] font-black tracking-[0.25em] text-[#e50914] uppercase">CRAFTED BY</span>
+        <button id="donglynSecretTrigger" type="button" class="mt-0.5 block cursor-pointer rounded-lg border border-white/10 transition hover:border-red-500/60 hover:shadow-[0_0_18px_rgba(229,9,20,.25)]" aria-label="Vexalyn Developer" title="Vexalyn Developer">
+          <img src="/asset/dev-logo.png" alt="Vexalyn Developer" class="h-7 w-24 object-contain"/>
+        </button>
+      </div>
+      <div class="flex items-center justify-between mt-4">
+        <div class="flex items-center gap-1.5">
+          <span class="text-[10px] text-white/30"></span>
+          <button onclick="setLang('id')" aria-label='Bahasa Indonesia' id="ftr-lang-id" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-[#e50914] text-white">ID</button>
+          <button onclick="setLang('en')" aria-label='English' id="ftr-lang-en" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/50">EN</button>
+          <button onclick="setLang('ja')" aria-label='日本語' id="ftr-lang-ja" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/50">JP</button>
+          <button onclick="setLang('zh')" aria-label='中文' id="ftr-lang-zh" class="ftr-lang px-2 py-0.5 text-[10px] font-bold rounded bg-white/10 text-white/50">CN</button>
+        </div>
+        <p class="text-[11px] text-white/20">© 2026 Donglyn • Dibuat oleh Vexalyn Developer <span class="text-[#e50914] font-bold">[Vio Atmajaya]</span></p>
+      </div>
+    </div>
+  </footer>
+
+<script src="/static/js/ui.js"></script>
+<script>document.addEventListener("DOMContentLoaded", function(){ lucide.createIcons(); });</script></body>
+</html>

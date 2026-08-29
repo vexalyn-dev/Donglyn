@@ -1,3 +1,0 @@
-iili.io=https://iili.io/Cb5sosn.png
-catbox=https://files.catbox.moe/l03o9g.png
-imgur=https://i.imgur.com/xGSfveu.png

@@ -1,14 +1,28 @@
 services:
   - type: web
-    name: vexora
+    name: donglyn
     runtime: python
-    plan: free
-    buildCommand: pip install -r requirements.txt && ./build.sh
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    plan: starter
+    buildCommand: pip install -r requirements.txt && npm ci && bash build.sh
+    startCommand: gunicorn backend.app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
     envVars:
       - key: SECRET_KEY
         generateValue: true
       - key: PYTHON_VERSION
-        value: 3.11.4
+        value: 3.11
       - key: NODE_VERSION
         value: 18
+      - key: PLAYWRIGHT_DOWNLOAD_HOST
+        value: https://playwright.azureedge.net
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM_EMAIL
+        sync: false

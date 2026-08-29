@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}{% if query %}{{ query }} - {% endif %}Search - Donglyn
+<script>document.addEventListener("DOMContentLoaded", function(){ lucide.createIcons(); });</script>
+{% endblock %}
+
+{% block extra_css %}
+body { background:#0b0b0b; font-family:Inter,sans-serif; }
+    .brand { font-family:'Bebas Neue',sans-serif; letter-spacing:.08em; }
+    .search-card { background:#181818; transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease; }
+    .search-card:hover { transform:translateY(-5px); border-color:rgba(229,9,20,.7); box-shadow:0 16px 32px rgba(0,0,0,.32); }
+    .search-results-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,170px)); justify-content:center; gap:12px; }
+    .poster { background:#232323; }
+    .skeleton { background:linear-gradient(90deg,#171717 25%,#242424 50%,#171717 75%); background-size:200% 100%; animation:loading 1.2s infinite; }
+    @keyframes loading { to { background-position:-200% 0; } }
+    .search-scroll::-webkit-scrollbar { display:none; }
+    /* Nav sliding indicator */
+    .nav-wrap{position:relative}
+    .nav-indicator{position:absolute;bottom:-2px;height:2px;background:#e50914;border-radius:2px;transition:left .35s cubic-bezier(.4,0,.2,1),width .35s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px rgba(229,9,20,.7),0 0 20px rgba(229,9,20,.3);pointer-events:none;opacity:0}
+    .nav-indicator.active{opacity:1}
+    #mobileMenuSearchDropdown{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1),opacity .25s ease;opacity:0;padding:0 1rem}
+    #mobileMenuSearchDropdown.open{max-height:400px;opacity:1;padding:0.75rem 1rem}
+{% endblock %}
+
+{% block content %}
+<div id="mobileMenuSearchDropdown" class="lg:hidden bg-black border-t border-white/10 px-4 py-3 space-y-1">
+    <a href="/" class="flex py-2 text-sm font-bold text-white/70 hover:text-white items-center gap-2"> Beranda</a>
+    <a href="/genre" class="flex py-2 text-sm font-bold text-white/70 hover:text-white items-center gap-2"> Genre</a>
+    <a href="/schedule" class="flex py-2 text-sm font-bold text-white/70 hover:text-white items-center gap-2"> Schedule</a>
+    <a href="/bookmark" class="flex py-2 text-sm font-bold text-white/70 hover:text-white items-center gap-2"> Bookmark</a>
+    <a href="/riwayat" class="flex py-2 text-sm font-bold text-white/70 hover:text-white items-center gap-2"> Riwayat</a>
+    <div class="border-t border-white/10 mt-2 pt-2 space-y-1">
+      <a href="/login" class="flex py-2 text-sm font-bold text-white items-center gap-2"><i data-lucide="log-in" class="w-5""></i> Masuk</a>
+    </div>
+  </div>
+    </div>
+  </nav>
+
+  <main class="mx-auto max-w-[1500px] px-4 pb-8 pt-24 md:px-8 md:pb-12 md:pt-28">
+    <div class="mb-8 flex flex-col gap-3 border-b border-white/10 pb-6 sm:flex-row sm:items-end sm:justify-between">
+      <div><p class="mb-2 text-[10px] font-bold uppercase tracking-[.28em] text-[#e50914]">Donglyn DISCOVERY</p><h1 class="text-2xl font-black tracking-tight md:text-4xl">Hasil Pencarian</h1><p id="searchSummary" class="mt-2 text-sm text-white/45">Mencari data terbaru...</p></div>
+      <a href="/" class="text-sm font-bold text-white/55 hover:text-white"><i data-lucide="arrow-left" mr-2"></i>Kembali ke beranda</a>
+    </div>
+    <div id="searchState" class="search-results-grid"></div>
+    <section id="latestSection" class="mt-12 hidden border-t border-white/10 pt-8">
+      <div class="mb-5 flex items-end justify-between"><div><p class="mb-1 text-[10px] font-bold uppercase tracking-[.24em] text-[#e50914]">Live update</p><h2 class="text-xl font-black md:text-2xl">Rilisan Terbaru</h2></div><span id="latestCount" class="text-xs font-bold text-white/40"></span></div>
+      <div id="latestState" class="search-results-grid"></div>
+    </section>
+  </main>
+  <script>
+    const query = document.body.dataset.query || '';
+    const state = document.getElementById('searchState');
+    const summary = document.getElementById('searchSummary');
+    const box = document.getElementById('searchBox');
+
+    function showMessage(message, tone = 'muted') {
+      state.className = 'min-h-[260px] flex items-center justify-center';
+      state.innerHTML = `<div class="max-w-md text-center"><p class="text-sm font-bold ${tone === 'error' ? 'text-red-300' : 'text-white/55'}">${message}</p></div>`;
+    }
+    function showLoading() {
+      state.className = 'search-results-grid';
+      state.innerHTML = Array.from({length:12}, () => '<div class="overflow-hidden rounded border border-white/5 bg-[#181818]"><div class="poster skeleton"></div><div class="space-y-2 p-3"><div class="skeleton h-3 rounded"></div><div class="skeleton h-2 w-2/3 rounded"></div></div></div>').join('');
+    }
+    // Unified card design (same as index.html)
+function createCard(anime, isGrid){
+  let isCompleted=(anime.status||'').toLowerCase().includes("completed")||(anime.status||'').toLowerCase().includes("tamat");
+  let baseClass = isGrid ? "w-[148px] md:w-auto shrink-0 md:shrink" : "w-[148px] md:w-[170px] shrink-0";
+  return `
+  <div class="Donglyn-card premium-card group relative ${baseClass} bg-card rounded overflow-hidden flex flex-col snap-start border border-white/5 hover:border-Donglyn/30">
+    <a href="${anime.url}" class="block poster-ratio-2-3 overflow-hidden bg-[#181818]">
+      <img src="${anime.thumbnail}" alt="${anime.title}" class="w-full h-full object-cover group-hover:scale-[1.04] transition duration-500" loading="lazy" decoding="async">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg"></div>
+      </div>
+      <span class="absolute top-1.5 right-1.5 bg-black/70 backdrop-blur text-[10px] font-bold px-1.5 py-0.5 rounded text-white border border-white/20">${anime.label}</span>
+      ${isCompleted?`<span class="absolute top-1.5 left-1.5 bg-Donglyn text-white text-[9px] font-black px-1.5 py-0.5 rounded">TAMAT</span>`:`<span class="absolute top-1.5 left-1.5 bg-Donglyn text-white text-[9px] font-black px-1.5 py-0.5 rounded">BARU</span>`}
+      <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black to-transparent p-2 pt-6">
+        <span class="inline-flex items-center gap-1 bg-Donglyn text-white text-[10px] font-black px-1.5 py-0.5 rounded"><i data-lucide="closed-captioning" class="text-[10px]""></i> ${anime.episode}</span>
+      </div>
+    </a>
+    <div class="premium-shine"></div>
+    <div class="p-2 bg-[#181818] group-hover:bg-[#232323] transition relative z-10">
+      <a href="${anime.url}" class="block"><h3 class="text-[12px] font-semibold leading-tight line-clamp-2 min-h-[32px] group-hover:text-white">${anime.title}</h3></a>
+      <div class="flex items-center justify-between mt-1.5">
+        <span class="text-[11px] text-white/40 font-medium flex items-center gap-1"> ${anime.type}</span>
+        <span class="text-[11px] font-bold ${isCompleted?'text-emerald-400':'text-Donglyn'}">${anime.status}</span>
+      </div>
+    </div>
+  </div>`;
+}
+function createDonghuaCard(item) {
+  const div = document.createElement('div');
+  div.innerHTML = createCard(item, true);
+  return div.firstElementChild;
+}
+    function renderResults(items) {
+      state.className = 'search-results-grid';
+      state.replaceChildren();
+      items.forEach(item => state.appendChild(createDonghuaCard(item)));
+    }
+    function renderLatest(items) {
+      const section = document.getElementById('latestSection');
+      const target = document.getElementById('latestState');
+      if (!items || !items.length) return;
+      section.classList.remove('hidden');
+      document.getElementById('latestCount').textContent = `${items.length} judul live`;
+      target.className = 'search-results-grid';
+      target.replaceChildren();
+      items.forEach(item => {
+        target.appendChild(createDonghuaCard(item));
+      });
+    }
+    async function loadLatest() {
+      try {
+        const response = await fetch('/api/home', {credentials:'same-origin'}); const data = await response.json();
+        const section = (data.sections || []).find(item => /rilisan terbaru|terbaru/i.test(item.section_name || ''));
+        renderLatest(section ? section.data : []);
+      } catch (error) { console.warn('Latest release feed unavailable', error); }
+    }
+    async function loadSearch() {
+      if (!query) { summary.textContent = 'Masukkan kata kunci untuk mulai mencari.'; showMessage('Ketik judul donghua yang ingin kamu cari.'); loadLatest(); box.focus(); return; }
+      box.value = query; summary.textContent = `Mencari “${query}” dari sumber live...`; showLoading();
+      try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {credentials:'same-origin'});
+        const data = await response.json();
+        if (!response.ok || data.status !== 'success') throw new Error(data.message || 'Pencarian gagal');
+        summary.textContent = `${data.total || 0} judul ditemukan untuk “${query}”`;
+        if (!data.data || !data.data.length) { showMessage(`Tidak ada hasil untuk “${query}”.`); loadLatest(); } else renderResults(data.data);
+      } catch (error) { summary.textContent = 'Pencarian tidak tersedia saat ini.'; showMessage(error.message || 'Gagal mengambil hasil pencarian.', 'error'); }
+    }
+    document.getElementById('searchForm').addEventListener('submit', event => { if (!box.value.trim()) { event.preventDefault(); box.focus(); } });
+    loadSearch();
+    function moveNavIndicator(el){
+      let ind=document.querySelector('.nav-indicator'); if(!ind||!el) return;
+      let wrap=el.parentElement; let wRect=wrap.getBoundingClientRect(); let eRect=el.getBoundingClientRect();
+      ind.classList.add('active');
+      ind.style.left=(eRect.left-wRect.left)+'px';
+      ind.style.width=eRect.width+'px';
+    }
+    function setupNavIndicator(){
+      let wrap=document.querySelector('.nav-wrap'); if(!wrap) return;
+      let active=wrap.querySelector('a.text-white:not(.text-white\\/70)');
+      if(active) moveNavIndicator(active);
+      wrap.querySelectorAll('a[data-nav]').forEach(a=>{
+        a.addEventListener('mouseenter',()=>moveNavIndicator(a));
+        a.addEventListener('mouseleave',()=>{let cur=wrap.querySelector('a.text-white:not(.text-white\\/70)'); if(cur) moveNavIndicator(cur);});
+      });
+    }
+    document.addEventListener('DOMContentLoaded', setupNavIndicator);
+  </script>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Bookmark — Donglyn
+<script>document.addEventListener("DOMContentLoaded", function(){ lucide.createIcons(); });</script>
+{% endblock %}
+
+{% block extra_css %}
+#mobileMenu{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1),opacity .25s ease;opacity:0;padding:0 1rem}
+    #mobileMenu.open{max-height:400px;opacity:1;padding:0.75rem 1rem}
+    /* Nav sliding indicator */
+    .nav-wrap{position:relative}
+    .nav-indicator{position:absolute;bottom:-2px;height:2px;background:#e50914;border-radius:2px;transition:left .35s cubic-bezier(.4,0,.2,1),width .35s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px rgba(229,9,20,.7),0 0 20px rgba(229,9,20,.3);pointer-events:none;opacity:0}
+    .nav-indicator.active{opacity:1}
+    .dropdown-rounded{border-radius:4px}
+    .ham-btn{width:18px;height:12px;position:relative;display:block}
+    .ham-btn span{display:block;position:absolute;height:2px;width:100%;background:#fff;border-radius:2px;transition:all .3s cubic-bezier(.4,0,.2,1)}
+    .ham-btn span:nth-child(1){top:0;transform-origin:center}
+    .ham-btn span:nth-child(2){top:5px;transform-origin:center}
+    .ham-btn span:nth-child(3){top:10px;transform-origin:center}
+    .ham-btn.active span:nth-child(1){top:5px;transform:rotate(45deg);background:#e50914}
+    .ham-btn.active span:nth-child(2){opacity:0;transform:translateX(-8px)}
+    .ham-btn.active span:nth-child(3){top:5px;transform:rotate(-45deg);background:#e50914}
+{% endblock %}
+
+{% block content %}
+<section class="pt-20 md:pt-24 pb-6 bg-gradient-to-b from-[#0a0a0a] to-[#0a0a0a]">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-10">
+      <div class="flex items-center gap-2 text-[#e50914] text-xs font-black tracking-[0.18em]"> BOOKMARK</div>
+      <h1 class="font-black text-[28px] md:text-[36px] leading-none mt-2">Daftar Saya</h1>
+      <p class="text-sm text-white/50 mt-2">Donghua yang sudah kamu simpan.</p>
+    </div>
+  </section>
+
+  <section class="max-w-[1600px] mx-auto px-4 md:px-10 pb-10">
+    <div id="bookmarkGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4"></div>
+    <div id="emptyState" class="hidden text-center py-20">
+      <i data-lucide="bookmark text-5xl text-white/15 mb-4"></i>
+      <p class="text-sm font-bold text-white/40">Belum ada bookmark</p>
+      <p class="text-xs text-white/25 mt-1">Klik ikon bookmark untuk menyimpan donghua favoritmu.</p>
+      <a href="/" class="inline-flex items-center gap-2 mt-5 bg-[#e50914] hover:bg-[#b20710] text-white px-5 py-2 rounded-lg text-xs font-bold transition"> Ke Beranda</a>
+    </div>
+  </section><script>
+async function loadBookmarks(){
+  try{
+    let r=await fetch('/api/auth/me',{credentials:'include'});let j=await r.json();
+    if(!j.logged_in){location.href='/login';return;}
+    document.getElementById('navAvatar').src=j.user.avatar||'https://i.pravatar.cc/100?u='+encodeURIComponent(j.user.username);
+    document.getElementById('dropAvatar').src=j.user.avatar||'https://i.pravatar.cc/100?u='+encodeURIComponent(j.user.username);
+    document.getElementById('dropName').textContent=j.user.username;
+    document.getElementById('dropEmail').textContent=j.user.email||'';
+    document.getElementById('authNav').classList.add('hidden');
+    document.getElementById('userMenu').classList.remove('hidden');
+    document.getElementById('userMenu').classList.add('flex');
+    let bm=await VX.getBookmarks();
+    renderBookmarks(bm);
+  }catch(e){console.error(e);}
+}
+function renderBookmarks(bm){
+  let grid=document.getElementById('bookmarkGrid');
+  grid.innerHTML='';
+  if(!bm||bm.length===0){
+    document.getElementById('emptyState').classList.remove('hidden');
+    return;
+  }
+  document.getElementById('emptyState').classList.add('hidden');
+  bm.forEach(item=>{
+    let linkUrl = item.url || '#';
+    if (linkUrl.startsWith('https://anichin.moe') || linkUrl.startsWith('http://anichin.moe')) {
+      linkUrl = '/player?url=' + encodeURIComponent(linkUrl);
+    }
+    let thumb = item.thumbnail || item.poster || '';
+    let card=document.createElement('div');
+    card.className='group relative bg-[#181818] hover:bg-[#232323] border border-white/5 hover:border-white/15 rounded-lg overflow-hidden transition hover:scale-[1.02]';
+    let a=document.createElement('a');
+    a.href=linkUrl;
+    a.className='block';
+    a.innerHTML=`<div class="relative poster-ratio-2-3 overflow-hidden"><img loading="lazy" decoding="async" src="${item.thumbnail||item.poster||''}" alt="${item.title||''}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 300%22 fill=%22%23232323%22><rect width=%22200%22 height=%22300%22/><text x=%22100%22 y=%22150%22 text-anchor=%22middle%22 fill=%22%23444%22 font-size=%2214%22>No Image</text></svg>'"/></div><div class="p-3"><p class="text-sm font-bold truncate">${item.title||'Untitled'}</p></div>`;
+    card.appendChild(a);
+    let btn=document.createElement('button');
+    btn.className='absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-black/70 text-white/80 hover:text-red-400 hover:bg-black/90 transition z-10';
+    btn.title='Hapus dari bookmark';
+    btn.innerHTML='';
+    btn.addEventListener('click', async (e)=>{ e.preventDefault(); e.stopPropagation(); await VX.removeBookmark(item.url); renderBookmarks(await VX.getBookmarks()); });
+    card.appendChild(btn);
+    grid.appendChild(card);
+  });
+}
+document.addEventListener('DOMContentLoaded', loadBookmarks);
+window.addEventListener('click',e=>{if(!e.target.closest('#userMenu')){let d=document.getElementById('userDropdown');if(d)d.classList.add('hidden');}});
+function moveNavIndicator(el){
+  let ind=document.querySelector('.nav-indicator'); if(!ind||!el) return;
+  let wrap=el.parentElement; let wRect=wrap.getBoundingClientRect(); let eRect=el.getBoundingClientRect();
+  ind.classList.add('active');
+  ind.style.left=(eRect.left-wRect.left)+'px';
+  ind.style.width=eRect.width+'px';
+}
+function setupNavIndicator(){
+  let wrap=document.querySelector('.nav-wrap'); if(!wrap) return;
+  let active=wrap.querySelector('a.text-white:not(.text-white\\/70)');
+  if(active) moveNavIndicator(active);
+  wrap.querySelectorAll('a[data-nav]').forEach(a=>{
+    a.addEventListener('mouseenter',()=>moveNavIndicator(a));
+    a.addEventListener('mouseleave',()=>{let cur=wrap.querySelector('a.text-white:not(.text-white\\/70)'); if(cur) moveNavIndicator(cur);});
+  });
+}
+document.addEventListener('DOMContentLoaded', setupNavIndicator);
+function toggleMobileMenu(){
+  let m=document.getElementById('mobileMenu');
+  let btn=document.getElementById('mobileMenuBtn');
+  let ham=document.getElementById('hamIconBookmark');
+  let isOpen=m.classList.contains('open');
+  m.classList.toggle('open');
+  if(ham) ham.classList.toggle('active',!isOpen);
+  if(btn) btn.classList.toggle('open',!isOpen);
+}
+</script>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}

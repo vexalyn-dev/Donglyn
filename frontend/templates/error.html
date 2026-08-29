@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ code }} — Donglyn</title>
+    <link rel="icon" type="image/png" href="/asset/favicon.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      src="https://unpkg.com/lucide@latest"></script><script src="https://unpkg.com/lucide@latest"
+    />
+    <link rel="stylesheet" href="/static/css/output.css" />
+    <style>
+      * {
+        font-family: "Inter", sans-serif;
+      }
+      body {
+        background: #0a0a0a;
+        color: #fff;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+      }
+      .glow {
+        position: absolute;
+        width: 520px;
+        height: 520px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(229, 9, 20, 0.18),
+          transparent 70%
+        );
+        filter: blur(40px);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -55%);
+      }
+      .err-code {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: clamp(110px, 22vw, 200px);
+        line-height: 0.9;
+        letter-spacing: 6px;
+        color: #fff;
+        text-shadow: 0 0 30px rgba(229, 9, 20, 0.5);
+        position: relative;
+      }
+      .err-code span {
+        color: #e50914;
+      }
+      .float {
+        animation: float 4s ease-in-out infinite;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-12px);
+        }
+      }
+      .glitch {
+        animation: glitch 2.6s infinite;
+      }
+      @keyframes glitch {
+        0%,
+        92%,
+        100% {
+          transform: translate(0, 0);
+        }
+        93% {
+          transform: translate(-3px, 1px);
+        }
+        95% {
+          transform: translate(3px, -1px);
+        }
+        97% {
+          transform: translate(-2px, 0);
+        }
+      }
+      .home-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: #e50914;
+        color: #fff;
+        font-weight: 800;
+        padding: 13px 30px;
+        border-radius: 9px;
+        transition: all 0.25s ease;
+        text-decoration: none;
+        box-shadow: 0 8px 30px rgba(229, 9, 20, 0.35);
+      }
+      .home-btn:hover {
+        background: #f40612;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(229, 9, 20, 0.5);
+      }
+      .home-btn i {
+        transition: transform 0.25s;
+      }
+      .home-btn:hover i {
+        transform: translateX(-4px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="glow"></div>
+    <div class="relative z-10 max-w-xl w-full px-6 text-center">
+      <!-- Custom SVG: signal putus + siluet anime misterius -->
+      <div class="float mb-2 flex justify-center">
+        <svg
+          width="180"
+          height="180"
+          viewBox="0 0 200 200"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          class="glitch"
+        >
+          <defs>
+            <linearGradient
+              id="rg"
+              x1="0"
+              y1="0"
+              x2="200"
+              y2="200"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#e50914" />
+              <stop offset="1" stop-color="#ff3b44" />
+            </linearGradient>
+          </defs>
+          <!-- layar rusak -->
+          <rect
+            x="34"
+            y="40"
+            width="132"
+            height="92"
+            rx="12"
+            stroke="url(#rg)"
+            stroke-width="4"
+            fill="rgba(229,9,20,0.06)"
+          />
+          <path
+            d="M34 70 L90 110 L70 122 L120 150 L150 128"
+            stroke="url(#rg)"
+            stroke-width="3"
+            fill="none"
+            opacity="0.8"
+          />
+          <path
+            d="M120 52 L160 84"
+            stroke="#fff"
+            stroke-width="2"
+            opacity="0.3"
+          />
+          <!-- siluet anime -->
+          <circle
+            cx="100"
+            cy="86"
+            r="15"
+            fill="#0a0a0a"
+            stroke="url(#rg)"
+            stroke-width="3"
+          />
+          <path
+            d="M82 118 Q100 96 118 118 L116 132 L84 132 Z"
+            fill="#0a0a0a"
+            stroke="url(#rg)"
+            stroke-width="3"
+          />
+          <!-- antena putus -->
+          <path d="M100 40 L100 22" stroke="url(#rg)" stroke-width="3" />
+          <path
+            d="M100 30 L86 18 M100 30 L114 18"
+            stroke="#ff3b44"
+            stroke-width="3"
+            opacity="0.7"
+          />
+          <circle cx="86" cy="18" r="3" fill="#e50914" />
+          <circle cx="114" cy="18" r="3" fill="#e50914" />
+          <!-- tanda seru mengambang -->
+          <text
+            x="150"
+            y="60"
+            font-family="Bebas Neue, sans-serif"
+            font-size="26"
+            fill="#e50914"
+          >
+            !
+          </text>
+        </svg>
+      </div>
+
+      <div class="err-code"><span>{{ code }}</span></div>
+      <h1 class="font-black text-2xl md:text-3xl mt-1">{{ title }}</h1>
+      <p class="text-white/60 text-sm md:text-base mt-3 leading-relaxed">
+        {{ message }}
+      </p>
+
+      <div
+        class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3"
+      >
+        <a href="/" class="home-btn"
+          ><i data-lucide="arrow-left""></i> Balik ke Beranda</a
+        >
+        <button
+          onclick="history.back()"
+          class="text-white/50 hover:text-white text-sm font-bold transition px-4 py-2"
+        >
+          <i data-lucide="rotate-back" mr-1"></i> Kembali ke halaman
+          sebelumnya
+        </button>
+      </div>
+
+      <p class="text-white/20 text-[11px] mt-10 tracking-widest">
+        Donglyn • Dibuat oleh Vexalyn Developer
+      </p>
+    </div>
+
+    <script src="/static/js/ui.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function(){ lucide.createIcons(); });</script></body>
+</html>

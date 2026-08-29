@@ -1,0 +1,1240 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dev Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil:wght@500;700;900&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/output.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
+    <style>
+      :root {
+        --void: #04070a;
+        --panel: #080d11;
+        --panel-2: #0b1116;
+        --line: rgba(57, 255, 142, 0.16);
+        --line-soft: rgba(200, 210, 205, 0.08);
+        --phosphor: #39ff8e;
+        --phosphor-dim: #1c8f56;
+        --alert: #ff4757;
+        --paper: #c9c2ab;
+        --steel: #8a95a1;
+        --ink: #e7ece9;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "JetBrains Mono", monospace;
+        background: var(--void);
+        color: var(--ink);
+        letter-spacing: 0.01em;
+      }
+      .stencil {
+        font-family: "Big Shoulders Stencil", sans-serif;
+        letter-spacing: 0.03em;
+      }
+
+      /* --- signature: CRT scanline + vignette overlay across the whole desk --- */
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 40;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0) 0px,
+          rgba(0, 0, 0, 0) 2px,
+          rgba(0, 0, 0, 0.14) 3px
+        );
+        mix-blend-mode: overlay;
+        opacity: 0.55;
+      }
+      body::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 39;
+        pointer-events: none;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(0, 0, 0, 0) 55%,
+          rgba(0, 0, 0, 0.55) 100%
+        );
+      }
+      @keyframes scan-sweep {
+        0% {
+          transform: translateY(-100%);
+        }
+        100% {
+          transform: translateY(100%);
+        }
+      }
+      @keyframes radar-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes blink-dot {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.25;
+        }
+      }
+      @keyframes flicker {
+        0%,
+        96%,
+        100% {
+          opacity: 1;
+        }
+        97% {
+          opacity: 0.82;
+        }
+        98% {
+          opacity: 1;
+        }
+        99% {
+          opacity: 0.9;
+        }
+      }
+
+      ::-webkit-scrollbar {
+        width: 9px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #030507;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1c2b24;
+        border-radius: 9999px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--phosphor-dim);
+      }
+
+      /* --- signature: targeting-bracket frame on every panel --- */
+      .brk {
+        position: relative;
+      }
+      .brk::before,
+      .brk::after,
+      .brk > .brk-tr,
+      .brk > .brk-bl {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border-color: var(--line);
+        opacity: 0.9;
+      }
+      .brk::before {
+        top: -1px;
+        left: -1px;
+        border-top: 1.5px solid var(--phosphor-dim);
+        border-left: 1.5px solid var(--phosphor-dim);
+      }
+      .brk::after {
+        bottom: -1px;
+        right: -1px;
+        border-bottom: 1.5px solid var(--phosphor-dim);
+        border-right: 1.5px solid var(--phosphor-dim);
+      }
+
+      .panel-glass {
+        background: linear-gradient(
+          160deg,
+          rgba(11, 17, 22, 0.92),
+          rgba(4, 7, 10, 0.96)
+        );
+        border: 1px solid var(--line-soft);
+      }
+      .radar {
+        background: conic-gradient(
+          from 0deg,
+          rgba(57, 255, 142, 0.55),
+          transparent 28%
+        );
+        animation: radar-spin 3.4s linear infinite;
+      }
+      .dot-live {
+        animation: blink-dot 1.6s ease-in-out infinite;
+      }
+      .redact {
+        background: repeating-linear-gradient(
+          -45deg,
+          rgba(255, 71, 87, 0.06),
+          rgba(255, 71, 87, 0.06) 6px,
+          transparent 6px,
+          transparent 12px
+        );
+      }
+      .stamp {
+        transform: rotate(-8deg);
+        border: 2px solid rgba(255, 71, 87, 0.55);
+        color: rgba(255, 71, 87, 0.8);
+        font-family: "Big Shoulders Stencil", sans-serif;
+      }
+      .tab-active {
+        background: linear-gradient(
+          90deg,
+          rgba(57, 255, 142, 0.12),
+          rgba(57, 255, 142, 0.02)
+        );
+        border-color: rgba(57, 255, 142, 0.5) !important;
+        color: var(--phosphor) !important;
+        box-shadow: inset 3px 0 0 var(--phosphor);
+      }
+      .card-grid {
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      }
+      input {
+        background: rgba(3, 6, 8, 0.75) !important;
+        border-color: var(--line-soft) !important;
+        color: var(--ink);
+      }
+      input:focus {
+        outline: none;
+        border-color: var(--phosphor-dim) !important;
+        box-shadow: 0 0 0 3px rgba(57, 255, 142, 0.1);
+      }
+      input::placeholder {
+        color: #52605a;
+      }
+      .dossier-aside { border-color: rgba(200, 210, 205, 0.08); }
+      .radar-core { background: #020403; }
+      .uplink-badge { border-color: var(--line-soft); color: var(--steel); }
+      .nav-active-border { border-color: rgba(57, 255, 142, 0.5); }
+      .nav-border { border-color: var(--line-soft); }
+      .clearance-card { border-color: var(--line-soft); background: rgba(57, 255, 142, 0.03); }
+      .command-main { background: rgba(3, 5, 6, 0.4); }
+      .command-header { border-color: var(--line-soft); background: rgba(4, 7, 9, 0.88); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+      .soft-border { border-color: var(--line-soft); }
+      .vault-cell { border-color: var(--line-soft); background: rgba(0, 0, 0, 0.25); }
+      .stat-icon { border-color: rgba(57, 255, 142, 0.25); background: rgba(57, 255, 142, 0.06); }
+      .user-row, .log-card { background: rgba(255, 255, 255, 0.03); }
+      .log-card { border-color: var(--line-soft); background: rgba(0, 0, 0, 0.2); }
+      .pet-console { border-color: var(--line-soft); background: radial-gradient(circle at 50% 12%, rgba(57,255,142,.09), transparent 42%), linear-gradient(145deg, rgba(10,16,18,.96), rgba(3,6,8,.98)); }
+      .pet-console { position:fixed; right:24px; bottom:24px; z-index:45; width:min(720px,calc(100vw - 48px)); display:none; box-shadow:0 24px 80px rgba(0,0,0,.65); }
+      .pet-console.open { display:block; }
+      .nova-launcher { position:fixed; right:24px; bottom:24px; z-index:46; display:flex; height:54px; width:54px; align-items:center; justify-content:center; border:1px solid rgba(57,255,142,.55); border-radius:50%; background:linear-gradient(145deg,#15231f,#050807); color:var(--phosphor); box-shadow:0 0 0 4px rgba(57,255,142,.06),0 12px 30px rgba(0,0,0,.5); transition:transform .2s ease,box-shadow .2s ease; }
+      .nova-launcher:hover { transform:translateY(-3px) scale(1.04); box-shadow:0 0 0 6px rgba(57,255,142,.08),0 16px 36px rgba(0,0,0,.6); }
+      .nova-launcher.hidden { display:none; }
+      @media (max-width:640px) { .pet-console { right:12px; bottom:12px; width:calc(100vw - 24px); } .nova-launcher { right:16px; bottom:16px; } }
+      #petCanvas { display:block; width:100%; height:260px; cursor:grab; }
+      #petCanvas:active { cursor:grabbing; }
+      .pet-chat { max-height:148px; overflow:auto; }
+      .pet-message { border-left:2px solid var(--phosphor-dim); background:rgba(57,255,142,.04); }
+      .pet-message.user { border-left-color:var(--steel); background:rgba(200,210,205,.05); }
+      .pet-status-dot { box-shadow:0 0 12px currentColor; }
+      .terminal-window { background:#020405; border:1px solid rgba(200,210,205,.18); box-shadow:inset 0 0 40px rgba(57,255,142,.025), 0 18px 45px rgba(0,0,0,.3); }
+      .terminal-output { min-height:240px; max-height:380px; overflow:auto; white-space:pre-wrap; font:500 10px/1.45 "JetBrains Mono",monospace; color:var(--phosphor); }
+      .terminal-prompt { color:var(--phosphor); }
+      .terminal-input { min-width:0; border:0 !important; background:transparent !important; box-shadow:none !important; color:var(--ink); font:500 12px "JetBrains Mono",monospace; }
+      .terminal-input:focus { outline:none; }
+      .terminal-command { font:500 11px "JetBrains Mono",monospace; }
+      .terminal-output .output-ok { color:var(--phosphor); }
+      .terminal-output .output-warn { color:#f5c542; }
+      .terminal-output .output-error { color:var(--alert); }
+      .terminal-output .output-info { color:var(--steel); }
+      .terminal-boot { color:var(--steel); }
+      .boot-layout { display:grid; grid-template-columns:minmax(0,45%) minmax(0,55%); gap:18px; align-items:start; }
+      .boot-art { color:#6ccfff; white-space:pre; line-height:1.45; overflow:hidden; }
+      .boot-info { min-width:0; padding-top:2px; line-height:1.65; overflow-wrap:break-word; }
+      .terminal-boot b { color:#c9d0df; font-weight:700; }
+      .boot-name { color:#f2b4e3; font-weight:700; }
+      .boot-cyan { color:#79dbe4; }
+      .boot-pink { color:#e6a8dc; }
+      .boot-orange { color:#f5a66b; }
+      .boot-green { color:#9be59e; }
+      .boot-teal { color:#82d9d0; }
+      .boot-dim { color:#8290aa; }
+      .boot-prompt { color:var(--phosphor); font-weight:700; }
+      .boot-dots { display:inline-flex; gap:7px; margin-top:30px; }
+      .boot-dots i { display:block; width:8px; height:8px; border-radius:50%; background:#50566e; }
+      .boot-dots i:nth-child(2) { background:#abb8dc; }
+      .boot-dots i:nth-child(3) { background:#8ed9d1; }
+      .boot-dots i:nth-child(4) { background:#e5acd8; }
+      .boot-dots i:nth-child(5) { background:#83b3ef; }
+      .boot-dots i:nth-child(6) { background:#f2d297; }
+      .boot-dots i:nth-child(7) { background:#9bd997; }
+      .boot-dots i:nth-child(8) { background:#e989a6; }
+      @media (max-width:800px) { .boot-layout { grid-template-columns:1fr; gap:10px; } .boot-art { font-size:8px; } }
+      .db-metric-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+      .db-lower-grid { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr); gap:18px; }
+      .db-chart { display:flex; align-items:end; gap:12px; height:148px; padding:12px 4px 0; border-bottom:1px solid var(--line-soft); }
+      .db-chart-item { display:flex; min-width:48px; height:100%; flex:1; flex-direction:column; align-items:center; justify-content:end; gap:6px; }
+      .db-chart-bar { width:100%; min-height:5px; border:1px solid rgba(57,255,142,.4); background:linear-gradient(180deg,rgba(57,255,142,.7),rgba(57,255,142,.08)); }
+      .db-chart-label { max-width:72px; overflow:hidden; color:var(--steel); font-size:9px; text-align:center; text-overflow:ellipsis; white-space:nowrap; }
+      .db-chart-value { color:var(--phosphor); font-size:10px; font-weight:700; }
+      .db-lower-grid > .space-y-4 { grid-column:2; grid-row:1 / span 2; }
+      @media (max-width:900px) { .db-metric-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .db-lower-grid { grid-template-columns:1fr; } .db-lower-grid > .space-y-4 { grid-column:auto; grid-row:auto; } }
+      @media (max-width:520px) { .db-metric-grid { grid-template-columns:1fr; } }
+      .terminal-dot { display:block; width:8px; height:8px; border-radius:999px; }
+      .terminal-dot-red { background:#ff4757; box-shadow:0 0 8px rgba(255,71,87,.65); }
+      .terminal-dot-yellow { background:#f5c542; box-shadow:0 0 8px rgba(245,197,66,.6); }
+      .terminal-dot-green { background:#39ff8e; box-shadow:0 0 8px rgba(57,255,142,.65); }
+      .terminal-registry-modal { position:fixed; top:0; left:0; right:0; bottom:0; z-index:50; display:none; place-items:center; background:rgba(0,0,0,.68); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+      .terminal-registry-modal.open { display:grid; }
+      .terminal-registry-panel { width:min(92vw,520px); border:1px solid rgba(200,210,205,.22); border-radius:8px; background:linear-gradient(145deg,#101619,#050708); box-shadow:0 24px 70px rgba(0,0,0,.55); }
+    </style>
+  </head>
+  <body class="min-h-screen">
+    <div class="flex min-h-screen">
+      <!-- SIDEBAR: dossier / case tabs -->
+      <aside
+        class="dossier-aside w-72 border-r border-[--line-soft] bg-[#050809] p-5 hidden md:flex md:flex-col"
+      >
+        <div class="mb-8 flex items-center gap-3">
+          <div class="relative h-11 w-11 shrink-0">
+            <div
+              class="radar-core absolute inset-0 rounded-full border border-phosphor/30 overflow-hidden"
+            >
+              <div class="radar absolute inset-0 rounded-full"></div>
+            </div>
+            <div
+              class="absolute inset-0 flex items-center justify-center stencil text-lg font-black text-phosphor"
+            >
+              V
+            </div>
+          </div>
+          <div>
+            <div class="text-[10px] uppercase tracking-[0.32em] text-alert/80">
+              File-0 // Classified
+            </div>
+            <div class="stencil text-xl font-bold leading-none">
+              Donglyn DESK
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="uplink-badge mb-4 flex items-center gap-2 rounded-md border px-2.5 py-2 text-[10px] uppercase tracking-[0.2em]"
+        >
+          <span class="h-1.5 w-1.5 rounded-full bg-phosphor dot-live"></span>
+          Uplink secure
+        </div>
+
+        <nav class="space-y-1.5">
+          <button
+            class="nav-btn nav-active-border tab-active flex w-full items-center gap-3 rounded-md border px-3 py-3 text-left text-sm font-semibold transition"
+            data-tab="dashboard"
+          >
+            <span class="text-[10px] text-steel/70">00 /</span>
+            <i class="w-4 h-4"" data-lucide="radar"></i>
+            Overwatch
+          </button>
+          <button
+            class="nav-btn nav-border flex w-full items-center gap-3 rounded-md border px-3 py-3 text-left text-sm font-semibold text-white/60 transition hover:text-white"
+            data-tab="users"
+          >
+            <span class="text-[10px] text-steel/50">01 /</span>
+            <i class="w-4 h-4"" data-lucide="fingerprint"></i>
+            Personnel Files
+          </button>
+          <button
+            class="nav-btn nav-border flex w-full items-center gap-3 rounded-md border px-3 py-3 text-left text-sm font-semibold text-white/60 transition hover:text-white"
+            data-tab="logs"
+          >
+            <span class="text-[10px] text-steel/50">02 /</span>
+            <i data-lucide="scroll-text" class="w-4 h-4"></i>
+            Intercepts
+          </button>
+          <button
+            class="nav-btn nav-border flex w-full items-center gap-3 rounded-md border px-3 py-3 text-left text-sm font-semibold text-white/60 transition hover:text-white"
+            data-tab="cache"
+          >
+            <span class="text-[10px] text-steel/50">03 /</span>
+            <i data-lucide="database-zap" class="w-4 h-4"></i>
+            Cache Vault
+          </button>
+          <button
+            class="nav-btn nav-border flex w-full items-center gap-3 rounded-md border px-3 py-3 text-left text-sm font-semibold text-white/60 transition hover:text-white"
+            data-tab="status"
+          >
+            <span class="text-[10px] text-steel/50">04 /</span>
+            <i data-lucide="satellite-dish" class="w-4 h-4"></i>
+            Field Status
+          </button>
+          <button
+            class="nav-btn nav-border flex w-full items-center gap-3 rounded-md border px-3 py-3 text-left text-sm font-semibold text-white/60 transition hover:text-white"
+            data-tab="terminal"
+          >
+            <span class="text-[10px] text-steel/50">05 /</span>
+            <i class="w-4 h-4"" data-lucide="terminal"></i>
+            Field Terminal
+          </button>
+          <button
+            class="nav-btn nav-border flex w-full items-center gap-3 rounded-md border px-3 py-3 text-left text-sm font-semibold text-white/60 transition hover:text-white"
+            data-tab="database"
+          >
+            <span class="text-[10px] text-steel/50">06 /</span>
+            <i data-lucide="hard-drive" class="w-4 h-4"></i>
+            Database Intel
+          </button>
+        </nav>
+
+        <div
+          class="clearance-card mt-auto brk rounded-lg border p-4"
+        >
+          <div
+            class="mb-1 text-[10px] uppercase tracking-[0.24em] text-steel/70"
+          >
+            Clearance level
+          </div>
+          <div class="stencil text-base font-bold text-phosphor">
+            Donglyn — DEVELOPER
+          </div>
+          <div class="mt-2 text-[11px] text-steel">
+            Agent on file:
+            <span id="adminUsername" class="font-semibold text-white"
+              >Unknown</span
+            >
+          </div>
+        </div>
+      </aside>
+
+      <main class="flex-1 command-main">
+        <header
+          class="command-header border-b px-5 py-4 md:px-8"
+        >
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <div
+                class="flex items-center gap-2 text-[10px] uppercase tracking-[0.28em] text-alert/80"
+              >
+                <span class="stamp px-1.5 py-0.5 text-[9px]">TOP SECRET</span>
+                Restricted operations desk
+              </div>
+              <h1 class="stencil mt-1 text-2xl font-black tracking-wide">
+                COMMAND DASHBOARD
+              </h1>
+            </div>
+            <div class="flex items-center gap-3">
+              <button
+                id="refreshAll"
+                class="soft-border brk rounded-md border px-4 py-2 text-sm font-semibold text-white/75 hover:text-phosphor"
+              >
+                <i data-lucide="refresh-cw" class="mr-2 inline h-4 w-4"></i></i
+                >Re-scan
+              </button>
+              <button
+                id="adminLogout"
+                class="rounded-md border border-alert/30 bg-alert/10 px-4 py-2 text-sm font-bold text-alert hover:bg-alert/20"
+              >
+                <i class="mr-2 inline h-4 w-4"" data-lucide="lock"></i>Terminate
+                Link
+              </button>
+              <a
+                href="/"
+                class="rounded-md border border-phosphor/40 bg-phosphor/10 px-4 py-2 text-sm font-bold text-phosphor hover:bg-phosphor/20"
+                ><i data-lucide="arrow-left" class="mr-2 inline h-4 w-4"></i></i
+                >Exit to Field</a
+              >
+            </div>
+          </div>
+        </header>
+
+        <div class="p-5 md:p-8">
+          <section id="tab-dashboard" class="tab-panel">
+            <div id="statsGrid" class="card-grid grid gap-4"></div>
+
+            <div class="pet-console brk mt-6 overflow-hidden rounded-lg border">
+              <div class="flex flex-col gap-3 border-b border-white/10 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <div class="flex items-center gap-2 text-[10px] uppercase tracking-[0.24em] text-alert/80"><span class="h-1.5 w-1.5 rounded-full bg-phosphor pet-status-dot"></span>Field companion / online</div>
+                  <h2 class="stencil mt-1 text-xl font-bold tracking-wide">NOVA // OPERATIVE AI</h2>
+                  <p class="mt-1 text-xs text-steel">Interactive 3D system companion. Ask about the live desk state.</p>
+                </div>
+                <div class="flex items-center gap-2"><button id="petReset" class="rounded-md border border-white/15 px-3 py-2 text-xs font-bold text-white/70 hover:border-phosphor/40 hover:text-phosphor"><i data-lucide="rotate-ccw" class="mr-1 inline h-3.5 w-3.5"></i>Reset view</button><button id="petClose" class="rounded-md border border-alert/30 px-3 py-2 text-xs font-bold text-alert hover:bg-alert/10" title="Close Nova"><i class="h-4 w-4"" data-lucide="x"></i><span class="sr-only">Close Nova</span></button></div>
+              </div>
+              <div class="grid gap-0 lg:grid-cols-[1.05fr,0.95fr]">
+                <div class="relative min-h-[260px] border-b border-white/10 lg:border-b-0 lg:border-r">
+                  <canvas id="petCanvas" aria-label="Interactive 3D Nova companion"></canvas>
+                  <div class="pointer-events-none absolute bottom-3 left-4 text-[10px] uppercase tracking-[0.2em] text-steel/60">Drag to inspect // live telemetry</div>
+                </div>
+                <div class="p-4">
+                  <div id="petChat" class="pet-chat space-y-2 text-xs" aria-live="polite"></div>
+                  <form id="petForm" class="mt-3 flex gap-2">
+                    <input id="petInput" class="min-w-0 flex-1 rounded-md border px-3 py-2 text-xs outline-none" placeholder="Ask Nova: system status?" autocomplete="off" />
+                    <button class="rounded-md border border-phosphor/30 bg-phosphor/10 px-3 py-2 text-xs font-bold text-phosphor hover:bg-phosphor/20" type="submit"><i class="h-3.5 w-3.5"" data-lucide="send"></i><span class="sr-only">Send</span></button>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 grid gap-6 xl:grid-cols-[1.2fr,0.8fr]">
+              <div class="brk rounded-lg panel-glass p-5">
+                <div class="mb-4 flex items-center justify-between">
+                  <h2 class="stencil text-lg font-bold tracking-wide">
+                    Direct Action
+                  </h2>
+                  <span
+                    class="soft-border rounded border px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-steel"
+                    >Field ops</span
+                  >
+                </div>
+                <div class="flex flex-wrap gap-3">
+                  <button
+                    data-action="clear-cache"
+                    class="rounded-md border border-alert/30 bg-alert/10 px-4 py-2.5 text-sm font-bold text-alert hover:bg-alert/20"
+                  >
+                    <i class="mr-2 inline h-4 w-4"" data-lucide="flame"></i>Burn
+                    Cache
+                  </button>
+                  <button
+                    data-action="refresh-scraper"
+                    class="rounded-md border border-phosphor/30 bg-phosphor/5 px-4 py-2.5 text-sm font-semibold text-phosphor hover:bg-phosphor/15"
+                  >
+                    <i class="mr-2 inline h-4 w-4"" data-lucide="satellite"></i
+                    >Re-task Scraper
+                  </button>
+                  <button
+                    data-action="reload-logs"
+                    class="soft-border rounded-md border px-4 py-2.5 text-sm font-semibold text-white/75 hover:text-white"
+                  >
+                    <i data-lucide="file-text" class="mr-2 inline h-4 w-4"></i></i
+                    >Pull Intercepts
+                  </button>
+                  <button
+                    data-action="probe-uplink"
+                    class="rounded-md border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white/75 hover:border-phosphor/40 hover:text-phosphor"
+                  >
+                    <i data-lucide="radio-tower" class="mr-2 inline h-4 w-4"></i></i
+                    >Probe Uplink
+                  </button>
+                  <button
+                    data-action="sync-all"
+                    class="rounded-md border border-phosphor/40 bg-phosphor/10 px-4 py-2.5 text-sm font-bold text-phosphor hover:bg-phosphor/20"
+                  >
+                    <i data-lucide="refresh-cw" class="mr-2 inline h-4 w-4"></i></i
+                    >Sync All Scrapers
+                  </button>
+                </div>
+              </div>
+
+              <div class="brk rounded-lg panel-glass p-5">
+                <div class="mb-4 flex items-center justify-between">
+                  <h2 class="stencil text-lg font-bold tracking-wide">
+                    Vitals
+                  </h2>
+                  <span
+                    class="inline-flex items-center gap-2 rounded-full border border-phosphor/30 bg-phosphor/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-phosphor"
+                  >
+                    <span
+                      class="h-2 w-2 rounded-full bg-phosphor dot-live"
+                    ></span>
+                    Nominal
+                  </span>
+                </div>
+                <div class="space-y-3 text-sm text-white/70">
+                  <div
+                    class="soft-border flex items-center justify-between border-b pb-2"
+                  >
+                    <span class="text-steel">Runtime</span
+                    ><span id="runtimeStatus" class="font-semibold text-white"
+                      >--</span
+                    >
+                  </div>
+                  <div
+                    class="soft-border flex items-center justify-between border-b pb-2"
+                  >
+                    <span class="text-steel">DB State</span
+                    ><span id="dbStatus" class="font-semibold text-white"
+                      >--</span
+                    >
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-steel">Cache Mode</span
+                    ><span id="cacheStatus" class="font-semibold text-white"
+                      >--</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="tab-users" class="tab-panel hidden">
+            <div class="brk rounded-lg panel-glass p-5">
+              <div
+                class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+              >
+                <h2 class="stencil text-lg font-bold tracking-wide">
+                  Personnel Files
+                </h2>
+                <div class="flex w-full max-w-md items-center gap-2">
+                  <input
+                    id="userSearch"
+                    type="text"
+                    placeholder="query: username / email"
+                    class="w-full rounded-md border px-3 py-2.5 text-sm outline-none"
+                  />
+                  <button
+                    id="searchUsers"
+                    class="rounded-md border border-phosphor/30 bg-phosphor/10 px-3 py-2.5 text-sm font-bold text-phosphor hover:bg-phosphor/20"
+                  >
+                    Locate
+                  </button>
+                </div>
+              </div>
+              <div class="overflow-x-auto">
+                <table
+                  class="min-w-full border-separate border-spacing-y-2 text-left text-sm"
+                >
+                  <thead>
+                    <tr
+                      class="text-[10px] uppercase tracking-[0.18em] text-steel"
+                    >
+                      <th class="px-3 py-2 font-medium">File #</th>
+                      <th class="px-3 py-2 font-medium">Codename</th>
+                      <th class="px-3 py-2 font-medium">Contact — Mail</th>
+                      <th class="px-3 py-2 font-medium">Contact — Line</th>
+                      <th class="px-3 py-2 font-medium">Recruited</th>
+                      <th class="px-3 py-2 font-medium">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="userTableBody" class="text-white/80"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section id="tab-logs" class="tab-panel hidden">
+            <div class="brk rounded-lg panel-glass p-5">
+              <div class="mb-4 flex items-center justify-between">
+                <h2 class="stencil text-lg font-bold tracking-wide">
+                  Intercepted Transmissions
+                </h2>
+                <div class="flex items-center gap-2">
+                  <button
+                    id="loadLogs"
+                    class="soft-border rounded-md border px-3 py-2 text-sm font-semibold text-white/75 hover:text-white"
+                  >
+                    Re-sync
+                  </button>
+                  <button
+                    id="clearDevLogs"
+                    class="rounded-md border border-alert/30 bg-alert/10 px-3 py-2 text-sm font-bold text-alert hover:bg-alert/20"
+                  >
+                    <i data-lucide="trash-2" class="mr-2 inline h-4 w-4"></i>Clear Logs
+                  </button>
+                </div>
+              </div>
+              <div id="logsContainer" class="space-y-2"></div>
+            </div>
+          </section>
+
+          <section id="tab-cache" class="tab-panel hidden">
+            <div class="grid gap-6 lg:grid-cols-2">
+              <div class="brk rounded-lg panel-glass p-5">
+                <h2 class="stencil mb-4 text-lg font-bold tracking-wide">
+                  Cache Vault
+                </h2>
+                <div class="space-y-3 text-sm text-white/70">
+                  <div
+                    class="vault-cell flex items-center justify-between rounded-md border px-3 py-3"
+                  >
+                    <span class="text-steel">Vault Status</span
+                    ><span id="cacheOnlyStatus" class="font-semibold text-white"
+                      >--</span
+                    >
+                  </div>
+                  <div
+                    class="vault-cell flex items-center justify-between rounded-md border px-3 py-3"
+                  >
+                    <span class="text-steel">Sealed Entries</span
+                    ><span id="cacheEntryCount" class="font-semibold text-white"
+                      >--</span
+                    >
+                  </div>
+                </div>
+                <button
+                  data-action="clear-cache"
+                  class="mt-5 w-full rounded-md border border-alert/30 bg-alert/10 px-4 py-3 text-sm font-bold text-alert hover:bg-alert/20"
+                >
+                  <i class="mr-2 inline h-4 w-4"" data-lucide="flame"></i>Burn
+                  Vault Now
+                </button>
+              </div>
+              <div class="brk rounded-lg panel-glass p-5">
+                <h2 class="stencil mb-4 text-lg font-bold tracking-wide">
+                  Scraper Re-tasking
+                </h2>
+                <p class="mb-4 text-sm text-steel">
+                  Dispatch a fresh collection cycle to refresh banner and
+                  schedule intel without dropping the current session.
+                </p>
+                <button
+                  data-action="refresh-scraper"
+                  class="w-full rounded-md border border-phosphor/30 bg-phosphor/10 px-4 py-3 text-sm font-semibold text-phosphor hover:bg-phosphor/20"
+                >
+                  <i class="mr-2 inline h-4 w-4"" data-lucide="satellite"></i
+                  >Re-task Scraper
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section id="tab-status" class="tab-panel hidden">
+            <div class="grid gap-6 lg:grid-cols-2">
+              <div class="brk rounded-lg panel-glass p-5">
+                <h2 class="stencil mb-4 text-lg font-bold tracking-wide">
+                  Field Status
+                </h2>
+                <div class="space-y-3 text-sm text-white/70">
+                  <div
+                    class="soft-border flex items-center justify-between border-b pb-2"
+                  >
+                    <span class="text-steel">Time in Field</span
+                    ><span id="uptimeValue" class="font-semibold text-white"
+                      >--</span
+                    >
+                  </div>
+                  <div
+                    class="soft-border flex items-center justify-between border-b pb-2"
+                  >
+                    <span class="text-steel">Archive Size</span
+                    ><span id="dbSizeValue" class="font-semibold text-white"
+                      >--</span
+                    >
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-steel">Base Station</span
+                    ><span
+                      id="serverStatusValue"
+                      class="font-semibold text-phosphor"
+                      >online</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="brk rounded-lg panel-glass p-5">
+                <h2 class="stencil mb-4 text-lg font-bold tracking-wide">
+                  Recent Chatter
+                </h2>
+                <div
+                  id="recentActivity"
+                  class="space-y-2 text-sm text-white/70"
+                ></div>
+              </div>
+            </div>
+          </section>
+
+          <section id="tab-terminal" class="tab-panel hidden">
+            <div class="brk rounded-lg panel-glass overflow-hidden">
+              <div class="flex items-center justify-between border-b border-white/10 p-4"><div class="flex items-center gap-3"><button id="terminalRegistryToggle" type="button" class="rounded-md border border-white/15 bg-white/5 p-2 text-steel hover:border-phosphor/40 hover:text-phosphor" title="Open command registry" aria-label="Open command registry"><i class="h-4 w-4"" data-lucide="lightbulb"></i></button><div><div class="text-[10px] uppercase tracking-[0.24em] text-alert/80">Restricted shell // allowlist</div><h2 class="stencil mt-1 text-xl font-bold tracking-wide">FIELD TERMINAL</h2></div></div><span class="rounded border border-phosphor/30 bg-phosphor/10 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-phosphor">ONLINE</span></div>
+              <div class="terminal-window m-4 rounded-md p-4">
+                <div class="mb-3 flex items-center gap-2 border-b border-white/10 pb-3 text-[10px] text-steel"><span class="terminal-dot terminal-dot-red"></span><span class="terminal-dot terminal-dot-yellow"></span><span class="terminal-dot terminal-dot-green"></span><span class="ml-2">nova@donglyn: field-terminal</span></div>
+                <div id="terminalOutput" class="terminal-output"><span class="terminal-boot">Connecting to live operations feed...</span></div>
+                <form id="terminalForm" class="mt-3 flex items-center gap-2 border-t border-white/10 pt-3"><span id="terminalPrompt" class="terminal-prompt text-xs">nova@donglyn:~$</span><input id="terminalInput" class="terminal-input flex-1" autocomplete="off" spellcheck="false" placeholder="type a registered command" aria-label="Terminal command" /></form>
+              </div>
+            </div>
+            <div id="terminalRegistryModal" class="terminal-registry-modal" aria-hidden="true" role="dialog" aria-labelledby="terminalRegistryTitle"><div class="terminal-registry-panel p-5"><div class="flex items-center justify-between border-b border-white/10 pb-3"><div><div class="text-[10px] uppercase tracking-[0.22em] text-alert/80">Command registry</div><h3 id="terminalRegistryTitle" class="stencil mt-1 text-lg font-bold">REGISTERED OPERATIONS</h3></div><button id="terminalRegistryClose" type="button" class="rounded-md border border-white/15 bg-white/5 p-2 text-steel hover:text-white" title="Close command registry" aria-label="Close command registry"><i class="h-4 w-4"" data-lucide="x"></i></button></div><div id="terminalCommands" class="mt-4 grid gap-2"></div></div></div>
+          </section>
+
+          <section id="tab-database" class="tab-panel hidden">
+            <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div>
+                <div class="mb-2 flex items-center gap-2 text-[10px] uppercase tracking-[0.28em] text-alert/80"><span class="h-1.5 w-1.5 rounded-full bg-phosphor dot-live"></span>Live data plane</div>
+                <h2 class="stencil text-3xl font-black tracking-wide text-white">DATABASE INTEL</h2>
+                <p class="mt-2 max-w-2xl text-sm text-steel">A live operational view of persistence, table records, cache state, and local media storage.</p>
+              </div>
+              <div class="flex items-center gap-2 rounded-md border border-phosphor/25 bg-phosphor/5 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-phosphor"><span class="h-2 w-2 rounded-full bg-phosphor dot-live"></span><span id="databaseLiveState">Syncing live</span></div>
+            </div>
+            <div class="db-metric-grid mb-5">
+              <div class="brk panel-glass rounded-lg p-4"><div class="mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-steel">Provider <i class="h-4 w-4 text-phosphor"" data-lucide="cloud"></i></div><div id="dbProvider" class="stencil text-xl font-bold text-white">--</div><div id="dbConnection" class="mt-1 text-xs text-phosphor">--</div></div>
+              <div class="brk panel-glass rounded-lg p-4"><div class="mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-steel">Registered users <i class="h-4 w-4 text-phosphor"" data-lucide="users"></i></div><div id="dbUsersCount" class="stencil text-2xl font-bold text-white">--</div><div class="mt-1 text-xs text-steel">Live rows in users</div></div>
+              <div class="brk panel-glass rounded-lg p-4"><div class="mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-steel">Cache records <i data-lucide="database-zap" class="h-4 w-4 text-phosphor"></i></div><div id="dbCacheCount" class="stencil text-2xl font-bold text-white">--</div><div id="dbCacheTtl" class="mt-1 text-xs text-steel">TTL: --</div></div>
+              <div class="brk panel-glass rounded-lg p-4"><div class="mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-steel">Media storage <i class="h-4 w-4 text-phosphor"" data-lucide="image"></i></div><div id="dbUploadCount" class="stencil text-2xl font-bold text-white">--</div><div id="dbUploadSize" class="mt-1 text-xs text-steel">--</div></div>
+            </div>
+            <div class="db-lower-grid">
+              <div class="brk panel-glass rounded-lg p-5">
+                <div class="mb-5 flex items-center justify-between"><div><div class="text-[10px] uppercase tracking-[0.22em] text-steel">Live distribution</div><h3 class="stencil mt-1 text-xl font-bold">ROW ACTIVITY</h3></div><i data-lucide="bar-chart-3" class="h-5 w-5 text-phosphor"></i></div>
+                <div id="dbTableChart" class="db-chart"></div>
+                <div class="mt-2 text-[10px] uppercase tracking-[0.16em] text-steel">Table records, refreshed with the live desk</div>
+              </div>
+              <div class="space-y-4">
+                <div class="brk panel-glass rounded-lg p-5"><div class="mb-4 flex items-center gap-2"><i class="h-4 w-4 text-phosphor"" data-lucide="activity"></i><h3 class="stencil text-lg font-bold">TELEMETRY</h3></div><div class="space-y-3 text-xs"><div class="flex items-center justify-between"><span class="text-steel">Last panel refresh</span><span id="dbLastRefresh" class="font-semibold text-white">--</span></div><div class="flex items-center justify-between"><span class="text-steel">Server uptime</span><span id="dbUptime" class="font-semibold text-white">--</span></div><div class="flex items-center justify-between"><span class="text-steel">Runtime status</span><span id="dbServerStatus" class="font-semibold text-phosphor">--</span></div></div></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+    <button id="novaLauncher" class="nova-launcher" type="button" aria-label="Open Nova AI" title="Open Nova AI"><i class="h-6 w-6"" data-lucide="bot"></i></button>
+
+    <script>
+      lucide.createIcons();
+
+      const state = { activeTab: "dashboard" };
+      const petState = { stats: null, logs: [], users: [], rotation: 0, dragging: false, lastX: 0 };
+      const terminalState = { commands: [], history: [], historyIndex: -1, aliases: { status: "system.status", health: "system.health", version: "system.version", logs: "system.logs", users: "users.count", banner: "scraper.banner", sync_all: "sync_all", cache: "cache.clear", refresh: "scraper.refresh" } };
+      const panelClickAudio = new Audio("/static/audio/dev-panel-click.wav");
+      panelClickAudio.preload = "auto";
+
+      function playPanelClick() {
+        panelClickAudio.pause();
+        panelClickAudio.currentTime = 0;
+        panelClickAudio.volume = 0.45;
+        const playback = panelClickAudio.play();
+        if (playback) playback.catch(() => {});
+      }
+
+      document.addEventListener("click", (event) => {
+        if (event.target.closest("button, a, select")) playPanelClick();
+      }, true);
+
+      function setRegistryModal(open) {
+        const modal = document.getElementById("terminalRegistryModal");
+        if (!modal) return;
+        modal.classList.toggle("open", open);
+        modal.setAttribute("aria-hidden", String(!open));
+      }
+
+      document.getElementById("terminalRegistryToggle")?.addEventListener("click", () => setRegistryModal(true));
+      document.getElementById("terminalRegistryClose")?.addEventListener("click", () => setRegistryModal(false));
+      document.getElementById("terminalRegistryModal")?.addEventListener("click", event => { if (event.target.id === "terminalRegistryModal") setRegistryModal(false); });
+      document.addEventListener("keydown", event => { if (event.key === "Escape") setRegistryModal(false); });
+
+      async function loadTerminal() {
+        const list = document.getElementById("terminalCommands");
+        if (!list) return;
+        const response = await fetch("/api/dev/terminal", { credentials: "same-origin" });
+        const data = await response.json();
+        if (data.status !== "success") { list.textContent = "Command registry unavailable."; return; }
+        const output = document.getElementById("terminalOutput");
+        if (output && data.boot) { output.innerHTML = ""; const boot = document.createElement("span"); boot.className = "terminal-boot"; boot.innerHTML = data.boot; output.appendChild(boot); }
+        terminalState.commands = Object.keys(data.commands);
+        list.innerHTML = Object.entries(data.commands).map(([command, description]) => `<button type="button" class="terminal-command rounded border border-white/10 bg-white/5 px-2.5 py-1.5 text-left text-steel hover:border-phosphor/40 hover:text-phosphor" data-command="${command}" title="${description}">${command}</button>`).join("");
+        list.querySelectorAll(".terminal-command").forEach(button => button.addEventListener("click", () => executeTerminalCommand(button.dataset.command)));
+      }
+
+      function appendTerminalLine(text, tone = "info") { const line = document.createElement("div"); line.className = `output-${tone}`; line.textContent = text; document.getElementById("terminalOutput").appendChild(line); }
+      function typeTerminalOutput(text, tone = "info") { return new Promise(resolve => { const line = document.createElement("div"); line.className = `output-${tone}`; document.getElementById("terminalOutput").appendChild(line); let index = 0; const timer = setInterval(() => { line.textContent += text[index++] || ""; if (index >= text.length) { clearInterval(timer); resolve(); } }, 7); }); }
+      function resolveTerminalCommand(value) { const command = value.trim().toLowerCase(); return terminalState.aliases[command] || command; }
+      function updateTerminalPrompt(command) { const prompt = document.getElementById("terminalPrompt"); if (prompt) prompt.textContent = `nova@donglyn:~/${command.includes("cache") ? "cache" : command.includes("log") ? "logs" : "ops"}$`; }
+
+      async function executeTerminalCommand(command) {
+        const output = document.getElementById("terminalOutput");
+        command = resolveTerminalCommand(command);
+        terminalState.history.push(command); terminalState.historyIndex = terminalState.history.length;
+        updateTerminalPrompt(command);
+        appendTerminalLine(`> ${command}`, "info");
+        appendTerminalLine(`[RUNNING] ${command}...`, "warn");
+        const result = await fetch("/api/dev/terminal", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ command }) });
+        const payload = await result.json();
+        const running = output.lastElementChild; if (running) running.remove();
+        await typeTerminalOutput(payload.status === "success" ? payload.output : `ERROR: ${payload.message || "Command failed"}`, payload.status === "success" ? "ok" : "error");
+        appendTerminalLine(payload.status === "success" ? "[OK] Operation completed" : "[ERROR] Operation failed", payload.status === "success" ? "ok" : "error");
+        output.scrollTop = output.scrollHeight;
+        if (command === "system.logs") await loadLogs();
+      }
+
+      document.getElementById("terminalForm")?.addEventListener("submit", event => { event.preventDefault(); const input = document.getElementById("terminalInput"); const raw = input.value.trim().toLowerCase(); if (!raw) return; input.value = ""; if (raw === "clear") { document.getElementById("terminalOutput").innerHTML = ""; return; } if (raw === "help") { appendTerminalLine(`AVAILABLE: ${terminalState.commands.join(" | ")}`, "info"); appendTerminalLine(`ALIASES: ${Object.keys(terminalState.aliases).join(" | ")}`, "info"); return; } if (raw === "history") { terminalState.history.forEach((item, index) => appendTerminalLine(`${index + 1}  ${item}`, "info")); return; } executeTerminalCommand(raw); });
+      document.getElementById("terminalInput")?.addEventListener("keydown", event => { const input = event.currentTarget; if (event.key === "ArrowUp") { event.preventDefault(); terminalState.historyIndex = Math.max(0, terminalState.historyIndex - 1); input.value = terminalState.history[terminalState.historyIndex] || ""; } if (event.key === "ArrowDown") { event.preventDefault(); terminalState.historyIndex = Math.min(terminalState.history.length, terminalState.historyIndex + 1); input.value = terminalState.history[terminalState.historyIndex] || ""; } if (event.key === "Tab") { event.preventDefault(); const value = input.value.trim().toLowerCase(); const match = [...terminalState.commands, ...Object.keys(terminalState.aliases)].find(command => command.startsWith(value)); if (match) input.value = match; } });
+
+      function initNovaPet() {
+        const canvas = document.getElementById("petCanvas");
+        const consolePanel = document.querySelector(".pet-console");
+        if (consolePanel && consolePanel.parentElement !== document.body) {
+          document.body.appendChild(consolePanel);
+        }
+        document.getElementById("novaLauncher")?.addEventListener("click", () => {
+          document.querySelector(".pet-console")?.classList.add("open");
+          document.getElementById("novaLauncher")?.classList.add("hidden");
+        });
+        document.getElementById("petClose")?.addEventListener("click", () => {
+          document.querySelector(".pet-console")?.classList.remove("open");
+          document.getElementById("novaLauncher")?.classList.remove("hidden");
+        });
+        if (!canvas || !window.THREE) return;
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
+        camera.position.set(0, 0.25, 5.2);
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        const pet = new THREE.Group(); scene.add(pet);
+        const coreMaterial = new THREE.MeshStandardMaterial({ color: 0x9ee8c2, metalness: .78, roughness: .2, emissive: 0x123a29, emissiveIntensity: .8 });
+        const darkMaterial = new THREE.MeshStandardMaterial({ color: 0x182025, metalness: .9, roughness: .22 });
+        const eyeMaterial = new THREE.MeshBasicMaterial({ color: 0x39ff8e });
+        const body = new THREE.Mesh(new THREE.IcosahedronGeometry(1.05, 2), coreMaterial); body.scale.set(1, 1.08, .8); body.position.y = -.05; pet.add(body);
+        const shell = new THREE.Mesh(new THREE.TorusGeometry(.9, .055, 12, 64), darkMaterial); shell.rotation.x = Math.PI / 2; pet.add(shell);
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(.18, 24, 16), eyeMaterial); eye.position.set(0, .2, .72); eye.scale.set(1.8, .65, .35); pet.add(eye);
+        [-1, 1].forEach(side => { const fin = new THREE.Mesh(new THREE.ConeGeometry(.22, .72, 4), darkMaterial); fin.rotation.z = side * -.9; fin.position.set(side * .9, .12, 0); pet.add(fin); });
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(1.55, .018, 8, 64), eyeMaterial); ring.rotation.x = Math.PI / 2.5; ring.position.y = -.3; pet.add(ring);
+        scene.add(new THREE.AmbientLight(0x9eb6aa, 1.5));
+        const keyLight = new THREE.PointLight(0x39ff8e, 4, 8); keyLight.position.set(2, 2, 3); scene.add(keyLight);
+        const fillLight = new THREE.PointLight(0xc9d6df, 2, 7); fillLight.position.set(-3, 1, 2); scene.add(fillLight);
+        function resize(){ const box = canvas.parentElement.getBoundingClientRect(); const width = Math.max(240, box.width); renderer.setSize(width, 260, false); camera.aspect = width / 260; camera.updateProjectionMatrix(); }
+        function animate(time){ pet.rotation.y = petState.rotation + time * .00025; pet.position.y = Math.sin(time * .0015) * .08; ring.rotation.z = time * .00035; renderer.render(scene, camera); requestAnimationFrame(animate); }
+        canvas.addEventListener("pointerdown", event => { petState.dragging = true; petState.lastX = event.clientX; canvas.setPointerCapture(event.pointerId); });
+        canvas.addEventListener("pointermove", event => { if (petState.dragging) { petState.rotation += (event.clientX - petState.lastX) * .01; petState.lastX = event.clientX; } });
+        canvas.addEventListener("pointerup", () => { petState.dragging = false; });
+        document.getElementById("petReset")?.addEventListener("click", () => { petState.rotation = 0; });
+        window.addEventListener("resize", resize); resize(); requestAnimationFrame(animate);
+      }
+
+      function addPetMessage(message, user = false) { const chat = document.getElementById("petChat"); const item = document.createElement("div"); item.className = `pet-message rounded-md p-2.5 ${user ? "user" : ""}`; item.textContent = message; chat.appendChild(item); chat.scrollTop = chat.scrollHeight; }
+      function novaReply(message) { const text = message.toLowerCase(); const stats = petState.stats || {}; if (text.includes("status") || text.includes("system") || text.includes("server")) return `System is ${stats.server_status || "online"}. Cache: ${stats.cache_status || "unknown"}. Uptime: ${stats.uptime_human || "unavailable"}.`; if (text.includes("user") || text.includes("agent")) return `Personnel records report ${stats.total_users ?? petState.users.length} registered agents.`; if (text.includes("cache")) return `Vault contains ${stats.cache_entries ?? 0} active cache entries and is ${stats.cache_status || "unavailable"}.`; if (text.includes("log") || text.includes("activity")) { const latest = petState.logs[petState.logs.length - 1]; return latest ? `Latest intercept: [${latest.level}] ${latest.message}` : "No recent intercepts are available."; } return "Ask me about status, users, cache, uptime, or logs."; }
+      function initNovaChat() { addPetMessage("Nova online. Telemetry link established. Ask for a live system readout."); document.getElementById("petForm")?.addEventListener("submit", event => { event.preventDefault(); const input = document.getElementById("petInput"); const message = input.value.trim(); if (!message) return; addPetMessage(message, true); input.value = ""; setTimeout(() => addPetMessage(novaReply(message)), 180); }); }
+
+      function setActiveTab(tab) {
+        state.activeTab = tab;
+        document.querySelectorAll(".tab-panel").forEach((panel) => {
+          panel.classList.toggle("hidden", panel.id !== `tab-${tab}`);
+        });
+        document.querySelectorAll(".nav-btn").forEach((btn) => {
+          const isActive = btn.dataset.tab === tab;
+          btn.classList.toggle("tab-active", isActive);
+        });
+      }
+
+      document.querySelectorAll(".nav-btn").forEach((btn) => {
+        btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
+      });
+
+      document.querySelectorAll("[data-action]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const action = btn.dataset.action;
+          if (action === "clear-cache") {
+            await fetch("/api/dev/clear-cache", {
+              method: "POST",
+              credentials: "same-origin",
+            });
+            await loadStats();
+            await loadLogs();
+            return;
+          }
+          if (action === "refresh-scraper") {
+            const res = await fetch("/api/dev/refresh-scraper", {
+              method: "POST",
+              credentials: "same-origin",
+            });
+            const data = await res.json();
+            alert(data.message || "Scraper refreshed");
+            await loadStats();
+            await loadLogs();
+            return;
+          }
+          if (action === "reload-logs") {
+            await loadLogs();
+            return;
+          }
+          if (action === "rescan-desk") {
+            await Promise.all([loadStats(), loadUsers(), loadLogs(), renderRecentActivity()]);
+            return;
+          }
+          if (action === "probe-uplink") {
+            const res = await fetch("/api/dev/stats", { credentials: "same-origin" });
+            const data = await res.json();
+            alert(data.status === "success" ? `Uplink nominal. Server: ${data.stats.server_status}.` : "Uplink probe failed.");
+            return;
+          }
+          if (action === "sync-all") {
+            const icon = btn.querySelector("i");
+            btn.disabled = true;
+            if (icon) icon.classList.add("animate-spin");
+            const res = await fetch("/api/dev/sync-all", { method: "POST", credentials: "same-origin" });
+            const data = await res.json();
+            btn.disabled = false;
+            if (icon) icon.classList.remove("animate-spin");
+            alert(data.status === "success" ? `Sync complete: ${Object.keys(data.updated || {}).length} caches updated.` : "Sync completed with errors.");
+            await Promise.all([loadStats(), loadLogs(), renderRecentActivity()]);
+          }
+        });
+      });
+
+      document
+        .getElementById("refreshAll")
+        .addEventListener("click", async () => {
+          await Promise.all([loadStats(), loadUsers(), loadLogs()]);
+        });
+
+      document
+        .getElementById("searchUsers")
+        .addEventListener("click", loadUsers);
+      document.getElementById("userSearch").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") loadUsers();
+      });
+      document.getElementById("loadLogs").addEventListener("click", loadLogs);
+      document.getElementById("clearDevLogs").addEventListener("click", async () => {
+        if (!confirm("Hapus semua dev log secara permanen?")) return;
+        const res = await fetch("/api/dev/logs/clear", { method: "POST", credentials: "same-origin" });
+        const data = await res.json();
+        if (!res.ok || data.status !== "success") { alert(data.message || "Dev log gagal dibersihkan"); return; }
+        await Promise.all([loadLogs(), renderRecentActivity(), loadStats()]);
+      });
+      document
+        .getElementById("adminLogout")
+        .addEventListener("click", async () => {
+          const res = await fetch("/api/dev/logout", {
+            method: "POST",
+            credentials: "same-origin",
+          });
+          const data = await res.json();
+          alert(data.message || "Admin logout");
+          window.location.href = "/";
+        });
+
+      function formatBytes(bytes) {
+        if (!bytes || bytes <= 0) return "0 KB";
+        const units = ["B", "KB", "MB", "GB"];
+        let value = bytes;
+        let unit = 0;
+        while (value >= 1024 && unit < units.length - 1) {
+          value /= 1024;
+          unit += 1;
+        }
+        return `${value.toFixed(1)} ${units[unit]}`;
+      }
+
+      function renderStats(stats) {
+        petState.stats = stats;
+        const cards = [
+          {
+            label: "Total Users",
+            value: stats.total_users ?? 0,
+            icon: "users",
+          },
+          {
+            label: "Vault Status",
+            value: stats.cache_status ?? "offline",
+            icon: "database-zap",
+          },
+          {
+            label: "Sealed Entries",
+            value: stats.cache_entries ?? 0,
+            icon: "box",
+          },
+          {
+            label: "Time in Field",
+            value: stats.uptime_human ?? "00:00:00",
+            icon: "clock",
+          },
+        ];
+
+        document.getElementById("statsGrid").innerHTML = cards
+          .map(
+            (card) => `
+        <div class="brk rounded-lg panel-glass p-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-[10px] uppercase tracking-[0.2em] text-steel">${card.label}</div>
+              <div class="stencil mt-3 text-3xl font-black text-white">${card.value}</div>
+            </div>
+            <div class="stat-icon flex h-11 w-11 items-center justify-center rounded-md border text-phosphor">
+              <i data-lucide="${card.icon}" class="h-5 w-5"></i>
+            </div>
+          </div>
+        </div>
+      `,
+          )
+          .join("");
+        lucide.createIcons();
+
+        document.getElementById("runtimeStatus").textContent =
+          stats.uptime_human ?? "--";
+        document.getElementById("dbStatus").textContent =
+          `${formatBytes(stats.db_size_bytes ?? 0)}`;
+        document.getElementById("cacheStatus").textContent =
+          stats.cache_status ?? "--";
+        document.getElementById("cacheOnlyStatus").textContent =
+          stats.cache_status ?? "--";
+        document.getElementById("cacheEntryCount").textContent =
+          stats.cache_entries ?? 0;
+        document.getElementById("uptimeValue").textContent =
+          stats.uptime_human ?? "--";
+        document.getElementById("dbSizeValue").textContent = formatBytes(
+          stats.db_size_bytes ?? 0,
+        );
+        document.getElementById("serverStatusValue").textContent =
+          stats.server_status ?? "online";
+        const storage = stats.storage || {};
+        document.getElementById("dbProvider").textContent = storage.provider ?? "--";
+        document.getElementById("dbConnection").textContent = storage.connection ?? "--";
+        const tableCounts = storage.table_counts || {};
+        const tableLabels = { users: "Users", bookmarks: "Bookmarks", history: "Watch history", cache: "Scraper cache", dev_logs: "Developer logs" };
+        const chartMax = Math.max(1, ...Object.keys(tableLabels).map((key) => tableCounts[key] ?? 0));
+        document.getElementById("dbTableChart").innerHTML = Object.entries(tableLabels).map(([key, label]) => {
+          const count = tableCounts[key] ?? 0;
+          const height = Math.max(5, Math.round((count / chartMax) * 112));
+          return `<div class="db-chart-item"><span class="db-chart-value">${count}</span><div class="db-chart-bar" style="height:${height}px" title="${label}: ${count} rows"></div><span class="db-chart-label">${label}</span></div>`;
+        }).join("");
+        document.getElementById("dbUsersCount").textContent = tableCounts.users ?? stats.total_users ?? 0;
+        document.getElementById("dbCacheCount").textContent = tableCounts.cache ?? stats.cache_entries ?? 0;
+        document.getElementById("dbCacheTtl").textContent = `TTL: ${storage.cache_ttl_seconds ?? "--"} seconds`;
+        document.getElementById("dbUploadCount").textContent = storage.uploads_files ?? 0;
+        document.getElementById("dbUploadSize").textContent = formatBytes(storage.uploads_bytes ?? 0);
+        document.getElementById("dbUptime").textContent = stats.uptime_human ?? "--";
+        document.getElementById("dbServerStatus").textContent = stats.server_status ?? "--";
+        document.getElementById("dbLastRefresh").textContent = new Date().toLocaleTimeString("id-ID");
+        document.getElementById("databaseLiveState").textContent = "Live / synced";
+      }
+
+      async function loadStats() {
+        const res = await fetch("/api/dev/stats", {
+          credentials: "same-origin",
+        });
+        const data = await res.json();
+        if (data.status === "success") {
+          renderStats(data.stats);
+        }
+      }
+
+      let realtimeBusy = false;
+      async function refreshLiveDesk() {
+        if (realtimeBusy || document.hidden) return;
+        realtimeBusy = true;
+        try {
+          await Promise.all([loadStats(), loadLogs(), renderRecentActivity(), loadUsers()]);
+        } finally {
+          realtimeBusy = false;
+        }
+      }
+
+      function renderUserTable(users) {
+        const rows = users
+          .map(
+            (user) => `
+        <tr class="user-row rounded-lg">
+          <td class="rounded-l-lg px-3 py-3 text-steel">#${user.id}</td>
+          <td class="px-3 py-3 font-semibold text-white">${user.username || "-"}</td>
+          <td class="px-3 py-3 text-white/70">${user.email || "-"}</td>
+          <td class="px-3 py-3 text-white/70">${user.phone || "-"}</td>
+          <td class="px-3 py-3 text-white/70">${user.created_at ? new Date(user.created_at).toLocaleString("id-ID") : "-"}</td>
+          <td class="rounded-r-lg px-3 py-3">
+            <button class="delete-user rounded border border-alert/30 bg-alert/10 px-2 py-1.5 text-xs font-bold text-alert hover:bg-alert/20" data-user-id="${user.id}">Purge</button>
+          </td>
+        </tr>
+      `,
+          )
+          .join("");
+
+        document.getElementById("userTableBody").innerHTML =
+          rows ||
+          `
+        <tr><td colspan="6" class="px-3 py-8 text-center text-steel">No matching files.</td></tr>
+      `;
+
+        document.querySelectorAll(".delete-user").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const id = btn.dataset.userId;
+            const confirmDelete = confirm(
+              "Purge file agen ini secara permanen?",
+            );
+            if (!confirmDelete) return;
+            const res = await fetch(`/api/dev/users/${id}`, {
+              method: "DELETE",
+              credentials: "same-origin",
+            });
+            const result = await res.json();
+            alert(result.message || "User deleted");
+            if (res.ok) loadUsers();
+          });
+        });
+      }
+
+      async function loadUsers() {
+        const query = document.getElementById("userSearch").value.trim();
+        const url = query
+          ? `/api/dev/users?q=${encodeURIComponent(query)}`
+          : "/api/dev/users";
+        const res = await fetch(url, { credentials: "same-origin" });
+        const data = await res.json();
+        if (data.status === "success") { petState.users = data.users || []; renderUserTable(petState.users); }
+      }
+
+      function renderLogs(logs) {
+        const container = document.getElementById("logsContainer");
+        if (!logs || logs.length === 0) {
+          container.innerHTML =
+            '<div class="log-card rounded-md border p-4 text-sm text-steel">No transmissions intercepted.</div>';
+          return;
+        }
+        container.innerHTML = logs
+          .map((log) => {
+            const levelColor =
+              log.level === "ERROR"
+                ? "border-alert/30 bg-alert/10 text-alert"
+                : log.level === "WARNING"
+                  ? "border-yellow-500/30 bg-yellow-500/10 text-yellow-300"
+                  : "border-phosphor/30 bg-phosphor/10 text-phosphor";
+            return `
+        <div class="log-card rounded-md border p-3">
+          <div class="mb-2 flex items-center justify-between gap-3">
+            <span class="rounded border px-2 py-1 text-[10px] font-bold uppercase tracking-[0.2em] ${levelColor}">${log.level}</span>
+            <span class="text-[11px] text-steel">${log.timestamp}</span>
+          </div>
+          <div class="text-[11px] uppercase tracking-[0.16em] text-steel">${log.category}</div>
+          <div class="mt-2 text-sm text-white/80">${log.message}</div>
+        </div>
+      `;
+          })
+          .join("");
+      }
+
+      async function loadLogs() {
+        const res = await fetch("/api/dev/logs?limit=60", {
+          credentials: "same-origin",
+        });
+        const data = await res.json();
+        if (data.status === "success") { petState.logs = data.logs || []; renderLogs(petState.logs); }
+      }
+
+      async function renderRecentActivity() {
+        const res = await fetch("/api/dev/logs?limit=5", {
+          credentials: "same-origin",
+        });
+        const data = await res.json();
+        const items = data.logs || [];
+        document.getElementById("recentActivity").innerHTML =
+          items
+            .map(
+              (log) => `
+        <div class="log-card rounded-md border p-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[10px] uppercase tracking-[0.2em] text-steel/80">${log.category}</span>
+            <span class="text-[10px] text-steel">${log.timestamp}</span>
+          </div>
+          <div class="mt-1 text-sm text-white/80">${log.message}</div>
+        </div>
+      `,
+            )
+            .join("") ||
+          '<div class="text-sm text-steel">No recent chatter.</div>';
+      }
+
+      async function initDevPanel() {
+        setActiveTab("dashboard");
+        initNovaPet();
+        initNovaChat();
+        loadTerminal();
+        await Promise.all([
+          loadStats(),
+          loadUsers(),
+          loadLogs(),
+          renderRecentActivity(),
+        ]);
+        window.setInterval(refreshLiveDesk, 3000);
+      }
+
+      initDevPanel();
+    </script>
+  </body>
+</html>

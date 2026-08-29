@@ -2,14 +2,16 @@
 const plugin = require('tailwindcss/plugin')
 
 module.exports = {
-  content: ["./templates/**/*.html", "./static/**/*.js"],
+  content: ["./frontend/templates/**/*.html", "./frontend/static/**/*.js"],
   corePlugins: {
     preflight: false,
+    inset: false,
+    aspectRatio: false,
   },
   theme: {
     extend: {
       colors: {
-        netflix: '#E50914',
+        Donglyn: '#E50914',
         dark: '#141414',
         card: '#232323',
         muted: '#808080',
@@ -40,8 +42,6 @@ module.exports = {
         },
         'html, :host': {
           'line-height': '1.5',
-          '-webkit-text-size-adjust': '100%',
-          '-moz-text-size-adjust': '100%',
           '-moz-tab-size': '4',
           'tab-size': '4',
           'font-family': 'theme("fontFamily.sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji")',

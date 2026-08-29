@@ -1,6 +1,6 @@
 # VEXORA
 
-Platform Streaming Donghua Gratis — Netflix Style
+Platform Streaming Donghua Gratis — Donglyn Style
 
 [![GitHub stars](https://img.shields.io/github/stars/VexalynDeveloper/VEXORA?style=flat-square&color=e50914)](https://github.com/VexalynDeveloper/VEXORA)
 [![GitHub forks](https://img.shields.io/github/forks/VexalynDeveloper/VEXORA?style=flat-square&color=ff6b35)](https://github.com/VexalynDeveloper/VEXORA)
@@ -13,7 +13,7 @@ Platform Streaming Donghua Gratis — Netflix Style
 [![Playwright](https://img.shields.io/badge/playwright-1.40+-2ead33?style=flat-square&logo=playwright&logoColor=white)](https://playwright.dev)
 [![Supabase](https://img.shields.io/badge/supabase-Powered-3ecf8e?style=flat-square&logo=supabase&logoColor=white)](https://supabase.com)
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=18&duration=3000&pause=1000&color=F7F7F7&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=80&lines=%F0%9F%8E%AC+Nonton+Donghua+Gratis+Kualitas+HD%3B%F0%9F%94%84+Real-Time+Update+ dari+Anichin.moe%3B%F0%9F%A7%A0+Netflix+Style+UI+%2B+Dark+Mode)](https://github.com/VexalynDeveloper/VEXORA)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=18&duration=3000&pause=1000&color=F7F7F7&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=80&lines=%F0%9F%8E%AC+Nonton+Donghua+Gratis+Kualitas+HD%3B%F0%9F%94%84+Real-Time+Update+ dari+Anichin.moe%3B%F0%9F%A7%A0+Donglyn+Style+UI+%2B+Dark+Mode)](https://github.com/VexalynDeveloper/VEXORA)
 
 ---
 
@@ -37,11 +37,11 @@ Platform Streaming Donghua Gratis — Netflix Style
 
 ## Tentang VEXORA
 
-VEXORA adalah platform streaming donghua (animasi China) gratis dengan tampilan ala Netflix. Website ini scrape data dari [anichin.moe](https://anichin.moe) secara real-time menggunakan Playwright untuk bypass Cloudflare, lalu ditampilkan dengan UI yang modern, responsive, dan user-friendly.
+VEXORA adalah platform streaming donghua (animasi China) gratis dengan tampilan ala Donglyn. Website ini scrape data dari [anichin.moe](https://anichin.moe) secara real-time menggunakan Playwright untuk bypass Cloudflare, lalu ditampilkan dengan UI yang modern, responsive, dan user-friendly.
 
 ### Kenapa VEXORA?
 
-- 🎬 Tampilan Netflix-style yang premium
+- 🎬 Tampilan Donglyn-style yang premium
 - 🌙 Dark mode full — nyaman di mata
 - 📱 Responsive — work di HP, tablet, dan desktop
 - ⚡ Fast loading dengan lazy loading & caching
@@ -67,7 +67,7 @@ VEXORA adalah platform streaming donghua (animasi China) gratis dengan tampilan 
 | 📱 Responsive | ✅ | Mobile-first, hamburger menu |
 | ⚡ Lazy Loading | ✅ | Gambar load saat dibutuhkan |
 | 🔗 Proxy Player | ✅ | Bypass CORS untuk video player |
-| 🌙 Dark Mode | ✅ | Full dark theme Netflix-style |
+| 🌙 Dark Mode | ✅ | Full dark theme Donglyn-style |
 
 ---
 
@@ -312,8 +312,8 @@ VEXORA/
 │
 └── templates/
     ├── index.html          # Home page (banner, search, sections)
-    ├── login.html          # Login page (Netflix-style)
-    ├── register.html       # Register page (Netflix-style)
+    ├── login.html          # Login page (Donglyn-style)
+    ├── register.html       # Register page (Donglyn-style)
     ├── forgot.html         # Forgot password (4 steps)
     ├── detail.html         # Anime detail page
     ├── player.html         # Video player page

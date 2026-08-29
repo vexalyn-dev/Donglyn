@@ -29,7 +29,7 @@ env/
 *.sqlite3
 
 # Uploads
-static/uploads/
+frontend/static/uploads/
 
 # IDE
 .vscode/

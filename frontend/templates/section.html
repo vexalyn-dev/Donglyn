@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}Section — Donglyn
+<script>document.addEventListener("DOMContentLoaded", function(){ lucide.createIcons(); });</script>
+{% endblock %}
+
+{% block extra_css %}
+.section-card{position:relative;display:flex;flex-direction:column;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;text-decoration:none;color:inherit;transition:all 0.35s cubic-bezier(0.23,1,0.32,1)}
+    .section-card:hover{transform:translateY(-6px) scale(1.02);border-color:rgba(229,9,20,0.35);box-shadow:0 12px 40px rgba(0,0,0,0.5),0 0 20px rgba(229,9,20,0.1)}
+    #mobileMenu{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1),opacity .25s ease;opacity:0;padding:0 1rem}
+    #mobileMenu.open{max-height:400px;opacity:1;padding:0.75rem 1rem}
+    /* Nav sliding indicator */
+    .nav-wrap{position:relative}
+    .nav-indicator{position:absolute;bottom:-2px;height:2px;background:#e50914;border-radius:2px;transition:left .35s cubic-bezier(.4,0,.2,1),width .35s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px rgba(229,9,20,.7),0 0 20px rgba(229,9,20,.3);pointer-events:none;opacity:0}
+    .nav-indicator.active{opacity:1}
+    .user-dropdown{opacity:0;transform:translateY(-8px) scale(.97);pointer-events:none;transition:opacity .2s ease,transform .2s cubic-bezier(.4,0,.2,1)}
+    .ham-btn{width:18px;height:12px;position:relative;display:block}
+    .ham-btn span{display:block;position:absolute;height:2px;width:100%;background:#fff;border-radius:2px;transition:all .3s cubic-bezier(.4,0,.2,1)}
+    .ham-btn span:nth-child(1){top:0;transform-origin:center}
+    .ham-btn span:nth-child(2){top:5px;transform-origin:center}
+    .ham-btn span:nth-child(3){top:10px;transform-origin:center}
+    .ham-btn.active span:nth-child(1){top:5px;transform:rotate(45deg);background:#e50914}
+    .ham-btn.active span:nth-child(2){opacity:0;transform:translateX(-8px)}
+    .ham-btn.active span:nth-child(3){top:5px;transform:rotate(-45deg);background:#e50914}
+    .user-dropdown.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+    .user-dropdown.closing{opacity:0;transform:translateY(-8px) scale(.97);pointer-events:none}
+    .dropdown-rounded{border-radius:4px}
+{% endblock %}
+
+{% block content %}
+<div id="loading" class="pt-28 text-center min-h-screen flex flex-col items-center justify-center">
+    <div class="w-10 h-10 rounded-full border-2 border-white/10 border-t-[#e50914] animate-spin mx-auto"></div>
+    <p class="text-xs font-bold tracking-[0.25em] text-white/40 mt-4 animate-pulse">MEMUAT...</p>
+  </div>
+
+  <section id="sectionContent" class="hidden pt-20 md:pt-24 pb-6 bg-gradient-to-b from-[#0a0a0a] to-[#0a0a0a]">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-10">
+      <div class="flex items-center gap-2 text-[#e50914] text-xs font-black tracking-[0.18em]"> SECTION</div>
+      <h1 id="sectionTitle" class="font-black text-[28px] md:text-[36px] leading-none mt-2"></h1>
+      <p id="sectionCount" class="text-sm text-white/50 mt-2"></p>
+    </div>
+  </section>
+
+  <section id="sectionGrid" class="hidden max-w-[1600px] mx-auto px-4 md:px-10 pb-10">
+    <div id="animeGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4"></div>
+    <div id="loadMoreWrap" class="hidden justify-center mt-6">
+      <button id="loadMoreBtn" class="group bg-[#e50914] hover:bg-[#b20710] text-white px-5 py-2 rounded-lg text-xs font-black flex items-center gap-2 transition">
+        <span>Next</span> <i class="text-xs group-hover:translate-x-0.5 transition" data-lucide="arrow-right"></i>
+      </button>
+    </div>
+  </section>
+
+<script>
+const sectionUrl = new URLSearchParams(window.location.search).get('url');
+const sectionName = new URLSearchParams(window.location.search).get('name');
+
+async function formatDetailUrl(url) {
+  if (!url) return '#';
+  if (url.startsWith('/detail/')) return url;
+  if (url.startsWith('/detail?url=')) {
+    let target = decodeURIComponent(url.split('/detail?url=')[1]);
+    let slug = target.replace(/^https?:\/\/[^\/]+\//, '').replace(/\/$/, '');
+    return slug ? `/detail/${slug}` : url;
+  }
+  let slug = url.replace(/^https?:\/\/[^\/]+\//, '').replace(/\/$/, '');
+  return slug ? `/detail/${slug}` : url;
+}
+
+async function loadSection() {
+  if (!sectionUrl) {
+    document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">URL tidak ditemukan.</p>';
+    return;
+  }
+
+  document.getElementById('sectionTitle').textContent = sectionName || 'Section';
+
+  try {
+    const res = await fetch(`/api/load-more?url=${encodeURIComponent(sectionUrl)}`);
+    const data = await res.json();
+
+    if (data.status === 'success' && data.data && data.data.length) {
+      document.getElementById('sectionCount').textContent = `${data.data.length} judul`;
+
+      const grid = document.getElementById('animeGrid');
+      data.data.forEach(anime => {
+        const detailUrl = anime.url ? formatDetailUrl(anime.url) : '#';
+        const card = document.createElement('a');
+        card.href = detailUrl;
+        card.className = 'section-card';
+        card.innerHTML = `
+          <div class="relative poster-ratio-2-3 overflow-hidden bg-[#1a1a1a]">
+            <img loading="lazy" decoding="async" src="${anime.poster || ''}" alt="${anime.title || ''}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.style.display='none'"/>
+            ${anime.episode ? `<span class="absolute top-2 left-2 bg-[#e50914] text-white text-[10px] font-black px-2 py-0.5 rounded">${anime.episode}</span>` : ''}
+            ${anime.type ? `<span class="absolute top-2 right-2 bg-black/60 backdrop-blur text-white text-[10px] font-bold px-2 py-0.5 rounded">${anime.type}</span>` : ''}
+          </div>
+          <div class="p-3">
+            <p class="text-sm font-bold truncate group-hover:text-[#e50914] transition">${anime.title || 'Untitled'}</p>
+            <div class="flex items-center gap-2 mt-1.5">
+              ${anime.genre ? `<span class="text-[11px] text-white/40 truncate">${anime.genre}</span>` : ''}
+              ${anime.status ? `<span class="text-[11px] ml-auto font-bold ${anime.status.toLowerCase().includes('ongoing') ? 'text-[#e50914]' : 'text-emerald-400'}">${anime.status}</span>` : ''}
+            </div>
+          </div>`;
+        grid.appendChild(card);
+      });
+
+      // Load more
+      const nextUrl = data.next_url || data.more_url;
+      if (nextUrl) {
+        document.getElementById('loadMoreWrap').classList.remove('hidden');
+        document.getElementById('loadMoreWrap').classList.add('flex');
+        document.getElementById('loadMoreBtn').onclick = async function () {
+          this.disabled = true;
+          this.innerHTML = ' Memuat...';
+          try {
+            const res2 = await fetch(`/api/load-more?url=${encodeURIComponent(nextUrl)}`);
+            const data2 = await res2.json();
+            if (data2.status === 'success' && data2.data && data2.data.length) {
+              data2.data.forEach(anime => {
+        const detailUrl = anime.url ? formatDetailUrl(anime.url) : '#';
+                const card = document.createElement('a');
+                card.href = detailUrl;
+                card.className = 'section-card';
+                card.innerHTML = `
+                  <div class="relative poster-ratio-2-3 overflow-hidden bg-[#1a1a1a]">
+                    <img loading="lazy" decoding="async" src="${anime.poster || ''}" alt="${anime.title || ''}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.style.display='none'"/>
+                    ${anime.episode ? `<span class="absolute top-2 left-2 bg-[#e50914] text-white text-[10px] font-black px-2 py-0.5 rounded">${anime.episode}</span>` : ''}
+                    ${anime.type ? `<span class="absolute top-2 right-2 bg-black/60 backdrop-blur text-white text-[10px] font-bold px-2 py-0.5 rounded">${anime.type}</span>` : ''}
+                  </div>
+                  <div class="p-3">
+                    <p class="text-sm font-bold truncate group-hover:text-[#e50914] transition">${anime.title || 'Untitled'}</p>
+                    <div class="flex items-center gap-2 mt-1.5">
+                      ${anime.genre ? `<span class="text-[11px] text-white/40 truncate">${anime.genre}</span>` : ''}
+                      ${anime.status ? `<span class="text-[11px] ml-auto font-bold ${anime.status.toLowerCase().includes('ongoing') ? 'text-[#e50914]' : 'text-emerald-400'}">${anime.status}</span>` : ''}
+                    </div>
+                  </div>`;
+                grid.appendChild(card);
+              });
+              const next2 = data2.next_url || data2.more_url;
+              if (next2) {
+                this.disabled = false;
+                this.innerHTML = `<span>Next</span> <i class="text-xs group-hover:translate-x-0.5 transition" data-lucide="arrow-right"></i>`;
+                this.onclick = arguments.callee;
+                this.setAttribute('onclick', `loadNextPage('${next2.replace(/'/g, "\\'")}')`);
+              } else {
+                this.innerHTML = ' Habis';
+                this.classList.add('opacity-50');
+              }
+            } else {
+              this.innerHTML = ' Habis';
+              this.classList.add('opacity-50');
+            }
+          } catch (e) {
+            this.innerHTML = 'Error';
+            this.disabled = false;
+          }
+        };
+      }
+
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('sectionContent').classList.remove('hidden');
+      document.getElementById('sectionGrid').classList.remove('hidden');
+    } else {
+      document.getElementById('loading').innerHTML = '<p class="text-white/40 font-bold">Tidak ada data.</p>';
+    }
+  } catch (e) {
+    document.getElementById('loading').innerHTML = `<p class="text-red-400">Error: ${e.message}</p>`;
+  }
+}
+
+async function loadNextPage(url) {
+  const btn = document.getElementById('loadMoreBtn');
+  const grid = document.getElementById('animeGrid');
+  btn.disabled = true;
+  btn.innerHTML = ' Memuat...';
+  try {
+    const res = await fetch(`/api/load-more?url=${encodeURIComponent(url)}`);
+    const data = await res.json();
+    if (data.status === 'success' && data.data && data.data.length) {
+      data.data.forEach(anime => {
+        const detailUrl = anime.url ? formatDetailUrl(anime.url) : '#';
+        const card = document.createElement('a');
+        card.href = detailUrl;
+        card.className = 'section-card';
+        card.innerHTML = `
+          <div class="relative poster-ratio-2-3 overflow-hidden bg-[#1a1a1a]">
+            <img loading="lazy" decoding="async" src="${anime.poster || ''}" alt="${anime.title || ''}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.style.display='none'"/>
+            ${anime.episode ? `<span class="absolute top-2 left-2 bg-[#e50914] text-white text-[10px] font-black px-2 py-0.5 rounded">${anime.episode}</span>` : ''}
+            ${anime.type ? `<span class="absolute top-2 right-2 bg-black/60 backdrop-blur text-white text-[10px] font-bold px-2 py-0.5 rounded">${anime.type}</span>` : ''}
+          </div>
+          <div class="p-3">
+            <p class="text-sm font-bold truncate group-hover:text-[#e50914] transition">${anime.title || 'Untitled'}</p>
+            <div class="flex items-center gap-2 mt-1.5">
+              ${anime.genre ? `<span class="text-[11px] text-white/40 truncate">${anime.genre}</span>` : ''}
+              ${anime.status ? `<span class="text-[11px] ml-auto font-bold ${anime.status.toLowerCase().includes('ongoing') ? 'text-[#e50914]' : 'text-emerald-400'}">${anime.status}</span>` : ''}
+            </div>
+          </div>`;
+        grid.appendChild(card);
+      });
+      const next = data.next_url || data.more_url;
+      if (next) {
+        btn.disabled = false;
+        btn.innerHTML = `<span>Next</span> <i class="text-xs group-hover:translate-x-0.5 transition" data-lucide="arrow-right"></i>`;
+        btn.setAttribute('onclick', `loadNextPage('${next.replace(/'/g, "\\'")}')`);
+      } else {
+        btn.innerHTML = ' Habis';
+        btn.classList.add('opacity-50');
+      }
+    } else {
+      btn.innerHTML = ' Habis';
+      btn.classList.add('opacity-50');
+    }
+  } catch (e) {
+    btn.innerHTML = 'Error';
+    btn.disabled = false;
+  }
+}
+
+async function checkAuth() {
+  try {
+    const r = await fetch('/api/auth/me', {credentials: 'include'});
+    const j = await r.json();
+    if (j.logged_in) {
+      document.getElementById('btnLogin')?.classList.add('hidden');
+      document.getElementById('btnRegister')?.classList.add('hidden');
+      const nav = document.getElementById('authNav');
+      if (nav) { nav.classList.add('hidden'); nav.style.display = 'none'; }
+      const um = document.getElementById('userMenu');
+      if (um) { um.classList.remove('hidden'); um.classList.add('flex'); document.getElementById('navAvatar').src = j.user.avatar || 'https://i.pravatar.cc/100?u=' + encodeURIComponent(j.user.username); }
+    }
+  } catch (e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => { checkAuth(); loadSection(); });
+window.addEventListener('click', e => { if (!e.target.closest('#userMenu')) { closeUserDropdown(); } });
+function moveNavIndicator(el){
+  let ind=document.querySelector('.nav-indicator'); if(!ind||!el) return;
+  let wrap=el.parentElement; let wRect=wrap.getBoundingClientRect(); let eRect=el.getBoundingClientRect();
+  ind.classList.add('active');
+  ind.style.left=(eRect.left-wRect.left)+'px';
+  ind.style.width=eRect.width+'px';
+}
+function setupNavIndicator(){
+  let wrap=document.querySelector('.nav-wrap'); if(!wrap) return;
+  let active=wrap.querySelector('a.text-white:not(.text-white\\/70)');
+  if(active) moveNavIndicator(active);
+  wrap.querySelectorAll('a[data-nav]').forEach(a=>{
+    a.addEventListener('mouseenter',()=>moveNavIndicator(a));
+    a.addEventListener('mouseleave',()=>{let cur=wrap.querySelector('a.text-white:not(.text-white\\/70)'); if(cur) moveNavIndicator(cur);});
+  });
+}
+document.addEventListener('DOMContentLoaded', setupNavIndicator);
+function toggleMobileMenu(){
+  let m=document.getElementById('mobileMenu');
+  let ham=document.getElementById('hamIconSection');
+  m.classList.toggle('open');
+  if(ham) ham.classList.toggle('active');
+}
+</script>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}
