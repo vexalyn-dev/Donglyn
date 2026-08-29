@@ -1,19 +1,18 @@
 services:
+  # Flask API backend (scraping + streaming)
   - type: web
-    name: donglyn
+    name: donglyn-api
     runtime: python
     plan: starter
-    buildCommand: pip install -r requirements.txt && npm ci && bash build.sh
+    buildCommand: pip install -r requirements.txt
     startCommand: gunicorn backend.app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
     envVars:
-      - key: SECRET_KEY
-        generateValue: true
       - key: PYTHON_VERSION
         value: 3.11
-      - key: NODE_VERSION
-        value: 18
       - key: PLAYWRIGHT_DOWNLOAD_HOST
         value: https://playwright.azureedge.net
+      - key: SECRET_KEY
+        generateValue: true
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_KEY
@@ -25,4 +24,19 @@ services:
       - key: RESEND_API_KEY
         sync: false
       - key: RESEND_FROM_EMAIL
+        sync: false
+      - key: CACHE_TTL
+        value: "600"
+
+  # Next.js frontend
+  - type: web
+    name: donglyn-web
+    runtime: node
+    plan: starter
+    buildCommand: cd frontend && npm ci && npm run build
+    startCommand: cd frontend && npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: NEXT_PUBLIC_API_URL
         sync: false
