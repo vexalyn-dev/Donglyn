@@ -1,426 +1,644 @@
-# VEXORA
+<div align="center">
 
-Platform Streaming Donghua Gratis — Donglyn Style
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/VexalynDeveloper/Donglyn/main/frontend/public/logo.png">
+  <img src="https://raw.githubusercontent.com/VexalynDeveloper/Donglyn/main/frontend/public/logo.png" alt="Donglyn Logo" width="280" height="auto">
+</picture>
 
-[![GitHub stars](https://img.shields.io/github/stars/VexalynDeveloper/VEXORA?style=flat-square&color=e50914)](https://github.com/VexalynDeveloper/VEXORA)
-[![GitHub forks](https://img.shields.io/github/forks/VexalynDeveloper/VEXORA?style=flat-square&color=ff6b35)](https://github.com/VexalynDeveloper/VEXORA)
-[![GitHub issues](https://img.shields.io/github/issues/VexalynDeveloper/VEXORA?style=flat-square&color=f5a623)](https://github.com/VexalynDeveloper/VEXORA/issues)
-[![GitHub watchers](https://img.shields.io/github/watchers/VexalynDeveloper/VEXORA?style=flat-square&color=4a90d9)](https://github.com/VexalynDeveloper/VEXORA)
-[![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.11+-blue?style=flat-square&logo=python&logoColor=white)](https://python.org)
-[![Flask](https://img.shields.io/badge/flask-3.0+-000000?style=flat-square&logo=flask&logoColor=white)](https://flask.palletsprojects.com)
-[![Tailwind CSS](https://img.shields.io/badge/tailwindcss-3.4+-06b6d4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![Playwright](https://img.shields.io/badge/playwright-1.40+-2ead33?style=flat-square&logo=playwright&logoColor=white)](https://playwright.dev)
-[![Supabase](https://img.shields.io/badge/supabase-Powered-3ecf8e?style=flat-square&logo=supabase&logoColor=white)](https://supabase.com)
+# **Donglyn**
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=18&duration=3000&pause=1000&color=F7F7F7&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=80&lines=%F0%9F%8E%AC+Nonton+Donghua+Gratis+Kualitas+HD%3B%F0%9F%94%84+Real-Time+Update+ dari+Anichin.moe%3B%F0%9F%A7%A0+Donglyn+Style+UI+%2B+Dark+Mode)](https://github.com/VexalynDeveloper/VEXORA)
+### Premium Donghua Streaming Platform
 
----
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
+[![Flask](https://img.shields.io/badge/Flask-3.0-black?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Python](https://img.shields.io/badge/Python-3.11+-blue?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38BDF8?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Playwright](https://img.shields.io/badge/Playwright-1.40+-2ead33?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-## Daftar Isi
-
-- [Tentang VEXORA](#tentang-vexora)
-- [Fitur](#fitur)
-- [Tech Stack](#tech-stack)
-- [System Architecture](#system-architecture)
-- [Cara Instalasi](#cara-instalasi)
-- [Cara Menjalankan](#cara-menjalankan)
-- [Konfigurasi](#konfigurasi)
-- [Struktur Project](#struktur-project)
-- [API Endpoints](#api-endpoints)
-- [Screenshot](#screenshot)
-- [Contributing](#contributing)
-- [Author](#author)
-- [License](#license)
+</div>
 
 ---
 
-## Tentang VEXORA
+**Donglyn** adalah platform streaming donghua (animasi China) premium dengan antarmuka modern, sinematik, dan responsif. Menggunakan Next.js + Flask API yang terpisah, dengan engine streaming Playwright untuk menelusuri server video (Okru, Dailymotion, StreamWish, Flickr).
 
-VEXORA adalah platform streaming donghua (animasi China) gratis dengan tampilan ala Donglyn. Website ini scrape data dari [anichin.moe](https://anichin.moe) secara real-time menggunakan Playwright untuk bypass Cloudflare, lalu ditampilkan dengan UI yang modern, responsive, dan user-friendly.
+<div align="center">
 
-### Kenapa VEXORA?
+[🌐 Demo](https://donglyn.vercel.app) · [📖 Dokumentasi](./docs) · [🐛 Report Bug](https://github.com/VexalynDeveloper/Donglyn/issues)
 
-- 🎬 Tampilan Donglyn-style yang premium
-- 🌙 Dark mode full — nyaman di mata
-- 📱 Responsive — work di HP, tablet, dan desktop
-- ⚡ Fast loading dengan lazy loading & caching
-- 🔐 Auth lengkap — email, Google OAuth, WhatsApp OTP
-- 🌍 Multi-language — Indonesia, English, Japanese, Chinese
+</div>
 
 ---
 
-## Fitur
+## ✨ Fitur
 
-| Fitur | Status | Deskripsi |
-| --- | --- | --- |
-| 🎬 Banner Slider | ✅ | Swiper.js dengan efek creative, auto-slide 3 detik |
-| 🔍 Real-Time Search | ✅ | Pencarian langsung dari anichin.moe, hasil muncul di halaman |
-| 📂 Genre Filter | ✅ | Filter berdasarkan genre donghua |
-| 📅 Schedule | ✅ | Jadwal rilis donghua |
-| 📑 Bookmark | ✅ | Simpan donghua favorit (localStorage + Supabase) |
-| 📖 Riwayat | ✅ | Histori tontonan otomatis |
-| 🔐 Login/Register | ✅ | Email + password, Google OAuth, WhatsApp OTP |
-| 📧 Lupa Password | ✅ | Reset via email (Resend API) atau WhatsApp (Fonnte) |
-| 🎭 Profil | ✅ | Ganti avatar, username, email |
-| 🌍 Multi-language | ✅ | Indonesia, English, Japanese, Chinese |
-| 📱 Responsive | ✅ | Mobile-first, hamburger menu |
-| ⚡ Lazy Loading | ✅ | Gambar load saat dibutuhkan |
-| 🔗 Proxy Player | ✅ | Bypass CORS untuk video player |
-| 🌙 Dark Mode | ✅ | Full dark theme Donglyn-style |
+| Fitur | Deskripsi |
+|-------|-----------|
+| 🎬 **Cinematic Hero** | Banner slider dengan efek gradient sinematik |
+| 🔍 **Real-time Search** | Pencarian langsung dari anichin.moe |
+| 📅 **Jadwal Rilis** | Schedule episode terbaru per hari |
+| 🏷️ **Genre Filter** | Filter berdasarkan genre donghua |
+| 🎥 **Multi-server Streaming** | Okru, Dailymotion, StreamWish, Flickr |
+| 🔐 **Multi-auth** | Email, Google OAuth, WhatsApp OTP |
+| 🔖 **Bookmark & Riwayat** | Simpan & lanjutkan tontonan |
+| 🌍 **Multi-language** | Indonesia, English, Japanese, Chinese |
+| 📱 **Fully Responsive** | Mobile-first, optimized untuk semua device |
+| 🎨 **Premium Dark UI** | Dark theme dengan accent crimson red |
+| ⚡ **Fast & Optimized** | Next.js static generation + lazy loading |
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 ### Frontend
-
-| Teknologi | Versi | Fungsi |
-| --- | --- | --- |
-| HTML5 | - | Struktur halaman |
-| Tailwind CSS | 3.4+ | Utility-first CSS framework |
-| JavaScript | ES6+ | Interaktivitas & AJAX |
-| Swiper.js | 11.x | Banner slider |
-| Font Awesome | 6.5+ | Icons |
-| Google Fonts | - | Bebas Neue + Inter |
+<table>
+<tr>
+<td><b>Framework</b></td><td>Next.js 14 (App Router)</td>
+</tr>
+<tr>
+<td><b>Language</b></td><td>TypeScript 5</td>
+</tr>
+<tr>
+<td><b>Styling</b></td><td>Tailwind CSS 3.4</td>
+</tr>
+<tr>
+<td><b>UI Library</b></td><td>Lucide Icons + Swiper 11</td>
+</tr>
+<tr>
+<td><b>Font</b></td><td>Inter + Bebas Neue (Google Fonts)</td>
+</tr>
+</table>
 
 ### Backend
+<table>
+<tr>
+<td><b>Framework</b></td><td>Flask 3.0</td>
+</tr>
+<tr>
+<td><b>Language</b></td><td>Python 3.11+</td>
+</tr>
+<tr>
+<td><b>Scraping</b></td><td>Playwright (async) + BeautifulSoup4</td>
+</tr>
+<tr>
+<td><b>Database</b></td><td>Supabase (PostgreSQL) + SQLite fallback</td>
+</tr>
+<tr>
+<td><b>Auth</b></td><td>Google OAuth 2.0 + Phone OTP (Fonnte/Resend)</td>
+</tr>
+<tr>
+<td><b>Deployment</b></td><td>Render.com (dual service)</td>
+</tr>
+</table>
 
-| Teknologi | Versi | Fungsi |
-| --- | --- | --- |
-| Python | 3.11+ | Bahasa utama |
-| Flask | 3.0+ | Web framework |
-| SQLite | - | Database lokal (fallback) |
-| Supabase | - | Database cloud (users, bookmarks, history) |
-| Playwright | 1.40+ | Web scraping (Cloudflare bypass) |
-| BeautifulSoup4 | - | HTML parsing |
-| Resend | - | Email OTP |
-| Fonnte API | - | WhatsApp OTP |
-| Google Auth | - | OAuth 2.0 |
-
-### Scraping
-
-| Tool | Fungsi |
-| --- | --- |
-| Playwright (async) | Buka anichin.moe via headless Chromium, bypass Cloudflare |
-| BeautifulSoup4 | Parse HTML hasil scrape, extract data donghua |
-| Requests | HTTP fallback kalau Playwright gagal |
+### Video Engine
+<table>
+<tr>
+<td><b>Adapters</b></td><td>Okru, Dailymotion, StreamWish, Flickr</td>
+</tr>
+<tr>
+<td><b>Method</b></td><td>Playwright headless browser + iframe chain resolution</td>
+</tr>
+<tr>
+<td><b>Proxy</b></td><td>CORS-enabled proxy endpoints (okru, dm, generic)</td>
+</tr>
+</table>
 
 ---
 
-## System Architecture
+## 🏗️ System Architecture
 
-```text
-┌──────────────────────────────────────────────────────────┐
-│                      CLIENT (Browser)                    │
-│  ┌─────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐ │
-│  │  HTML   │  │ Tailwind │  │    JS    │  │ Swiper.js│ │
-│  │ Template│  │   CSS    │  │ AJAX +   │  │  Slider  │ │
-│  │  (Jinja)│  │          │  │ Fetch API│  │          │ │
-│  └────┬────┘  └────┬─────┘  └────┬─────┘  └──────────┘ │
-└───────┼────────────┼─────────────┼──────────────────────┘
-        │            │             │
-        ▼            ▼             ▼
-┌──────────────────────────────────────────────────────────┐
-│                    FLASK BACKEND (app.py)                 │
-│                                                          │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌─────────┐ │
-│  │   Auth   │  │  Search  │  │  Banner  │  │  Proxy  │ │
-│  │ Register │  │ /api/    │  │ /api/    │  │ /api/   │ │
-│  │ Login    │  │ search   │  │ banner   │  │ proxy-  │ │
-│  │ Google   │  │          │  │          │  │ player  │ │
-│  │ OTP      │  │          │  │          │  │         │ │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬────┘ │
-└───────┼──────────────┼─────────────┼──────────────┼──────┘
-        │              │             │              │
-        ▼              ▼             ▼              ▼
-┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
-│ Supabase │   │Playwright│   │ Anichin  │   │ Anichin  │
-│ (Cloud)  │   │ Headless │   │   .moe   │   │  Player  │
-│          │   │ Chromium │   │ (Source) │   │  (Video) │
-│ users    │   │          │   │          │   │          │
-│ bookmarks│   │ Scrape + │   │ Banner + │   │ Stream   │
-│ history  │   │ Parse    │   │ Content  │   │ URL      │
-└──────────┘   └──────────┘   └──────────┘   └──────────┘
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                         CLIENT (Browser)                           │
+│                                                                     │
+│   ┌──────────────┐  ┌──────────────┐  ┌────────────────────────┐   │
+│   │  Next.js 14  │  │  React 18    │  │  TypeScript 5          │   │
+│   │  App Router  │  │  Components  │  │  Type-safe APIs        │   │
+│   └──────┬───────┘  └──────┬───────┘  └──────────┬─────────────┘   │
+│          │                 │                      │                 │
+│   ┌──────▼───────┐  ┌──────▼───────┐  ┌──────────▼─────────────┐   │
+│   │  Tailwind    │  │  Lucide +    │  │  Swiper 11             │   │
+│   │  CSS v3      │  │  Icons       │  │  Banner Slider         │   │
+│   └──────────────┘  └──────────────┘  └────────────────────────┘   │
+│                                                                     │
+└──────────────────────────┬──────────────────────────────────────────┘
+                           │  fetch() / API calls
+                           ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                      FLASK API BACKEND (:5000)                     │
+│                                                                     │
+│   ┌──────────────┐  ┌──────────────┐  ┌────────────────────────┐   │
+│   │  /api/home   │  │  /api/search │  │  /api/detail-data      │   │
+│   │  /api/banner │  │  /api/schedule│ │  /api/genres           │   │
+│   │  /api/stream │  │  /api/proxy  │  │  /api/auth/*           │   │
+│   └──────┬───────┘  └──────┬───────┘  └──────────┬─────────────┘   │
+│          │                 │                      │                 │
+│   ┌──────▼──────────────────▼──────────────────────▼─────────────┐  │
+│   │                    SCRAPER ENGINE                            │  │
+│   │  home.py  │  banner.py  │  detail.py  │  search.py           │  │
+│   │  schedule │  genre.py   │  stream.py  │  core/               │  │
+│   └──────┬──────────────────┬──────────────────┬─────────────────┘  │
+│          │                  │                  │                     │
+│   ┌──────▼───────┐  ┌───────▼──────┐  ┌─────▼───────────────┐      │
+│   │  Anichin    │  │  Video      │  │  External APIs       │      │
+│   │  .moe       │  │  Player     │  │  (Google, Resend,    │      │
+│   │  (Source)   │  │  Iframes    │  │   Fonnte, Supabase)  │      │
+│   └─────────────┘  └──────────────┘  └─────────────────────┘      │
+│                                                                     │
+└──────────────────────────┬──────────────────────────────────────────┘
+                           │  asyncio.run()
+                           ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                     VIDEO STREAMING ENGINE                          │
+│                                                                     │
+│   ┌─────────────────────────────────────────────────────────────┐  │
+│   │  backend/video_engine/adapters/                             │  │
+│   │                                                             │  │
+│   │  ┌──────────┐  ┌──────────────┐  ┌────────────┐           │  │
+│   │  │ okru.py  │  │dailymotion.py│  │streamwish.py│          │  │
+│   │  │ (Okru)   │  │ (Dailymotion)│  │ (StreamWish)│          │  │
+│   │  └────┬─────┘  └──────┬───────┘  └─────┬──────┘           │  │
+│   │       │               │                │                   │  │
+│   │  ┌────▼───────────────▼────────────────▼──────┐           │  │
+│   │  │        base.py (shared helpers)            │           │  │
+│   │  │  - resolve_episode_url()                   │           │  │
+│   │  │  - navigate_episode()                      │           │  │
+│   │  │  - click_server_option()                   │           │  │
+│   │  │  - resolve_iframe_chain()                  │           │  │
+│   │  └────────────────────────────────────────────┘           │  │
+│   └─────────────────────────────────────────────────────────────┘  │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Data Flow
 
-```text
-User Request → Flask Router → Handler Function
-                                    │
-                    ┌───────────────┼───────────────┐
-                    ▼               ▼               ▼
-              Auth Check      Scraping API      Static Files
-              (Supabase/      (Playwright/      (Tailwind/
-               SQLite)         Requests)         Assets)
-                    │               │               │
-                    ▼               ▼               ▼
-              Session/         HTML Parse      CSS/JS/Img
-              JWT Token       (BeautifulSoup)   Response
+```
+┌─────────┐     ┌──────────┐     ┌──────────┐     ┌──────────────┐
+│  User   │────▶│  Next.js │────▶│  Flask   │────▶│  Anichin.moe │
+│ Browser │     │  (React) │     │  API     │     │  (Source)    │
+└─────────┘     └────┬─────┘     └────┬─────┘     └──────┬───────┘
+                     │                │                   │
+                     │                │                   │
+                     │                ▼                   │
+                     │          ┌──────────┐              │
+                     │          │ Scraper  │              │
+                     │          │ Engine   │              │
+                     │          └────┬─────┘              │
+                     │               │                   │
+                     │               ▼                   │
+                     │         ┌──────────┐              │
+                     │         │ BeautifulSoup│            │
+                     │         │ + Parse  │              │
+                     │         └────┬─────┘              │
+                     │              │                    │
+                     │              ▼                    │
+                     │        ┌──────────┐              │
+                     │        │ JSON     │              │
+                     │        │ Response │              │
+                     │        └────┬─────┘              │
+                     │             │                    │
+                     ▼             ▼                    │
+              ┌──────────┐   ┌──────────────┐          │
+              │ UI Render │   │ Video Player │          │
+              │ (React)  │   │ (iframe)     │          │
+              └──────────┘   └──────────────┘          │
+                                                       │
+              ┌────────────────────────────────────────┘
+              │  /api/stream POST
+              │  { url, server }
+              ▼
+      ┌──────────────────┐
+      │  Playwright      │
+      │  Headless Chrome │
+      │  → Click Server  │
+      │  → Navigate Chain│
+      │  → Extract URL   │
+      └────────┬─────────┘
+               │
+               ▼
+      ┌──────────────────┐
+      │  { server,       │
+      │    video_url,    │
+      │    embed_ready } │
+      └──────────────────┘
 ```
 
 ---
 
-## Cara Instalasi
+## 📦 Instalasi
 
 ### Prasyarat
 
-- Python 3.11 atau lebih tinggi
-- Node.js (untuk compile Tailwind CSS)
-- Git
+- **Python** 3.11+
+- **Node.js** 18+
+- **Git**
 
-### 1. Clone Repository
+### 1️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/VexalynDeveloper/VEXORA.git
-cd VEXORA
+git clone https://github.com/VexalynDeveloper/Donglyn.git
+cd Donglyn
 ```
 
-### 2. Install Dependencies Python
+### 2️⃣ Install Backend Dependencies
 
 ```bash
 pip install -r requirements.txt
-```
-
-Atau install manual:
-
-```bash
-pip install flask playwright beautifulsoup4 requests python-dotenv
-pip install google-auth supabase resend werkzeug
-```
-
-### 3. Install Playwright Browser
-
-```bash
 playwright install chromium
 ```
 
-### 4. Install Node.js Dependencies (untuk Tailwind)
+### 3️⃣ Install Frontend Dependencies
 
 ```bash
-npm install -D tailwindcss
+cd frontend
+npm install
+cd ..
 ```
 
-### 5. Setup Environment Variables
-
-Copy `.env.example` ke `.env`:
+### 4️⃣ Setup Environment Variables
 
 ```bash
-copy .env.example .env
+cp .env.example .env
 ```
 
-Lalu isi `.env` dengan credentials kamu (lihat bagian [Konfigurasi](#konfigurasi)).
-
-### 6. Setup Supabase (Opsional)
-
-Kalau mau pakai Supabase cloud:
-
-1. Buat akun di [supabase.com](https://supabase.com)
-2. Buat project baru
-3. Buka SQL Editor
-4. Jalankan isi `setup_supabase.sql`
-5. Copy URL dan API Key ke `.env`
-
----
-
-## Cara Menjalankan
-
-### 1. Compile Tailwind CSS
-
-```bash
-npx tailwindcss -i ./static/src/input.css -o ./static/css/output.css --minify
-```
-
-### 2. Jalankan Server
-
-```bash
-python app.py
-```
-
-### 3. Buka Browser
-
-```text
-http://127.0.0.1:5000
-```
-
----
-
-## Konfigurasi
-
-Buka file `.env` dan isi:
+Edit `.env` dan isi dengan kredensial kamu:
 
 ```env
-# Google OAuth 2.0 (daftar di console.cloud.google.com)
-GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=xxxxx
+# Flask
+SECRET_KEY=your-secret-key-here
 
-# Fonnte WhatsApp API (gratis 1000 msg/bulan di md.fonnte.com)
-FONNTE_TOKEN=xxxxx
+# Supabase (opsional, fallback SQLite jika kosong)
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your-supabase-anon-key
 
-# Resend Email API (gratis 100 emails/hari di resend.com)
-RESEND_API_KEY=re_xxxxx
-RESEND_FROM_EMAIL=noreply@domainkamu.com
+# Google OAuth
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
 
-# Supabase (gratis di supabase.com → Settings → API)
-SUPABASE_URL=https://xxxxx.supabase.co
-SUPABASE_KEY=eyJxxxxx
+# Email OTP
+RESEND_API_KEY=re-your-resend-key
+RESEND_FROM_EMAIL=noreply@yourdomain.com
 
-# Flask Secret Key
-SECRET_KEY=bebas-isi-random
-```
+# WhatsApp OTP (Fonnte)
+FONNTE_TOKEN=your-fonnte-token
 
-### Penjelasan Tiap API Key
-
-| API Key | Dapat dari | Fungsi | Gratis? |
-| --- | --- | --- | --- |
-| `GOOGLE_CLIENT_ID` | [Google Cloud Console](https://console.cloud.google.com/apis/credentials) | Login via Google | ✅ |
-| `GOOGLE_CLIENT_SECRET` | Google Cloud Console | OAuth secret | ✅ |
-| `FONNTE_TOKEN` | [Fonnte](https://md.fonnte.com) | Kirim OTP via WhatsApp | ✅ (1000/bln) |
-| `RESEND_API_KEY` | [Resend](https://resend.com/api-keys) | Kirim OTP via Email | ✅ (100/hari) |
-| `SUPABASE_KEY` | [Supabase Dashboard](https://supabase.com/dashboard) → Settings → API | Database cloud | ✅ (500MB) |
-
----
-
-## Struktur Project
-
-```text
-VEXORA/
-├── app.py                  # Main Flask application (routes, scraping, auth)
-├── search.py               # Standalone search scraper (reference)
-├── banner.py               # Banner scraper (reference)
-├── setup_supabase.sql      # SQL setup untuk Supabase
-├── .env                    # Environment variables (JANGAN commit!)
-├── .gitignore              # Git ignore rules
-├── users.db                # SQLite database (auto-created)
-│
-├── core/
-│   └── browser.py          # Playwright browser helper
-│
-├── static/
-│   ├── src/
-│   │   └── input.css       # Tailwind source CSS
-│   ├── css/
-│   │   └── output.css      # Compiled Tailwind CSS (minified)
-│   ├── uploads/            # User uploaded avatars
-│   └── favicon.svg         # Favicon (huruf V merah)
-│
-├── asset/
-│   ├── logo.png            # VEXORA logo
-│   ├── dev-logo.png        # Developer logo
-│   └── bg-login & register.png  # Background login page
-│
-└── templates/
-    ├── index.html          # Home page (banner, search, sections)
-    ├── login.html          # Login page (Donglyn-style)
-    ├── register.html       # Register page (Donglyn-style)
-    ├── forgot.html         # Forgot password (4 steps)
-    ├── detail.html         # Anime detail page
-    ├── player.html         # Video player page
-    ├── genre.html          # Genre filter page
-    ├── schedule.html       # Schedule page
-    ├── bookmark.html       # Bookmark page
-    ├── riwayat.html        # History page
-    ├── profile.html        # User profile page
-    └── section.html        # Section detail page
+# Dev Panel
+DEV_SECRET_KEY=your-dev-secret-key
+DEV_PANEL_ADMINS=admin,vexora
 ```
 
 ---
 
-## API Endpoints
+## 🚀 Menjalankan
 
-### Auth
+### Development (Local)
 
-| Method | Endpoint | Fungsi |
-| --- | --- | --- |
-| POST | `/api/auth/register` | Register akun baru |
-| POST | `/api/auth/login` | Login |
-| POST | `/api/auth/google` | Login/Register via Google |
-| POST | `/api/auth/logout` | Logout |
-| GET | `/api/auth/me` | Cek status login |
-| POST | `/api/auth/send-otp` | Kirim OTP WhatsApp |
-| POST | `/api/auth/verify-phone` | Verifikasi OTP phone |
-| POST | `/api/auth/forgot-password` | Kirim OTP reset password |
-| POST | `/api/auth/verify-reset-otp` | Verifikasi OTP reset |
-| POST | `/api/auth/reset-password` | Reset password |
-| POST | `/api/auth/update-profile` | Update username/email |
-| POST | `/api/auth/upload-avatar` | Upload avatar |
+Jalankan Flask API + Next.js bersamaan:
+
+```bash
+python run.py
+```
+
+Atau jalankan terpisah:
+
+```bash
+# Terminal 1 — Flask API
+cd backend && python app.py
+
+# Terminal 2 — Next.js
+cd frontend && npm run dev
+```
+
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:5000 |
+| Health Check | http://localhost:5000/api/health |
+
+### Production Build
+
+```bash
+# Build frontend
+cd frontend && npm run build
+
+# Run with gunicorn
+cd .. && gunicorn backend.app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+```
+
+---
+
+## 📂 Struktur Project
+
+```
+Donglyn/
+│
+├── frontend/                          ← Next.js 14 Application
+│   ├── app/                           ← App Router pages
+│   │   ├── layout.tsx                 ← Root layout (fonts, SEO, head)
+│   │   ├── page.tsx                   ← Home (/)
+│   │   ├── not-found.tsx              ← 404 page
+│   │   │
+│   │   ├── search/                    ← Search page
+│   │   │   ├── page.tsx
+│   │   │   └── SearchContent.tsx
+│   │   │
+│   │   ├── detail/                    ← Donghua detail page
+│   │   │   ├── page.tsx
+│   │   │   ├── layout.tsx
+│   │   │   └── DetailContent.tsx
+│   │   │
+│   │   ├── player/                    ← Video player page
+│   │   │   ├── page.tsx
+│   │   │   └── PlayerContent.tsx
+│   │   │
+│   │   ├── login/                     ← Login page
+│   │   │   └── page.tsx
+│   │   ├── register/                  ← Register page
+│   │   │   └── page.tsx
+│   │   ├── forgot-password/           ← Forgot password
+│   │   │   └── page.tsx
+│   │   ├── reset-password/            ← Reset password
+│   │   │   ├── page.tsx
+│   │   │   └── ResetPasswordContent.tsx
+│   │   ├── verify-email/              ← Email verification
+│   │   │   ├── page.tsx
+│   │   │   └── VerifyEmailContent.tsx
+│   │   ├── verify-email-sent/         ← Email sent confirmation
+│   │   │   └── page.tsx
+│   │   │
+│   │   ├── profile/                   ← User profile
+│   │   │   └── page.tsx
+│   │   ├── bookmark/                  ← Bookmarks list
+│   │   │   └── page.tsx
+│   │   ├── riwayat/                   ← Watch history
+│   │   │   └── page.tsx
+│   │   ├── genre/                     ← Genre browser
+│   │   │   └── page.tsx
+│   │   ├── schedule/                  ← Release schedule
+│   │   │   └── page.tsx
+│   │   ├── terbaru/                   ← Latest episodes
+│   │   │   └── page.tsx
+│   │   └── dev-panel/                 ← Developer dashboard
+│   │       ├── page.tsx
+│   │       └── layout.tsx
+│   │
+│   ├── components/                    ← Reusable components
+│   │   ├── layout/
+│   │   │   ├── Navbar.tsx             ← Responsive navbar + mobile menu
+│   │   │   ├── Footer.tsx             ← Footer with social links
+│   │   │   ├── LoadingScreen.tsx      ← Splash screen animation
+│   │   │   └── DevPanel.tsx           ← Dev panel modal
+│   │   │
+│   │   ├── content/
+│   │   │   ├── HeroBanner.tsx         ← Swiper hero banner
+│   │   │   ├── ContentSection.tsx     ← Content section wrapper
+│   │   │   └── PosterCard.tsx         ← Poster card component
+│   │   │
+│   │   └── ui/
+│   │       └── States.tsx             ← Skeleton, EmptyState, ErrorState
+│   │
+│   ├── lib/                           ← Utilities
+│   │   ├── api.ts                     ← API client (fetch wrapper)
+│   │   └── types.ts                   ← TypeScript interfaces
+│   │
+│   ├── hooks/                         ← Custom React hooks
+│   │
+│   ├── public/                        ← Static assets
+│   │   ├── logo.png                   ← Donglyn logo
+│   │   ├── favicon.png                ← Favicon
+│   │   └── dev-logo.png               ← Dev panel logo
+│   │
+│   ├── tailwind.config.js             ← Tailwind configuration
+│   ├── tsconfig.json                  ← TypeScript configuration
+│   ├── postcss.config.js              ← PostCSS configuration
+│   ├── eslint.config.mjs              ← ESLint configuration
+│   ├── next-env.d.ts                  ← Next.js type declarations
+│   ├── package.json                   ← NPM dependencies
+│   └── README.md                      ← Frontend documentation
+│
+├── backend/                           ← Flask API Application
+│   ├── app.py                         ← Main Flask app (routes + handlers)
+│   │
+│   ├── core/                          ← Core utilities
+│   │   ├── __init__.py
+│   │   └── browser.py                 ← Playwright browser helper
+│   │
+│   ├── video_engine/                  ← Video streaming engine
+│   │   ├── __init__.py
+│   │   └── adapters/
+│   │       ├── __init__.py
+│   │       ├── base.py                ← Shared helpers (navigate, click, chain)
+│   │       ├── okru.py                ← Okru server adapter
+│   │       ├── dailymotion.py         ← Dailymotion server adapter
+│   │       ├── streamwish.py          ← StreamWish server adapter
+│   │       ├── flickr.py              ← Flickr server adapter
+│   │       └── shortlink.py           ← Shortlink bypass adapter
+│   │
+│   ├── home.py                        ← Homepage scraper
+│   ├── banner.py                      ← Banner slider scraper
+│   ├── detail.py                      ← Detail page scraper
+│   ├── search.py                      ← Search scraper
+│   ├── schedule.py                    ← Schedule scraper
+│   ├── genre.py                       ← Genre scraper
+│   └── stream.py                      ← Episode URL resolver
+│
+├── db/                                ← Database setup
+│   └── setup_supabase.sql             ← Supabase schema
+│
+├── .env.example                       ← Environment variables template
+├── .gitignore                         ← Git ignore rules
+├── AGENTS.md                          ← Agent instructions
+├── README.md                          ← This file
+├── redesign.md                        ← Master design prompt
+├── render.yaml                        ← Render.com deployment config
+├── requirements.txt                   ← Python dependencies
+└── run.py                             ← Local dev runner
+```
+
+---
+
+## 🔌 API Endpoints
+
+### Health
+
+| Method | Endpoint | Response |
+|--------|----------|----------|
+| GET | `/api/health` | `{"status": "ok"}` |
 
 ### Content
 
-| Method | Endpoint | Fungsi |
-| --- | --- | --- |
-| GET | `/api/home` | Data home (sections) |
-| GET | `/api/banner` | Banner slider data |
-| GET | `/api/search?q=...` | Pencarian donghua |
-| GET | `/api/genre` | Daftar genre |
-| GET | `/api/genre/<slug>` | Donghua per genre |
-| GET | `/api/schedule` | Jadwal rilis |
-| GET | `/api/detail-data?url=...` | Detail donghua |
-| GET | `/api/proxy-player?url=...` | Proxy video player |
+| Method | Endpoint | Request Body | Deskripsi |
+|--------|----------|--------------|-----------|
+| GET | `/api/home` | — | Homepage sections data |
+| GET | `/api/banner` | — | Banner slider data |
+| GET | `/api/schedule?day=all` | — | Release schedule |
+| GET | `/api/genres` | — | Genre list |
+| POST | `/api/search` | `{ "q": "string" }` | Search donghua |
+| POST | `/api/detail-data` | `{ "url": "string" }` | Detail + episodes |
+| POST | `/api/stream` | `{ "url": "string", "server": "Okru" }` | Resolve video URL |
 
-### Data
+### Proxy
 
-| Method | Endpoint | Fungsi |
-| --- | --- | --- |
-| GET | `/api/bookmarks` | Ambil bookmarks |
-| POST | `/api/bookmarks` | Tambah bookmark |
-| DELETE | `/api/bookmarks` | Hapus bookmark |
-| GET | `/api/history` | Ambil riwayat |
-| POST | `/api/history` | Tambah/update riwayat |
-| DELETE | `/api/history` | Hapus riwayat |
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| GET | `/api/proxy-okru` | Proxy Okru video page |
+| GET | `/api/proxy-dm` | Proxy Dailymotion page |
+| GET | `/api/proxy?url=...` | Generic proxy (CORS-enabled) |
 
----
+### Auth (Legacy)
 
-## Screenshot
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| POST | `/api/auth/register` | Register new account |
+| POST | `/api/auth/login` | Login |
+| POST | `/api/auth/logout` | Logout |
+| GET | `/api/auth/me` | Get current user |
+| POST | `/api/auth/send-otp` | Send WhatsApp OTP |
+| POST | `/api/auth/verify-phone` | Verify phone OTP |
+| POST | `/api/auth/forgot-password` | Send reset link |
+| POST | `/api/auth/reset-password` | Reset password |
+| POST | `/api/auth/update-profile` | Update profile |
+| POST | `/api/auth/upload-avatar` | Upload avatar |
 
-| Home | Detail | Player |
-| --- | --- | --- |
-| ![Home](screenshot-home.png) | ![Detail](screenshot-detail.png) | ![Player](screenshot-player.png) |
+### Bookmarks & History
 
-| Login | Mobile | Search |
-| --- | --- | --- |
-| ![Login](screenshot-login.png) | ![Mobile](screenshot-mobile.png) | ![Search](screenshot-search.png) |
-
----
-
-## Contributing
-
-Contributions sangat dipersilakan! Kalau kamu mau:
-
-1. Fork repository ini
-2. Buat branch baru (`git checkout -b fitur/xxx`)
-3. Commit perubahan (`git commit -m 'Add fitur xxx'`)
-4. Push ke branch (`git push origin fitur/xxx`)
-5. Buka Pull Request
-
-### Bug Report
-
-Kalau nemu bug, buka [GitHub Issues](https://github.com/VexalynDeveloper/VEXORA/issues) dan kasih:
-
-- Deskripsi bug
-- Screenshot/video
-- Console log (kalau ada error)
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| GET | `/api/bookmarks` | Get bookmarks |
+| POST | `/api/bookmarks` | Add bookmark |
+| DELETE | `/api/bookmarks` | Remove bookmark |
+| GET | `/api/history` | Get watch history |
+| POST | `/api/history` | Add history entry |
+| DELETE | `/api/history` | Clear history |
 
 ---
 
-## Author
+## ⚙️ Konfigurasi
 
-Vexalyn Developer
+### Environment Variables
 
-Vio Atmajaya Saputra
+Lihat `.env.example` untuk daftar lengkap. Yang wajib diisi:
 
-[![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://instagram.com/vexalyn)
+| Variable | Wajib | Deskripsi |
+|----------|-------|-----------|
+| `SECRET_KEY` | ✅ | Flask session secret |
+| `SUPABASE_URL` | ❌ | Supabase project URL |
+| `SUPABASE_KEY` | ❌ | Supabase anon key |
+| `GOOGLE_CLIENT_ID` | ❌ | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | ❌ | Google OAuth client secret |
+| `RESEND_API_KEY` | ❌ | Resend email API key |
+| `FONNTE_TOKEN` | ❌ | Fonnte WhatsApp API token |
+
+### Tailwind Content Path
+
+Update `frontend/tailwind.config.js` jika menambahkan path baru:
+
+```js
+content: [
+  "./app/**/*.{js,ts,jsx,tsx,mdx}",
+  "./components/**/*.{js,ts,jsx,tsx,mdx}",
+  "./public/**/*.js",
+],
+```
+
+---
+
+## 🎬 Video Streaming
+
+Engine streaming menggunakan Playwright headless browser untuk menelusuri rantai iframe dari halaman episode hingga mendapatkan URL video akhir.
+
+### Alur Streaming
+
+```
+1. User klik "Watch Now" → navigasi ke /player?url=...&server=Okru
+2. PlayerContent.tsx → API.post('/api/stream', { url, server })
+3. Flask receives request → resolve_episode_url_stable() → full URL
+4. Playwright navigates episode page → clicks server button
+5. Follows iframe chain: episode → /stream/TOKEN → player → ok.ru/dailymotion/etc
+6. Returns JSON: { server, video_url, embed_ready, elapsed_time }
+7. Player renders iframe dengan proxy URL
+```
+
+### Server yang Didukung
+
+| Server | Status | Proxy |
+|--------|--------|-------|
+| Okru | ✅ | `/api/proxy-okru` |
+| Dailymotion | ✅ | `/api/proxy-dm` |
+| StreamWish | ✅ | `/api/proxy` |
+| Flickr | ✅ | `/api/proxy` |
+
+---
+
+## 📊 Deployment
+
+### Render.com (Dual Service)
+
+Project dikonfigurasi untuk deploy di Render dengan 2 service:
+
+| Service | Runtime | Build Command | Start Command |
+|---------|---------|---------------|---------------|
+| `donglyn-api` | Python | `pip install -r requirements.txt` | `gunicorn backend.app:app --bind 0.0.0.0:$PORT` |
+| `donglyn-web` | Node.js | `cd frontend && npm ci && npm run build` | `cd frontend && npm start` |
+
+### Local Development
+
+```bash
+# Jalankan kedua service sekaligus
+python run.py
+
+# Atau terpisah
+python -m flask run --port 5000   # Backend
+cd frontend && npm run dev        # Frontend
+```
+
+---
+
+## 👨‍💻 Developer
+
+| Role | Nama |
+|------|------|
+| **Project Lead** | Vio Atmajaya Saputra |
+| **Backend Engineer** | Vexalyn Developer |
+| **Frontend Engineer** | Vexalyn Developer |
+| **UI/UX Designer** | Vexalyn Developer |
+
+### Social
+
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/VexalynDeveloper)
+[![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://instagram.com/vexalyn)
 [![TikTok](https://img.shields.io/badge/TikTok-000000?style=for-the-badge&logo=tiktok&logoColor=white)](https://tiktok.com/@vexalyn)
 
-Dibuat dengan ❤️ untuk komunitas donghua Indonesia
+---
+
+## 🤝 Contributing
+
+Contributions sangat dipersilakan!
+
+1. **Fork** repository ini
+2. **Clone** fork kamu: `git clone https://github.com/username/Donglyn.git`
+3. **Create branch**: `git checkout -b fitur/nama-fitur`
+4. **Commit** perubahan: `git commit -m 'Add: deskripsi fitur'`
+5. **Push** ke branch: `git push origin fitur/nama-fitur`
+6. **Buka Pull Request**
+
+### Development Guidelines
+
+- Ikuti **AGENTS.md** untuk instruksi agent
+- Gunakan **ESLint** + **Prettier** untuk code style
+- Pastikan **build clean** sebelum submit PR
+- Update **documentation** jika ada perubahan API
 
 ---
 
-## License
+## 📄 License
 
-```text
+Distributed under the **MIT License**. See [LICENSE](LICENSE) untuk detail.
+
+```
 MIT License
 
 Copyright (c) 2026 Vexalyn Developer
@@ -446,6 +664,10 @@ SOFTWARE.
 
 ---
 
-⭐ Star repo ini kalau kamu suka VEXORA! ⭐
+<div align="center">
 
-Made with Python & ❤️ by [Vexalyn Developer](https://github.com/VexalynDeveloper)
+**Dibuat dengan ❤️ oleh [Vexalyn Developer](https://github.com/VexalynDeveloper)**
+
+⭐ Star repo ini jika kamu suka Donglyn!
+
+</div>

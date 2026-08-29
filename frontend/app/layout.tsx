@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Inter, Bebas_Neue } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -19,7 +19,7 @@ const bebas = Bebas_Neue({
 
 export const metadata: Metadata = {
   title: {
-    default: "Donglyn — Pusat Streaming Donghua Terlengkap",
+    default: "Donglyn â€” Pusat Streaming Donghua Terlengkap",
     template: "%s | Donglyn",
   },
   description: "Nonton donghua terbaru, terlengkap, dan berkualitas. Streaming gratis dengan subtitle Indonesia.",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "id_ID",
     siteName: "Donglyn",
-    title: "Donglyn — Pusat Streaming Donghua Terlengkap",
+    title: "Donglyn â€” Pusat Streaming Donghua Terlengkap",
     description: "Nonton donghua terbaru dengan subtitle Indonesia.",
   },
   twitter: { card: "summary_large_image", site: "@donglyn", creator: "@donglyn" },
@@ -45,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/brands.min.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
         <link rel="stylesheet" href="/css/output.css" />
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.png" type="image/svg+xml" />
       </head>
       <body className="min-h-screen bg-[#050505] text-[#f5f5f5] font-sans selection:bg-[#e50914] selection:text-white">
         <LoadingScreen />
@@ -56,3 +56,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+
+
